@@ -1,0 +1,8 @@
+server:
+  port: 80
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.1.4/database?serverTimezone=UTC
+    username: root
+    password: 0.123456a
