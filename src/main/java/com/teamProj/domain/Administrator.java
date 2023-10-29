@@ -1,4 +1,4 @@
-package com.teamproj.domain;
+package com.teamProj.domain;
 
 public class Administrator {
     private String adminId;

@@ -6,3 +6,6 @@ spring:
     url: jdbc:mysql://192.168.1.216/team_project?serverTimezone=UTC
     username: root
     password: 0.123456a
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
