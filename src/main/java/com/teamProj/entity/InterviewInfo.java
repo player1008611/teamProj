@@ -1,8 +1,12 @@
 package com.teamProj.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.sql.Timestamp;
 
 public class InterviewInfo {
+    @TableId(type = IdType.AUTO)
     int interviewId;
     int studentId;
     int applicationId;

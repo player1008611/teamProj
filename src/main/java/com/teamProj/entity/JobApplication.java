@@ -1,12 +1,16 @@
 package com.teamProj.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.sql.Timestamp;
 
 public class JobApplication {
+    @TableId(type = IdType.AUTO)
     int applicationId;
     int resumeId;
     int studentId;
-    int opportunityId;
+    int recruitmentId;
     Timestamp applicationTime;
     Timestamp approvalTime;
     Character status;
@@ -18,7 +22,7 @@ public class JobApplication {
                 "applicationId=" + applicationId +
                 ", resumeId=" + resumeId +
                 ", studentId=" + studentId +
-                ", opportunityId=" + opportunityId +
+                ", opportunityId=" + recruitmentId +
                 ", applicationTime=" + applicationTime +
                 ", approvalTime=" + approvalTime +
                 ", status=" + status +
@@ -50,12 +54,12 @@ public class JobApplication {
         this.studentId = studentId;
     }
 
-    public int getOpportunityId() {
-        return opportunityId;
+    public int getRecruitmentId() {
+        return recruitmentId;
     }
 
-    public void setOpportunityId(int opportunityId) {
-        this.opportunityId = opportunityId;
+    public void setRecruitmentId(int opportunityId) {
+        this.recruitmentId = opportunityId;
     }
 
     public Timestamp getApplicationTime() {

@@ -1,9 +1,13 @@
 package com.teamProj.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.sql.Date;
 import java.sql.Time;
 
 public class CareerFair {
+    @TableId(type = IdType.AUTO)
     int fairId;
     int schoolId;
     int enterpriseId;

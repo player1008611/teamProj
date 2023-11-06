@@ -1,8 +1,12 @@
 package com.teamProj.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import java.sql.Timestamp;
 
 public class Student {
+    @TableId(type = IdType.AUTO)
     int studentId;
     String studentAccount;
     int schoolId;
@@ -14,7 +18,6 @@ public class Student {
     Character gender;
     String wechat;
     String qq;
-    String email;
     int collegeId;
     int majorId;
 
@@ -32,7 +35,6 @@ public class Student {
                 ", gender=" + gender +
                 ", wechat='" + wechat + '\'' +
                 ", qq='" + qq + '\'' +
-                ", email='" + email + '\'' +
                 ", collegeId=" + collegeId +
                 ", majorId=" + majorId +
                 '}';
@@ -124,14 +126,6 @@ public class Student {
 
     public void setQq(String qq) {
         this.qq = qq;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public int getCollegeId() {

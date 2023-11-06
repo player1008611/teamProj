@@ -1,7 +1,7 @@
 package com.teamProj.controller;
 
-import com.teamProj.entity.Administrator;
-import com.teamProj.service.AdministratorService;
+import com.teamProj.entity.Student;
+import com.teamProj.service.StudentService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/student")
 public class StudentController {
     @Resource
     StudentService studentService;

@@ -1,6 +1,10 @@
 package com.teamProj.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+
 public class Enterprise {
+    @TableId(type = IdType.AUTO)
     String enterpriseId;
     String enterpriseName;
     String website;
