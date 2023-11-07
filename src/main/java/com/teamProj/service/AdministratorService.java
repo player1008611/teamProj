@@ -9,13 +9,13 @@ import java.util.List;
 public interface AdministratorService {
     Administrator administratorLogin(String account, String password);
 
-    Student ResetStudentPassword(String account);
+    int ResetStudentPassword(String account);
 
-    Student DisableStudentAccount(String account);
+    int DisableStudentAccount(String account);
 
-    Student AbleStudentAccount(String account);
+    int AbleStudentAccount(String account);
 
-    Student DeleteStudentAccount(String account);
+    int DeleteStudentAccount(String account);
 
     List<Student> QueryStudent(String name, String account, int status);
 
