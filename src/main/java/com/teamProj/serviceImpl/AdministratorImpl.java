@@ -85,7 +85,7 @@ public class AdministratorImpl implements AdministratorService {
     }
 
     @Override
-    public List<Student> queryStudent(String name, String account, String status) {
+    public List<Student> queryStudent(String name, String account, int status) {
         QueryWrapper<Student> wrapper = new QueryWrapper<>();
         if (!name.isEmpty()) {
             wrapper.eq("name", name);
@@ -93,7 +93,7 @@ public class AdministratorImpl implements AdministratorService {
         if (!account.isEmpty()) {
             wrapper.eq("student_account", account);
         }
-        wrapper.eq("user_status", Integer.parseInt(status));
+        wrapper.eq("user_status", status);
         return studentDao.selectList(wrapper);
     }
 

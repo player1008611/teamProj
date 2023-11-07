@@ -17,7 +17,7 @@ public interface AdministratorService {
 
     Student deleteStudentAccount(String account);
 
-    List<Student> queryStudent(String name, String account, String status);
+    List<Student> queryStudent(String name, String account, int status);
 
     School resetSchoolPassword(String account);
 
