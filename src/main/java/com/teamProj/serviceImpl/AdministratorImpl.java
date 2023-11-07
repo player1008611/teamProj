@@ -53,7 +53,7 @@ public class AdministratorImpl implements AdministratorService {
     @Override
     public Student disableStudentAccount(String account) {
         UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
-        wrapper.eq("student_account", account).set("user_status", 1);
+        wrapper.eq("student_account", account).set("user_status", 0);
         if (studentDao.update(null, wrapper) > 0) {
             return studentDao.selectOne(wrapper);
         } else {
@@ -64,7 +64,7 @@ public class AdministratorImpl implements AdministratorService {
     @Override
     public Student enableStudentAccount(String account) {
         UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
-        wrapper.eq("student_account", account).set("user_status", 0);
+        wrapper.eq("student_account", account).set("user_status", 1);
         if (studentDao.update(null, wrapper) > 0) {
             return studentDao.selectOne(wrapper);
         } else {
