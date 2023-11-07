@@ -3,6 +3,7 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teamProj.dao.AdministratorDao;
+import com.teamProj.dao.SchoolDao;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.entity.Administrator;
 import com.teamProj.entity.School;
@@ -11,7 +12,6 @@ import com.teamProj.service.AdministratorService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +21,9 @@ public class AdministratorImpl implements AdministratorService {
 
     @Resource
     StudentDao studentDao;
+
+    @Resource
+    SchoolDao schoolDao;
 
     public Administrator administratorLogin(String account, String password) {
         List<Administrator> administratorList = administratorDao.selectList(null);
@@ -37,69 +40,96 @@ public class AdministratorImpl implements AdministratorService {
     }
 
     @Override
-    public int ResetStudentPassword(String account) {
+    public Student resetStudentPassword(String account) {
         UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
-        wrapper.eq("studentAccount", account).set("studentPassword", "123456");
-        return studentDao.update(null, wrapper);
+        wrapper.eq("student_account", account).set("student_password", "123456");
+        if (studentDao.update(null, wrapper) > 0) {
+            return studentDao.selectOne(wrapper);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public int DisableStudentAccount(String account) {
+    public Student disableStudentAccount(String account) {
         UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
-        wrapper.eq("studentAccount", account).set("userStatus", 1);
-        return studentDao.update(null, wrapper);
+        wrapper.eq("student_account", account).set("user_status", 1);
+        if (studentDao.update(null, wrapper) > 0) {
+            return studentDao.selectOne(wrapper);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public int AbleStudentAccount(String account) {
+    public Student enableStudentAccount(String account) {
         UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
-        wrapper.eq("studentAccount", account).set("userStatus", 0);
-        return studentDao.update(null, wrapper);
+        wrapper.eq("student_account", account).set("user_status", 0);
+        if (studentDao.update(null, wrapper) > 0) {
+            return studentDao.selectOne(wrapper);
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public int DeleteStudentAccount(String account) {
+    public Student deleteStudentAccount(String account) {
         QueryWrapper<Student> wrapper = new QueryWrapper<>();
-        wrapper.eq("studentAccount", account);
-        return studentDao.delete(wrapper);
+        wrapper.eq("student_account", account);
+        Student deletedStudent = studentDao.selectOne(wrapper);
+        if (studentDao.delete(wrapper) > 0) {
+            return deletedStudent;
+        } else {
+            return null;
+        }
     }
 
     @Override
-    public List<Student> QueryStudent(String name, String account, int status) {
+    public List<Student> queryStudent(String name, String account, String status) {
         QueryWrapper<Student> wrapper = new QueryWrapper<>();
-        wrapper.eq("name", name.isEmpty() ? "*" : name)
-                .eq("studentAccount", account.isEmpty() ? "*" : account)
-                .eq("userStatus", status);
+        if (!name.isEmpty()) {
+            wrapper.eq("name", name);
+        }
+        if (!account.isEmpty()) {
+            wrapper.eq("student_account", account);
+        }
+        wrapper.eq("user_status", Integer.parseInt(status));
         return studentDao.selectList(wrapper);
     }
 
     @Override
-    public School ResetSchoolPassword(String account) {
+    public School resetSchoolPassword(String account) {
+        UpdateWrapper<School> wrapper = new UpdateWrapper<>();
+        wrapper.eq("student_account", account).set("school_password", "123456");
+        if (schoolDao.update(null, wrapper) > 0) {
+            return schoolDao.selectOne(wrapper);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public School disableSchoolAccount(String account) {
         return null;
     }
 
     @Override
-    public School DisableSchoolAccount(String account) {
+    public School enableSchoolAccount(String account) {
         return null;
     }
 
     @Override
-    public School AbleSchoolAccount(String account) {
+    public School deleteSchoolAccount(String account) {
         return null;
     }
 
     @Override
-    public School DeleteSchoolAccount(String account) {
+    public School createNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal) {
         return null;
     }
 
     @Override
-    public School CreateNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal) {
-        return null;
-    }
-
-    @Override
-    public List<School> QuerySchool(String schoolName, String account, int status) {
+    public List<School> querySchool(String schoolName, String account, int status) {
         return null;
     }
 }

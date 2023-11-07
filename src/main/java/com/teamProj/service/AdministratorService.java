@@ -9,25 +9,25 @@ import java.util.List;
 public interface AdministratorService {
     Administrator administratorLogin(String account, String password);
 
-    int ResetStudentPassword(String account);
+    Student resetStudentPassword(String account);
 
-    int DisableStudentAccount(String account);
+    Student disableStudentAccount(String account);
 
-    int AbleStudentAccount(String account);
+    Student enableStudentAccount(String account);
 
-    int DeleteStudentAccount(String account);
+    Student deleteStudentAccount(String account);
 
-    List<Student> QueryStudent(String name, String account, int status);
+    List<Student> queryStudent(String name, String account, String status);
 
-    School ResetSchoolPassword(String account);
+    School resetSchoolPassword(String account);
 
-    School DisableSchoolAccount(String account);
+    School disableSchoolAccount(String account);
 
-    School AbleSchoolAccount(String account);
+    School enableSchoolAccount(String account);
 
-    School DeleteSchoolAccount(String account);
+    School deleteSchoolAccount(String account);
 
-    School CreateNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal);
+    School createNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal);
 
-    List<School> QuerySchool(String schoolName, String account, int status);
+    List<School> querySchool(String schoolName, String account, int status);
 }

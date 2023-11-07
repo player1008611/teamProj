@@ -7,6 +7,9 @@ spring:
     username: root
     password: 0.123456a
   mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
     pathmatch:
       matching-strategy: ant_path_matcher
   redis:
