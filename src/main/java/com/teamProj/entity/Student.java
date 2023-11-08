@@ -20,6 +20,7 @@ public class Student {
     String qq;
     int collegeId;
     int majorId;
+    String byword;
 
     @Override
     public String toString() {
@@ -37,6 +38,7 @@ public class Student {
                 ", qq='" + qq + '\'' +
                 ", collegeId=" + collegeId +
                 ", majorId=" + majorId +
+                ", byword='" + byword + '\'' +
                 '}';
     }
 
@@ -142,5 +144,13 @@ public class Student {
 
     public void setMajorId(int majorId) {
         this.majorId = majorId;
+    }
+
+    public String getByword() {
+        return byword;
+    }
+
+    public void setByword(String byword) {
+        this.byword = byword;
     }
 }

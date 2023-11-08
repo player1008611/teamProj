@@ -8,21 +8,9 @@ public class School {
     int schoolId;
     String schoolAccount;
     String schoolPassword;
-    String schoolName;
     String tel;
     String principal;
-
-    @Override
-    public String toString() {
-        return "School{" +
-                "schoolId=" + schoolId +
-                ", schoolAccount='" + schoolAccount + '\'' +
-                ", schoolPassword='" + schoolPassword + '\'' +
-                ", schoolName='" + schoolName + '\'' +
-                ", tel='" + tel + '\'' +
-                ", principal='" + principal + '\'' +
-                '}';
-    }
+    String schoolName;
 
     public int getSchoolId() {
         return schoolId;
@@ -48,14 +36,6 @@ public class School {
         this.schoolPassword = schoolPassword;
     }
 
-    public String getSchoolName() {
-        return schoolName;
-    }
-
-    public void setSchoolName(String schoolName) {
-        this.schoolName = schoolName;
-    }
-
     public String getTel() {
         return tel;
     }
@@ -70,5 +50,24 @@ public class School {
 
     public void setPrincipal(String principal) {
         this.principal = principal;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+    @Override
+    public String toString() {
+        return "School{" +
+                "schoolId=" + schoolId +
+                ", schoolAccount='" + schoolAccount + '\'' +
+                ", schoolPassword='" + schoolPassword + '\'' +
+                ", tel='" + tel + '\'' +
+                ", principal='" + principal + '\'' +
+                ", schoolName='" + schoolName + '\'' +
+                '}';
     }
 }

@@ -22,6 +22,7 @@ public class RecruitmentInfo {
     String rejectionReason;
     int recruitNum;
     int recruitedNum;
+    String byword;
 
     @Override
     public String toString() {
@@ -41,8 +42,11 @@ public class RecruitmentInfo {
                 ", rejectionReason='" + rejectionReason + '\'' +
                 ", recruitNum=" + recruitNum +
                 ", recruitedNum=" + recruitedNum +
+                ", byword='" + byword + '\'' +
                 '}';
     }
+
+
 
     public int getRecruitmentId() {
         return recruitmentId;
@@ -162,5 +166,13 @@ public class RecruitmentInfo {
 
     public void setRecruitedNum(int recruitedNum) {
         this.recruitedNum = recruitedNum;
+    }
+
+    public String getByword() {
+        return byword;
+    }
+
+    public void setByword(String byword) {
+        this.byword = byword;
     }
 }
