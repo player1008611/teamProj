@@ -85,7 +85,7 @@ public class AdministratorImpl implements AdministratorService {
     }
 
     @Override
-    public List<Student> queryStudent(String name, String account, Character status) {
+    public List<Student> queryStudent(String name, String account, String status) {
         QueryWrapper<Student> wrapper = new QueryWrapper<>();
         if (!name.isEmpty()) {
             wrapper.eq("name", name);
@@ -146,7 +146,7 @@ public class AdministratorImpl implements AdministratorService {
     }
 
     @Override
-    public List<School> querySchool(String schoolName, String account, Character status) {
+    public List<School> querySchool(String schoolName, String account, String status) {
         QueryWrapper<School> wrapper = new QueryWrapper<>();
         if (!schoolName.isEmpty()) {
             wrapper.eq("school_name", schoolName);
