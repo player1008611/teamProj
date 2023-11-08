@@ -28,4 +28,8 @@ public class StudentImpl implements StudentService {
         return null;
     }
 
+    @Override
+    public Student setStudentPassword(String account, String password) {
+        return null;
+    }
 }
