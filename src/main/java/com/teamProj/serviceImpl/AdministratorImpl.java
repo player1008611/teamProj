@@ -120,16 +120,41 @@ public class AdministratorImpl implements AdministratorService {
 
     @Override
     public School deleteSchoolAccount(String account) {
-        return null;
+        QueryWrapper<School> wrapper = new QueryWrapper<>();
+        wrapper.eq("school_account", account);
+        School deletedSchool = schoolDao.selectOne(wrapper);
+        if (schoolDao.delete(wrapper) > 0) {
+            return deletedSchool;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public School createNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal) {
-        return null;
+        School newSchool = new School();
+        newSchool.setSchoolAccount(account);
+        newSchool.setSchoolPassword(password);
+        newSchool.setSchoolName(schoolName);
+        newSchool.setTel(telephone);
+        newSchool.setPrincipal(principal);
+        if (schoolDao.insert(newSchool) > 0) {
+            return newSchool;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public List<School> querySchool(String schoolName, String account, int status) {
-        return null;
+        QueryWrapper<School> wrapper = new QueryWrapper<>();
+        if (!schoolName.isEmpty()) {
+            wrapper.eq("school_name", schoolName);
+        }
+        if (!account.isEmpty()) {
+            wrapper.eq("school_account", account);
+        }
+//        wrapper.eq("user_status", status);
+        return schoolDao.selectList(wrapper);
     }
 }

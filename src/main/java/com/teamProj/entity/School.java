@@ -8,6 +8,7 @@ public class School {
     int schoolId;
     String schoolAccount;
     String schoolPassword;
+    String schoolName;
     String tel;
     String principal;
 
@@ -17,6 +18,7 @@ public class School {
                 "schoolId=" + schoolId +
                 ", schoolAccount='" + schoolAccount + '\'' +
                 ", schoolPassword='" + schoolPassword + '\'' +
+                ", schoolName='" + schoolName + '\'' +
                 ", tel='" + tel + '\'' +
                 ", principal='" + principal + '\'' +
                 '}';
@@ -44,6 +46,14 @@ public class School {
 
     public void setSchoolPassword(String schoolPassword) {
         this.schoolPassword = schoolPassword;
+    }
+
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
     }
 
     public String getTel() {
