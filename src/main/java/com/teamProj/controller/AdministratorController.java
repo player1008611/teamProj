@@ -55,7 +55,7 @@ public class AdministratorController {
     }
 
     @GetMapping("queryStudent")
-    List<Student> queryStudent(@RequestParam(value = "studentName") String name, @RequestParam(value = "studentAccount") String account, @RequestParam(value = "status") int status) {
+    List<Student> queryStudent(@RequestParam(value = "studentName") String name, @RequestParam(value = "studentAccount") String account, @RequestParam(value = "status") Character status) {
         return administratorService.queryStudent(name, account, status);
     }
 }

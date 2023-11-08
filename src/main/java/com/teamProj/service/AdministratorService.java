@@ -17,7 +17,7 @@ public interface AdministratorService {
 
     Student deleteStudentAccount(String account);
 
-    List<Student> queryStudent(String name, String account, int status);
+    List<Student> queryStudent(String name, String account, Character status);
 
     School resetSchoolPassword(String account);
 
@@ -29,5 +29,5 @@ public interface AdministratorService {
 
     School createNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal);
 
-    List<School> querySchool(String schoolName, String account, int status);
+    List<School> querySchool(String schoolName, String account, Character status);
 }
