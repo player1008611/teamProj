@@ -9,10 +9,15 @@ import com.teamProj.entity.Administrator;
 import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
 import com.teamProj.service.AdministratorService;
+import com.teamProj.util.HttpResult;
+import com.teamProj.util.ResultCodeEnum;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.PreferenceChangeListener;
 
 @Service
 public class AdministratorImpl implements AdministratorService {
@@ -25,136 +30,151 @@ public class AdministratorImpl implements AdministratorService {
     @Resource
     SchoolDao schoolDao;
 
-    public Administrator administratorLogin(String account, String password) {
-        List<Administrator> administratorList = administratorDao.selectList(null);
-        for (Administrator administrator : administratorList) {
-            if (administrator.getLoginAccount().equals(account)) {
-                if (administrator.getPassword().equals(password)) {
-                    return administrator;
-                } else {
-                    return null;
-                }
+    public HttpResult<Administrator> administratorLogin(String account, String password) {
+        QueryWrapper<Administrator> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("login_account", account);
+        Administrator loginAdmin = administratorDao.selectOne(queryWrapper);
+        if (loginAdmin != null) {
+            if (loginAdmin.getPassword().equals(password)) {
+                return HttpResult.success(administratorDao.selectOne(new QueryWrapper<Administrator>().select("name", "login_account").eq("login_account", account)), "登录成功");
             }
+            return HttpResult.success(null, "密码错误");
         }
-        return null;
+        return HttpResult.success(null, "账号不存在");
     }
 
     @Override
-    public Student resetStudentPassword(String account) {
-        UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
-        wrapper.eq("student_account", account).set("student_password", "123456");
-        if (studentDao.update(null, wrapper) > 0) {
-            return studentDao.selectOne(wrapper);
+    public HttpResult<Student> resetStudentPassword(String account) {
+        UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("student_account", account).set("student_password", "123456");
+        if (studentDao.update(null, updateWrapper) > 0) {
+            QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("student_account", "name").eq("student_account", account);
+            return HttpResult.success(studentDao.selectOne(queryWrapper), "重置成功");
         } else {
-            return null;
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
 
     @Override
-    public Student disableStudentAccount(String account) {
+    public HttpResult<Student> disableStudentAccount(String account) {
         UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
         wrapper.eq("student_account", account).set("user_status", 0);
         if (studentDao.update(null, wrapper) > 0) {
-            return studentDao.selectOne(wrapper);
+            QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("student_account", "name").eq("student_account", account);
+            return HttpResult.success(studentDao.selectOne(queryWrapper), "操作成功");
         } else {
-            return null;
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
 
     @Override
-    public Student enableStudentAccount(String account) {
+    public HttpResult<Student> enableStudentAccount(String account) {
         UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
         wrapper.eq("student_account", account).set("user_status", 1);
         if (studentDao.update(null, wrapper) > 0) {
-            return studentDao.selectOne(wrapper);
+            QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("student_account", "name").eq("student_account", account);
+            return HttpResult.success(studentDao.selectOne(queryWrapper), "操作成功");
         } else {
-            return null;
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
 
     @Override
-    public Student deleteStudentAccount(String account) {
+    public HttpResult<Student> deleteStudentAccount(String account) {
         QueryWrapper<Student> wrapper = new QueryWrapper<>();
         wrapper.eq("student_account", account);
         Student deletedStudent = studentDao.selectOne(wrapper);
         if (studentDao.delete(wrapper) > 0) {
-            return deletedStudent;
+            Student result = new Student();
+            result.setName(deletedStudent.getName());
+            result.setStudentAccount(deletedStudent.getStudentAccount());
+            return HttpResult.success(result, "删除成功");
         } else {
-            return null;
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
 
     @Override
-    public List<Student> queryStudent(String name, String account, String status) {
-        QueryWrapper<Student> wrapper = new QueryWrapper<>();
-        if (!name.isEmpty()) {
-            wrapper.eq("name", name);
+    public HttpResult<List<Student>> queryStudent(String name, String account, String status) {
+        QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+        if (name != null && !name.isEmpty()) {
+            queryWrapper.eq("name", name);
         }
-        if (!account.isEmpty()) {
-            wrapper.eq("student_account", account);
+        if (account != null && !account.isEmpty()) {
+            queryWrapper.eq("student_account", account);
         }
-        wrapper.eq("user_status", status);
-        return studentDao.selectList(wrapper);
+        queryWrapper.select("student_account", "name", "phone_number", "user_status", "creation_time").eq("user_status", status);
+        return HttpResult.success(studentDao.selectList(queryWrapper), "查询成功");
     }
 
     @Override
-    public School resetSchoolPassword(String account) {
-        UpdateWrapper<School> wrapper = new UpdateWrapper<>();
-        wrapper.eq("student_account", account).set("school_password", "123456");
-        if (schoolDao.update(null, wrapper) > 0) {
-            return schoolDao.selectOne(wrapper);
+    public HttpResult<School> resetSchoolPassword(String account) {
+        UpdateWrapper<School> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("school_account", account).set("school_password", "123456");
+        QueryWrapper<School> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("school_account", "school_name").eq("school_account", account);
+        if (schoolDao.update(null, updateWrapper) > 0) {
+            return HttpResult.success(schoolDao.selectOne(queryWrapper), "操作成功");
         } else {
-            return null;
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
 
     @Override
-    public School disableSchoolAccount(String account) {
+    public HttpResult<School> disableSchoolAccount(String account) {
         return null;
     }
 
     @Override
-    public School enableSchoolAccount(String account) {
+    public HttpResult<School> enableSchoolAccount(String account) {
         return null;
     }
 
     @Override
-    public School deleteSchoolAccount(String account) {
+    public HttpResult<School> deleteSchoolAccount(String account) {
         QueryWrapper<School> wrapper = new QueryWrapper<>();
         wrapper.eq("school_account", account);
         School deletedSchool = schoolDao.selectOne(wrapper);
         if (schoolDao.delete(wrapper) > 0) {
-            return deletedSchool;
+            School result = new School();
+            result.setSchoolName(deletedSchool.getSchoolName());
+            result.setSchoolAccount(deletedSchool.getSchoolAccount());
+            return HttpResult.success(result, "删除成功");
         } else {
-            return null;
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
 
     @Override
-    public School createNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal) {
+    public HttpResult<School> createNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal) {
         School newSchool = new School();
         newSchool.setSchoolAccount(account);
         newSchool.setSchoolPassword(password);
         newSchool.setSchoolName(schoolName);
         newSchool.setTel(telephone);
         newSchool.setPrincipal(principal);
+        QueryWrapper<School> queryWrapper = new QueryWrapper<School>();
+        queryWrapper.select("school_account", "school_name").eq("school_account", account);
         if (schoolDao.insert(newSchool) > 0) {
-            return newSchool;
+            return HttpResult.success(schoolDao.selectOne(queryWrapper), "添加成功");
         } else {
-            return null;
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }
     }
 
     @Override
-    public List<School> querySchool(String schoolName, String account, String status) {
-        QueryWrapper<School> wrapper = new QueryWrapper<>();
-        if (!schoolName.isEmpty()) {
-            wrapper.eq("school_name", schoolName);
+    public HttpResult<List<School>> querySchool(String schoolName, String account, String status) {
+        QueryWrapper<School> queryWrapper = new QueryWrapper<>();
+        if (schoolName != null && !schoolName.isEmpty()) {
+            queryWrapper.eq("school_name", schoolName);
         }
-        if (!account.isEmpty()) {
-            wrapper.eq("school_account", account);
+        if (account != null && !account.isEmpty()) {
+            queryWrapper.eq("school_account", account);
         }
-        wrapper.eq("user_status", status);
-        return schoolDao.selectList(wrapper);
+        queryWrapper.select("school_name", "principal", "tel", "state", "school_account").eq("user_status", status);
+        return HttpResult.success(schoolDao.selectList(queryWrapper), "查询成功");
     }
 }
