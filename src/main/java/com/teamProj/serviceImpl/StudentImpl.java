@@ -1,9 +1,12 @@
 package com.teamProj.serviceImpl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.entity.Student;
 import com.teamProj.service.StudentService;
+import com.teamProj.util.HttpResult;
+import com.teamProj.util.ResultCodeEnum;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -15,28 +18,29 @@ public class StudentImpl implements StudentService {
     StudentDao studentDao;
 
     @Override
-    public Student studentLogin(String account, String password) {
-        List<Student> studentList = studentDao.selectList(null);
-        for (Student student : studentList) {
-            if (student.getStudentAccount().equals(account)) {
-                if (student.getStudentPassword().equals(password)) {
-                    return student;
-                } else {
-                    return null;
-                }
+    public HttpResult<Student> studentLogin(String account, String password) {
+        QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("student_account", account);
+        Student loginStudent = studentDao.selectOne(queryWrapper);
+        if(loginStudent != null){
+            if(loginStudent.getStudentPassword().equals(password)){
+                return HttpResult.success(studentDao.selectOne(new QueryWrapper<Student>().select("student_account","name").eq("student_account",account)),"登录成功");
             }
+            return HttpResult.success(null,"密码错误");
         }
-        return null;
+        return HttpResult.success(null,"账号不存在");
     }
 
     @Override
-    public Student setStudentPassword(String account, String oldPassword, String password) {
+    public HttpResult<Student> setStudentPassword(String account, String oldPassword, String password) {
         UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
-        wrapper.eq("studentpassword",oldPassword).eq("studentaccount",account).set("studentpassword",password);
+        wrapper.eq("student_password",oldPassword).eq("student_account",account).set("student_password",password);
         if (studentDao.update(null, wrapper) > 0) {
-            return studentDao.selectOne(wrapper);
+            QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("student_account", "name").eq("student_account", account);
+            return HttpResult.success(studentDao.selectOne(queryWrapper), "修改成功");
         } else {
-            return null;
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
 }
