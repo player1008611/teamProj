@@ -1,30 +1,14 @@
 package com.teamProj.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class FairParticipant {
     int fairId;
+
     int studentId;
-
-    @Override
-    public String toString() {
-        return "FairParticipant{" +
-                "fairId=" + fairId +
-                ", studentId=" + studentId +
-                '}';
-    }
-
-    public int getFairId() {
-        return fairId;
-    }
-
-    public void setFairId(int fairId) {
-        this.fairId = fairId;
-    }
-
-    public int getStudentId() {
-        return studentId;
-    }
-
-    public void setStudentId(int studentId) {
-        this.studentId = studentId;
-    }
 }

@@ -25,30 +25,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                //关闭csrf
                 .csrf().disable()
-                //不通过Session获取SecurityContext
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                // 允许跨域
-                .cors()
-                .and()
-                // 配置路劲是否需要认证
-                .authorizeRequests()
-                // 对于登录接口 允许匿名访问
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers("/admin/login",
-                        "/swagger-ui.html",
+                        "swagger-ui.html",
                         "/v2/api-docs",
                         "/swagger-resources/configuration/ui",
                         "/swagger-resources",
                         "/swagger-resources/configuration/security",
                         "/swagger-resources/**",
-                        "/webjars/**").permitAll()
-                // 配置权限
-                //.antMatchers("/hello2").hasAuthority("/hello2")
-                // 除上面外的所有请求全部需要鉴权认证
+                        "/webjars/**").anonymous()
                 .anyRequest().authenticated()
-                .and()
-                .build();
+                .and().build();
     }
 }

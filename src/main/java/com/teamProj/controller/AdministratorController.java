@@ -1,7 +1,5 @@
 package com.teamProj.controller;
 
-import com.teamProj.entity.Administrator;
-import com.teamProj.entity.Student;
 import com.teamProj.service.AdministratorService;
 import com.teamProj.utils.HttpResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,32 +21,32 @@ public class AdministratorController {
     AdministratorService administratorService;
 
     @PostMapping("/login")
-    HttpResult<?> administratorLogin(@RequestParam(value = "account") String account, @RequestParam(value = "password") String password) {
+    HttpResult administratorLogin(@RequestParam(value = "account") String account, @RequestParam(value = "password") String password) {
         return administratorService.administratorLogin(account, password);
     }
 
     @PatchMapping("/resetStudentPassword")
-    HttpResult<Student> resetStudentPassword(@RequestParam(value = "studentAccount") String account) {
+    HttpResult resetStudentPassword(@RequestParam(value = "studentAccount") String account) {
         return administratorService.resetStudentPassword(account);
     }
 
     @PatchMapping("/disableStudentAccount")
-    HttpResult<Student> disableStudentAccount(@RequestParam(value = "studentAccount") String account) {
+    HttpResult disableStudentAccount(@RequestParam(value = "studentAccount") String account) {
         return administratorService.disableStudentAccount(account);
     }
 
     @PatchMapping("/enableStudentAccount")
-    HttpResult<Student> ableStudentAccount(@RequestParam(value = "studentAccount") String account) {
+    HttpResult ableStudentAccount(@RequestParam(value = "studentAccount") String account) {
         return administratorService.enableStudentAccount(account);
     }
 
     @DeleteMapping("deleteStudentAccount")
-    HttpResult<Student> deleteStudentAccount(@RequestParam(value = "studentAccount") String account) {
+    HttpResult deleteStudentAccount(@RequestParam(value = "studentAccount") String account) {
         return administratorService.deleteStudentAccount(account);
     }
 
     @GetMapping("queryStudent")
-    HttpResult<List<Student>> queryStudent(@RequestParam(value = "studentName", required = false) String name, @RequestParam(value = "studentAccount", required = false) String account, @RequestParam(value = "status") String status) {
+    HttpResult queryStudent(@RequestParam(value = "studentName", required = false) String name, @RequestParam(value = "studentAccount", required = false) String account, @RequestParam(value = "status") String status) {
         return administratorService.queryStudent(name, account, status);
     }
 }

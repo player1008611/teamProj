@@ -9,27 +9,27 @@ import java.util.List;
 import java.util.Objects;
 
 public interface AdministratorService {
-    HttpResult<Administrator> administratorLogin(String account, String password);
+    HttpResult administratorLogin(String account, String password);
 
-    HttpResult<Student> resetStudentPassword(String account);
+    HttpResult resetStudentPassword(String account);
 
-    HttpResult<Student> disableStudentAccount(String account);
+    HttpResult disableStudentAccount(String account);
 
-    HttpResult<Student> enableStudentAccount(String account);
+    HttpResult enableStudentAccount(String account);
 
-    HttpResult<Student> deleteStudentAccount(String account);
+    HttpResult deleteStudentAccount(String account);
 
-    HttpResult<List<Student>> queryStudent(String name, String account, String status);
+    HttpResult queryStudent(String name, String account, String status);
 
-    HttpResult<School> resetSchoolPassword(String account);
+    HttpResult resetSchoolPassword(String account);
 
-    HttpResult<School> disableSchoolAccount(String account);
+    HttpResult disableSchoolAccount(String account);
 
-    HttpResult<School> enableSchoolAccount(String account);
+    HttpResult enableSchoolAccount(String account);
 
-    HttpResult<School> deleteSchoolAccount(String account);
+    HttpResult deleteSchoolAccount(String account);
 
-    HttpResult<School> createNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal);
+    HttpResult createNewSchoolAccount(String account, String password, String schoolName, String telephone, String principal);
 
-    HttpResult<List<School>> querySchool(String schoolName, String account, String status);
+    HttpResult querySchool(String schoolName, String account, String status);
 }
