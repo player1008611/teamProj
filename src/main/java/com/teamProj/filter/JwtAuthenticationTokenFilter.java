@@ -39,12 +39,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             e.printStackTrace();
             throw new RuntimeException("token非法");
         }
-        LoginUser loginUser=redisCache.getCacheObject(id);
-        if(Objects.isNull(loginUser)){
+        LoginUser loginUser = redisCache.getCacheObject(id);
+        if (Objects.isNull(loginUser)) {
             throw new RuntimeException("用户未登录");
         }
-        UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(loginUser,null,null);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 }

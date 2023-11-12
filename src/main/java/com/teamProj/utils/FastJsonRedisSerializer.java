@@ -22,6 +22,7 @@ public class FastJsonRedisSerializer<T> implements RedisSerializer<T> {
 
     static {
         ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
+        ParserConfig.getGlobalInstance().addAccept("org.springframework.security.core.authority.");
     }
 
     public FastJsonRedisSerializer(Class<T> clazz) {
