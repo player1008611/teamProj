@@ -1,4 +1,4 @@
-package com.teamProj.util;
+package com.teamProj.utils;
 
 import java.io.IOException;
 import java.net.UnknownHostException;

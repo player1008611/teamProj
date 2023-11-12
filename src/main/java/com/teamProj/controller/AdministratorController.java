@@ -3,7 +3,7 @@ package com.teamProj.controller;
 import com.teamProj.entity.Administrator;
 import com.teamProj.entity.Student;
 import com.teamProj.service.AdministratorService;
-import com.teamProj.util.HttpResult;
+import com.teamProj.utils.HttpResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/admin")
@@ -22,7 +23,7 @@ public class AdministratorController {
     AdministratorService administratorService;
 
     @PostMapping("/login")
-    HttpResult<Administrator> administratorLogin(@RequestParam(value = "account") String account, @RequestParam(value = "password") String password) {
+    HttpResult<?> administratorLogin(@RequestParam(value = "account") String account, @RequestParam(value = "password") String password) {
         return administratorService.administratorLogin(account, password);
     }
 

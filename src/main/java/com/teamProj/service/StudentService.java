@@ -1,8 +1,7 @@
 package com.teamProj.service;
 
-import com.teamProj.entity.Administrator;
 import com.teamProj.entity.Student;
-import com.teamProj.util.HttpResult;
+import com.teamProj.utils.HttpResult;
 
 public interface StudentService {
     HttpResult<Student> studentLogin(String account, String password);

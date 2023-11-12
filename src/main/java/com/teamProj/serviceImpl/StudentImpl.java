@@ -5,12 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.entity.Student;
 import com.teamProj.service.StudentService;
-import com.teamProj.util.HttpResult;
-import com.teamProj.util.ResultCodeEnum;
+import com.teamProj.utils.HttpResult;
+import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @Service
 public class StudentImpl implements StudentService {

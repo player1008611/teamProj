@@ -1,4 +1,4 @@
-package com.teamProj.util;
+package com.teamProj.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

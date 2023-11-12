@@ -1,4 +1,4 @@
-package com.teamProj.util;
+package com.teamProj.utils;
 
 public class MailMessage {
   /** 发件人 */

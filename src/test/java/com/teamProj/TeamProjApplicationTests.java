@@ -29,6 +29,7 @@ import com.teamProj.entity.Student;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -159,5 +160,11 @@ class TeamProjApplicationTests {
     void getAllAnnouncement() {
         List<Announcement> announcementList = announcementDao.selectList(null);
         System.out.println(announcementList);
+    }
+
+    @Test
+    void TestBCryptPasswordEncoder(){
+        BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+        System.out.println(passwordEncoder.encode("123456"));
     }
 }

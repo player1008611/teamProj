@@ -1,4 +1,4 @@
-package com.teamProj.util;
+package com.teamProj.utils;
 
 public enum ResultCodeEnum {
     /*** 通用部分 100 - 599***/

@@ -9,26 +9,27 @@ import com.teamProj.entity.Administrator;
 import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
 import com.teamProj.service.AdministratorService;
-import com.teamProj.util.HttpResult;
-import com.teamProj.util.ResultCodeEnum;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import com.teamProj.utils.HttpResult;
+import com.teamProj.utils.ResultCodeEnum;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.PreferenceChangeListener;
 
 @Service
 public class AdministratorImpl implements AdministratorService {
     @Resource
-    AdministratorDao administratorDao;
+    private AdministratorDao administratorDao;
 
     @Resource
-    StudentDao studentDao;
+    private StudentDao studentDao;
 
     @Resource
-    SchoolDao schoolDao;
+    private SchoolDao schoolDao;
+
+    @Resource
+    private AuthenticationManager authenticationManager;
 
     public HttpResult<Administrator> administratorLogin(String account, String password) {
         QueryWrapper<Administrator> queryWrapper = new QueryWrapper<>();

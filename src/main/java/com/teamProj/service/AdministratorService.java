@@ -3,9 +3,10 @@ package com.teamProj.service;
 import com.teamProj.entity.Administrator;
 import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
-import com.teamProj.util.HttpResult;
+import com.teamProj.utils.HttpResult;
 
 import java.util.List;
+import java.util.Objects;
 
 public interface AdministratorService {
     HttpResult<Administrator> administratorLogin(String account, String password);
