@@ -15,7 +15,7 @@ public class Student {
     @TableId(type = IdType.AUTO)
     int studentId;
 
-    String studentAccount;
+    //String studentAccount;
 
     int schoolId;
 
@@ -27,7 +27,7 @@ public class Student {
 
     Timestamp creationTime;
 
-    String studentPassword;
+    //String studentPassword;
 
     Character gender;
 

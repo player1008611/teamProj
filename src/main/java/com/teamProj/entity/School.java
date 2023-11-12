@@ -13,9 +13,9 @@ public class School {
     @TableId(type = IdType.AUTO)
     int schoolId;
 
-    String schoolAccount;
+    //String schoolAccount;
 
-    String schoolPassword;
+    //String schoolPassword;
 
     String tel;
 

@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Administrator {
+public class User {
     @TableId(type = IdType.AUTO)
-    private int adminId;
+    int userId;
 
-    private String name;
+    String account;
 
-    //private String loginAccount;
+    String password;
 
-    //private String password;
+    String permission;
+
 }
