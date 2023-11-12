@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/admin")
@@ -23,6 +21,11 @@ public class AdministratorController {
     @PostMapping("/login")
     HttpResult administratorLogin(@RequestParam(value = "account") String account, @RequestParam(value = "password") String password) {
         return administratorService.administratorLogin(account, password);
+    }
+
+    @PostMapping("/logout")
+    HttpResult administratorLogout(){
+        return administratorService.administratorLogout();
     }
 
     @PatchMapping("/resetStudentPassword")

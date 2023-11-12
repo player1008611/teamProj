@@ -15,6 +15,7 @@ import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -49,6 +50,14 @@ public class AdministratorImpl implements AdministratorService {
         map.put("token", jwt);
         redisCache.setCacheObject(adminId, loginUser);
         return HttpResult.success(map, "登录成功");
+    }
+
+    public HttpResult administratorLogout() {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int adminId = loginUser.getAdministrator().getAdminId();
+        redisCache.deleteObject(String.valueOf(adminId));
+        return HttpResult.success(null, "用户注销");
     }
 
     @Override

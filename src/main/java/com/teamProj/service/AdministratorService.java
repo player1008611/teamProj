@@ -11,6 +11,8 @@ import java.util.Objects;
 public interface AdministratorService {
     HttpResult administratorLogin(String account, String password);
 
+    HttpResult administratorLogout();
+
     HttpResult resetStudentPassword(String account);
 
     HttpResult disableStudentAccount(String account);
