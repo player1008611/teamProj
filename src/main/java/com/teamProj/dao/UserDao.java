@@ -1,6 +1,9 @@
 package com.teamProj.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.teamProj.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 
-public interface UserDao extends BaseMapper<UserDao> {
+@Mapper
+public interface UserDao extends BaseMapper<User> {
 }

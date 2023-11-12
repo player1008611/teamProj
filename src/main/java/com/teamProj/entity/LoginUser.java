@@ -1,10 +1,8 @@
 package com.teamProj.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,15 +15,15 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class LoginUser implements UserDetails {
 
-    private Administrator administrator;
+    private User user;
 
     private List<String> permissions;
 
     @JSONField(serialize = false)
     private List<GrantedAuthority> authorities;
 
-    public LoginUser(Administrator administrator, List<String> permissions) {
-        this.administrator = administrator;
+    public LoginUser(User user, List<String> permissions) {
+        this.user = user;
         this.permissions = permissions;
     }
 
@@ -42,12 +40,12 @@ public class LoginUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return administrator.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return administrator.getLoginAccount();
+        return user.getAccount();
     }
 
     @Override
