@@ -14,4 +14,6 @@ public interface AdministratorService {
     HttpResult enableStudentAccount(String account);
 
     HttpResult disableStudentAccount(String account);
+
+    HttpResult deleteStudentAccount(String account);
 }

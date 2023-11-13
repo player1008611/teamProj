@@ -1,8 +1,13 @@
 package com.teamProj.serviceImpl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.StudentDao;
+import com.teamProj.dao.UserDao;
 import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.Student;
+import com.teamProj.entity.User;
 import com.teamProj.entity.vo.AdminStudentVo;
 import com.teamProj.service.AdministratorService;
 import com.teamProj.utils.HttpResult;
@@ -13,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,7 +32,13 @@ public class AdministratorImpl implements AdministratorService {
     private AuthenticationManager authenticationManager;
 
     @Resource
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Resource
     private RedisCache redisCache;
+
+    @Resource
+    UserDao userDao;
 
     @Resource
     private StudentDao studentDao;
@@ -38,7 +50,7 @@ public class AdministratorImpl implements AdministratorService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        if(!loginUser.getPermissions().get(0).equals("admin")){
+        if (!loginUser.getPermissions().get(0).equals("admin")) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         String userId = String.valueOf(loginUser.getUser().getUserId());
@@ -58,23 +70,67 @@ public class AdministratorImpl implements AdministratorService {
     }
 
     @Override
-    public HttpResult queryStudent(String name, String schoolName, Character status,Integer current,Integer size) {
-        return null;
+    public HttpResult queryStudent(String name, String schoolName, Character status, Integer current, Integer size) {
+        Page<AdminStudentVo> page = new Page<>(current, size);
+        return HttpResult.success(studentDao.queryStudent(page, name, schoolName, status), "查询成功");
     }
 
     @Override
     public HttpResult resetStudentPassword(String account) {
-        return null;
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("account", account).eq("permission", "student").set("password", bCryptPasswordEncoder.encode("123456"));
+        if (userDao.update(null, updateWrapper) > 0) {
+            return HttpResult.success(account, "重置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
     }
 
     @Override
     public HttpResult enableStudentAccount(String account) {
-        return null;
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account).eq("permission", "student");
+        User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        UpdateWrapper<Student> studentUpdateWrapper = new UpdateWrapper<>();
+        studentUpdateWrapper.eq("student_id", user.getUserId()).set("user_status", '1');
+        if (studentDao.update(null, studentUpdateWrapper) > 0) {
+            return HttpResult.success(account, "设置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
     }
 
     @Override
     public HttpResult disableStudentAccount(String account) {
-        return null;
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account).eq("permission", "student");
+        User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        UpdateWrapper<Student> studentUpdateWrapper = new UpdateWrapper<>();
+        studentUpdateWrapper.eq("student_id", user.getUserId()).set("user_status", '2');
+        if (studentDao.update(null, studentUpdateWrapper) > 0) {
+            return HttpResult.success(account, "设置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult deleteStudentAccount(String account) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account).eq("permission", "student");
+        User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        UpdateWrapper<Student> studentUpdateWrapper = new UpdateWrapper<>();
+        studentUpdateWrapper.eq("student_id", user.getUserId()).set("user_status", '0');
+        if (studentDao.update(null, studentUpdateWrapper) > 0) {
+            return HttpResult.success(account, "设置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
     }
 }
 

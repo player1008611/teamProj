@@ -4,8 +4,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.StudentDao">
     <select id="queryStudent" resultType="com.teamProj.entity.vo.AdminStudentVo">
-        SELECT account,`name`,phone_number,user_status,creation_time,school_name
-        FROM user,student,school
-        WHERE user_id=student_id AND student.school_id=school.school_id
+        SELECT account, `name`, phone_number, user_status, creation_time, school_name
+        FROM user,
+        student,
+        school
+        WHERE user_id = student_id
+        AND student.school_id = school.school_id
+        <if test="name!=null and name!=''">
+            AND `name` = #{name}
+        </if>
+        <if test="schoolName!=null and schoolName!=''">
+            AND school_name = #{schoolName}
+        </if>
+        <if test="status!=null and status!=''">
+            AND user_status = #{status}
+        </if>
     </select>
 </mapper>
