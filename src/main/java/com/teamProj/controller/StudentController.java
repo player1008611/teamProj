@@ -31,4 +31,9 @@ public class StudentController {
     HttpResult createResume(@RequestParam(value = "studentAccount") String account, @RequestBody Map<String, Object> map) {
         return studentService.createResume(account, map);
     }
+
+    @PatchMapping("/setStudentInfo")
+    HttpResult setStudentInfo(@RequestParam(value = "studentAccount") String account, @RequestBody Map<String, Object> map) {
+        return studentService.setStudentInfo(account, map);
+    }
 }

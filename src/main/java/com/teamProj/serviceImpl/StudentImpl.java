@@ -3,7 +3,9 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teamProj.dao.StudentDao;
+import com.teamProj.dao.UserDao;
 import com.teamProj.entity.Student;
+import com.teamProj.entity.User;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.ResultCodeEnum;
@@ -17,6 +19,8 @@ import java.util.Map;
 public class StudentImpl implements StudentService {
     @Resource
     StudentDao studentDao;
+    @Resource
+    UserDao userDao;
     @Resource
     private AuthenticationManager authenticationManager;
 
@@ -37,13 +41,18 @@ public class StudentImpl implements StudentService {
 
     @Override
     public HttpResult setStudentPassword(String account, String oldPassword, String password) {
-        UpdateWrapper<Student> wrapper = new UpdateWrapper<>();
-        wrapper.eq("student_password", oldPassword).eq("student_account", account).set("student_password", password);
-        if (studentDao.update(null, wrapper) > 0) {
-            QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-            queryWrapper.select("student_account", "name").eq("student_account", account);
-            return HttpResult.success(studentDao.selectOne(queryWrapper), "修改成功");
-        } else {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("student_account", account);
+        User user = userDao.selectOne(queryWrapper);
+        if(user !=null){
+            if(user.getPassword().equals(oldPassword)){
+                user.setPassword(password);
+                userDao.update(user,queryWrapper);
+                queryWrapper.select("student_account");
+                return HttpResult.success(userDao.selectOne(queryWrapper),"修改成功");
+            }
+            return HttpResult.success(userDao.selectOne(queryWrapper),"密码错误");
+        }else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
@@ -54,9 +63,13 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult setStudentInfo(int student_id, Map<String, Object> map) {
+    public HttpResult setStudentInfo(String account, Map<String, Object> map) {
+        QueryWrapper<User> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("student_account", account);
+        User user = userDao.selectOne(queryWrapper1);
+        int studentId=user.getUserId();
         UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("student_id", student_id);
+        updateWrapper.eq("student_id", studentId);
         Student student = new Student();
         student.setName((String) map.get("name"));
         student.setPhoneNumber((String) map.get("phoneNumber"));
@@ -66,7 +79,7 @@ public class StudentImpl implements StudentService {
         student.setCollegeId((Integer) map.get("collegeId"));
         student.setMajorId((Integer) map.get("majorId"));
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("name").eq("student_id", student_id);
+        queryWrapper.select("name").eq("student_id", studentId);
         if (studentDao.update(student, updateWrapper) > 0) {
             return HttpResult.success(studentDao.selectOne(queryWrapper), "修改成功");
         } else {

@@ -11,7 +11,7 @@ public interface StudentService {
 
     HttpResult setStudentPassword(String account, String oldPassword, String password);
 
-    HttpResult createResume(String studentAccount, Map<String,Object> map);
+    HttpResult createResume(String account, Map<String,Object> map);
 
-    HttpResult setStudentInfo(int student_id, Map<String, Object> map);
+    HttpResult setStudentInfo(String account, Map<String, Object> map);
 }
