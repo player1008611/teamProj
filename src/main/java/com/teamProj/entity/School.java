@@ -11,11 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class School {
     @TableId(type = IdType.AUTO)
-    int schoolId;
-
-    //String schoolAccount;
-
-    //String schoolPassword;
+    Integer schoolId;
 
     String tel;
 

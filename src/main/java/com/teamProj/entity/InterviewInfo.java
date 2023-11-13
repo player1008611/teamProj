@@ -13,11 +13,11 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class InterviewInfo {
     @TableId(type = IdType.AUTO)
-    int interviewId;
+    Integer interviewId;
 
-    int studentId;
+    Integer studentId;
 
-    int applicationId;
+    Integer applicationId;
 
     Timestamp dateTime;
 

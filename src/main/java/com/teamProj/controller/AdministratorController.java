@@ -17,7 +17,7 @@ public class AdministratorController {
     @Resource
     AdministratorService administratorService;
 
-    @GetMapping("/hello")
+    @GetMapping("/test")
     @PreAuthorize("hasAuthority('admin')")
     String hello() {
         return "hello";
@@ -32,5 +32,14 @@ public class AdministratorController {
     @PreAuthorize("hasAuthority('admin')")
     HttpResult administratorLogout() {
         return administratorService.administratorLogout();
+    }
+
+    @GetMapping("/queryStudent")
+    HttpResult queryStudent(@RequestParam(value = "name", required = false) String name
+            , @RequestParam(value = "schoolName", required = false) String schoolName
+            , @RequestParam(value = "status", required = false) Character status
+            , @RequestParam(value = "current") Integer current
+            , @RequestParam(value = "size") Integer size) {
+        return administratorService.queryStudent(name, schoolName, status,current,size);
     }
 }

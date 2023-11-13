@@ -13,11 +13,11 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class RecruitmentInfo {
     @TableId(type = IdType.AUTO)
-    int recruitmentId;
+    Integer recruitmentId;
 
-    int userId;
+    Integer userId;
 
-    int enterpriseId;
+    Integer enterpriseId;
 
     String jobTitle;
 
@@ -39,9 +39,9 @@ public class RecruitmentInfo {
 
     String rejectionReason;
 
-    int recruitNum;
+    Integer recruitNum;
 
-    int recruitedNum;
+    Integer recruitedNum;
 
     String byword;
 }

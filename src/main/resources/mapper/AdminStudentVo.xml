@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.StudentDao">
+    <select id="queryStudent" resultType="com.teamProj.entity.vo.AdminStudentVo">
+        SELECT account,`name`,phone_number,user_status,creation_time,school_name
+        FROM user,student,school
+        WHERE user_id=student_id AND student.school_id=school.school_id
+    </select>
+</mapper>

@@ -13,11 +13,9 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Student {
     @TableId(type = IdType.AUTO)
-    int studentId;
+    Integer studentId;
 
-    //String studentAccount;
-
-    int schoolId;
+    Integer schoolId;
 
     String name;
 
@@ -27,17 +25,15 @@ public class Student {
 
     Timestamp creationTime;
 
-    //String studentPassword;
-
     Character gender;
 
     String wechat;
 
     String qq;
 
-    int collegeId;
+    Integer collegeId;
 
-    int majorId;
+    Integer majorId;
 
     String byword;
 }

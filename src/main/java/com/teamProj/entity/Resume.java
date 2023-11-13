@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Resume {
     @TableId(type = IdType.AUTO)
-    int resumeId;
+    Integer resumeId;
 
-    int studentId;
+    Integer studentId;
 
     String selfDescription;
 

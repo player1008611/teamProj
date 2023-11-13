@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MarkedRecruitmentInfo {
-    int studentId;
+    Integer studentId;
 
-    int recruitmentId;
+    Integer recruitmentId;
 }

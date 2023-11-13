@@ -38,13 +38,10 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers("/admin/login",
-                        "swagger-ui.html",
-                        "/v2/api-docs",
-                        "/swagger-resources/configuration/ui",
-                        "/swagger-resources",
-                        "/swagger-resources/configuration/security",
+                        "/swagger-ui.html",
+                        "/webjars/**",
                         "/swagger-resources/**",
-                        "/webjars/**").anonymous()
+                        "/v2/**").permitAll()
                 .anyRequest().authenticated()
                 .and().build();
     }

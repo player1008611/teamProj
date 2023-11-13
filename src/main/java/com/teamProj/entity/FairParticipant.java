@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FairParticipant {
-    int fairId;
+    Integer fairId;
 
-    int studentId;
+    Integer studentId;
 }

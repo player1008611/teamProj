@@ -11,11 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Administrator {
     @TableId(type = IdType.AUTO)
-    private int adminId;
+    private Integer adminId;
 
     private String name;
-
-    //private String loginAccount;
-
-    //private String password;
 }

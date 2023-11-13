@@ -13,11 +13,11 @@ import java.sql.Time;
 @AllArgsConstructor
 public class CareerFair {
     @TableId(type = IdType.AUTO)
-    int fairId;
+    Integer fairId;
 
-    int schoolId;
+    Integer schoolId;
 
-    int enterpriseId;
+    Integer enterpriseId;
 
     Date date;
 

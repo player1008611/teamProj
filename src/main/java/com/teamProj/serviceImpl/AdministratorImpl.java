@@ -1,6 +1,9 @@
 package com.teamProj.serviceImpl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.teamProj.dao.StudentDao;
 import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.vo.AdminStudentVo;
 import com.teamProj.service.AdministratorService;
 import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.JwtUtil;
@@ -25,6 +28,9 @@ public class AdministratorImpl implements AdministratorService {
     @Resource
     private RedisCache redisCache;
 
+    @Resource
+    private StudentDao studentDao;
+
     public HttpResult administratorLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
@@ -47,4 +53,25 @@ public class AdministratorImpl implements AdministratorService {
         redisCache.deleteObject(String.valueOf(adminId));
         return HttpResult.success(null, "用户注销");
     }
+
+    @Override
+    public HttpResult queryStudent(String name, String schoolName, Character status,Integer current,Integer size) {
+
+    }
+
+    @Override
+    public HttpResult resetStudentPassword(String account) {
+        return null;
+    }
+
+    @Override
+    public HttpResult enableStudentAccount(String account) {
+        return null;
+    }
+
+    @Override
+    public HttpResult disableStudentAccount(String account) {
+        return null;
+    }
 }
+

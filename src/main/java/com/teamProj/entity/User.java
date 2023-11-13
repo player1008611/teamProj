@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class User {
     @TableId(type = IdType.AUTO)
-    int userId;
+    Integer userId;
 
     String account;
 

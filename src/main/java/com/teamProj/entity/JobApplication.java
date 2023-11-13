@@ -13,13 +13,13 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class JobApplication {
     @TableId(type = IdType.AUTO)
-    int applicationId;
+    Integer applicationId;
 
-    int resumeId;
+    Integer resumeId;
 
-    int studentId;
+    Integer studentId;
 
-    int recruitmentId;
+    Integer recruitmentId;
 
     Timestamp applicationTime;
 
