@@ -4,40 +4,62 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.dao.UserDao;
+import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.HttpResult;
+import com.teamProj.utils.JwtUtil;
+import com.teamProj.utils.RedisCache;
 import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class StudentImpl implements StudentService {
     @Resource
-    StudentDao studentDao;
+    private StudentDao studentDao;
     @Resource
-    UserDao userDao;
+    private UserDao userDao;
     @Resource
     private AuthenticationManager authenticationManager;
+    @Resource
+    private RedisCache redisCache;
 
     @Override
     public HttpResult studentLogin(String account, String password) {
-//        QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("student_account", account);
-//        Student loginStudent = studentDao.selectOne(queryWrapper);
-//        if(loginStudent != null){
-//            if(loginStudent.getStudentPassword().equals(password)){
-//                return HttpResult.success(studentDao.selectOne(new QueryWrapper<Student>().select("student_account","name").eq("student_account",account)),"登录成功");
-//            }
-//            return HttpResult.success(null,"密码错误");
-//        }
-//        return HttpResult.success(null,"账号不存在");
-        return null;
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+        if (Objects.isNull(authenticate)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        if(!loginUser.getPermissions().get(0).equals("student")){
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        String userId = String.valueOf(loginUser.getUser().getUserId());
+        String jwt = JwtUtil.createJWT(userId);
+        Map<String, String> map = new HashMap<>();
+        map.put("token", jwt);
+        redisCache.setCacheObject(userId, loginUser);
+        return HttpResult.success(map, "登录成功");
     }
+    public HttpResult studentLogout() {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int studentId = loginUser.getUser().getUserId();
+        redisCache.deleteObject(String.valueOf(studentId));
+        return HttpResult.success(null, "用户注销");
+    }
+
 
     @Override
     public HttpResult setStudentPassword(String account, String oldPassword, String password) {

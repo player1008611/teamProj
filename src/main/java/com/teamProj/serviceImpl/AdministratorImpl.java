@@ -38,6 +38,9 @@ public class AdministratorImpl implements AdministratorService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        if(!loginUser.getPermissions().get(0).equals("admin")){
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
         String userId = String.valueOf(loginUser.getUser().getUserId());
         String jwt = JwtUtil.createJWT(userId);
         Map<String, String> map = new HashMap<>();
@@ -56,7 +59,7 @@ public class AdministratorImpl implements AdministratorService {
 
     @Override
     public HttpResult queryStudent(String name, String schoolName, Character status,Integer current,Integer size) {
-
+        return null;
     }
 
     @Override

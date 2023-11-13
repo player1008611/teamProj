@@ -6,6 +6,7 @@ import com.teamProj.entity.Resume;
 import com.teamProj.entity.Student;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.HttpResult;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -35,5 +36,11 @@ public class StudentController {
     @PatchMapping("/setStudentInfo")
     HttpResult setStudentInfo(@RequestParam(value = "studentAccount") String account, @RequestBody Map<String, Object> map) {
         return studentService.setStudentInfo(account, map);
+    }
+
+    @PostMapping("/logout")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult studentLogout() {
+        return studentService.studentLogout();
     }
 }

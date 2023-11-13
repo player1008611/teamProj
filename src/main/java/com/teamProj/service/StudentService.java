@@ -14,4 +14,5 @@ public interface StudentService {
     HttpResult createResume(String account, Map<String,Object> map);
 
     HttpResult setStudentInfo(String account, Map<String, Object> map);
+    HttpResult studentLogout();
 }
