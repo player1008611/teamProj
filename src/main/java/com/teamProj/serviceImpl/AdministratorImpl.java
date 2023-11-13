@@ -110,7 +110,7 @@ public class AdministratorImpl implements AdministratorService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         UpdateWrapper<Student> studentUpdateWrapper = new UpdateWrapper<>();
-        studentUpdateWrapper.eq("student_id", user.getUserId()).set("user_status", '2');
+        studentUpdateWrapper.eq("student_id", user.getUserId()).set("user_status", '0');
         if (studentDao.update(null, studentUpdateWrapper) > 0) {
             return HttpResult.success(account, "设置成功");
         }
@@ -121,14 +121,8 @@ public class AdministratorImpl implements AdministratorService {
     public HttpResult deleteStudentAccount(String account) {
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("account", account).eq("permission", "student");
-        User user = userDao.selectOne(userQueryWrapper);
-        if (Objects.isNull(user)) {
-            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
-        }
-        UpdateWrapper<Student> studentUpdateWrapper = new UpdateWrapper<>();
-        studentUpdateWrapper.eq("student_id", user.getUserId()).set("user_status", '0');
-        if (studentDao.update(null, studentUpdateWrapper) > 0) {
-            return HttpResult.success(account, "设置成功");
+        if (userDao.delete(userQueryWrapper) > 0) {
+            return HttpResult.success(account, "删除成功");
         }
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
     }

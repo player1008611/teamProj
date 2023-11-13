@@ -25,7 +25,7 @@ public class RecruitmentInfo {
 
     String jobDescription;
 
-    String department;
+    String departmentId;
 
     String companyName;
 
