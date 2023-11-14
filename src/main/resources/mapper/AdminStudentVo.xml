@@ -5,7 +5,7 @@
 <mapper namespace="com.teamProj.dao.AdministratorDao">
     <select id="queryStudent" resultType="com.teamProj.entity.vo.AdminStudentVo">
         SELECT account, `name`, phone_number, user_status, creation_time, school_name
-        FROM user,
+        FROM `user`,
         student,
         school
         WHERE user_id = student_id

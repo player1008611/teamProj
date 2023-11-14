@@ -4,11 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.AdministratorDao;
+import com.teamProj.dao.EnterpriseDao;
+import com.teamProj.dao.EnterpriseUserDao;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.dao.UserDao;
+import com.teamProj.entity.Enterprise;
 import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
+import com.teamProj.entity.vo.AdminEnterpriseUserVo;
 import com.teamProj.entity.vo.AdminStudentVo;
 import com.teamProj.service.AdministratorService;
 import com.teamProj.utils.HttpResult;
@@ -39,13 +43,19 @@ public class AdministratorImpl implements AdministratorService {
     private RedisCache redisCache;
 
     @Resource
-    UserDao userDao;
+    private UserDao userDao;
 
     @Resource
-    AdministratorDao administratorDao;
+    private AdministratorDao administratorDao;
 
     @Resource
     private StudentDao studentDao;
+
+    @Resource
+    private EnterpriseDao enterpriseDao;
+
+    @Resource
+    private EnterpriseUserDao enterpriseUserDao;
 
     public HttpResult administratorLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
@@ -129,6 +139,23 @@ public class AdministratorImpl implements AdministratorService {
             return HttpResult.success(account, "删除成功");
         }
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult queryEnterprise(String name, Integer current, Integer size) {
+        Page<Enterprise> page = new Page<>(current, size);
+        QueryWrapper<Enterprise> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("enterprise_name", "website");
+        if (!Objects.isNull(name) && !name.isEmpty()) {
+            queryWrapper.eq("enterprise_name", name);
+        }
+        return HttpResult.success(enterpriseDao.selectPage(page, queryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult queryEnterpriseUser(String enterpriseName, String userName, Integer current, Integer size) {
+        Page<AdminEnterpriseUserVo> page = new Page<>(current, size);
+        return HttpResult.success(administratorDao.queryEnterpriseUser(page, enterpriseName, userName), "查询成功");
     }
 }
 

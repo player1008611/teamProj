@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.AdministratorDao">
+    <select id="queryEnterpriseUser" resultType="com.teamProj.entity.vo.AdminEnterpriseUserVo">
+        SELECT enterprise_name, `name`, tel, user_state, account
+        FROM `user`,
+        enterprise,
+        enterprise_user
+        WHERE enterprise.enterprise_id = enterprise_user.enterprise_id
+        AND enterprise_user.user_id = `user`.user_id
+        AND enterprise.enterprise_name = #{enterpriseName}
+        <if test="name!=null and name!=''">
+            AND enterprise_user.`name` = #{name}
+        </if>
+    </select>
+</mapper>

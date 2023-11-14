@@ -26,7 +26,7 @@ public class AdministratorController {
     }
 
     @PostMapping("/login")
-    HttpResult administratorLogin(@RequestParam(value = "account") String account, @RequestParam(value = "password") String password) {
+    HttpResult administratorLogin(@RequestParam String account, @RequestParam String password) {
         return administratorService.administratorLogin(account, password);
     }
 
@@ -52,21 +52,38 @@ public class AdministratorController {
         return administratorService.resetStudentPassword(account);
     }
 
-    @PatchMapping("enableStudentAccount")
+    @PatchMapping("/enableStudentAccount")
     @PreAuthorize("hasAuthority('admin')")
     HttpResult enableStudentAccount(@RequestParam String account) {
         return administratorService.enableStudentAccount(account);
     }
 
-    @PatchMapping("disableStudentAccount")
+    @PatchMapping("/disableStudentAccount")
     @PreAuthorize("hasAuthority('admin')")
     HttpResult disableStudentAccount(@RequestParam String account) {
         return administratorService.disableStudentAccount(account);
     }
 
-    @DeleteMapping("deleteStudent")
+    @DeleteMapping("/deleteStudent")
     @PreAuthorize("hasAuthority('admin')")
     HttpResult deleteStudent(@RequestParam String account) {
         return administratorService.deleteStudentAccount(account);
+    }
+
+    @GetMapping("/queryEnterprise")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult queryEnterprise(@RequestParam(required = false) String name
+            , @RequestParam Integer current
+            , @RequestParam Integer size) {
+        return administratorService.queryEnterprise(name, current, size);
+    }
+
+    @GetMapping("/queryEnterpriseUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult queryEnterpriseUser(@RequestParam String enterpriseName
+            , @RequestParam(required = false) String userName
+            , @RequestParam Integer current
+            , @RequestParam Integer size) {
+        return administratorService.queryEnterpriseUser(enterpriseName, userName, current, size);
     }
 }
