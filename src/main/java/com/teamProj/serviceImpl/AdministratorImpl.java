@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.AdministratorDao;
 import com.teamProj.dao.EnterpriseDao;
-import com.teamProj.dao.EnterpriseUserDao;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.dao.UserDao;
 import com.teamProj.entity.Enterprise;
@@ -30,6 +29,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AdministratorImpl implements AdministratorService {
@@ -54,9 +54,6 @@ public class AdministratorImpl implements AdministratorService {
     @Resource
     private EnterpriseDao enterpriseDao;
 
-    @Resource
-    private EnterpriseUserDao enterpriseUserDao;
-
     public HttpResult administratorLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
@@ -71,7 +68,7 @@ public class AdministratorImpl implements AdministratorService {
         String jwt = JwtUtil.createJWT(userId);
         Map<String, String> map = new HashMap<>();
         map.put("token", jwt);
-        redisCache.setCacheObject(userId, loginUser);
+        redisCache.setCacheObject(userId, loginUser, 24, TimeUnit.HOURS);
         return HttpResult.success(map, "登录成功");
     }
 

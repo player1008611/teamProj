@@ -22,6 +22,7 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class StudentImpl implements StudentService {
@@ -42,16 +43,17 @@ public class StudentImpl implements StudentService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        if(!loginUser.getPermissions().get(0).equals("student")){
+        if (!loginUser.getPermissions().get(0).equals("student")) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         String userId = String.valueOf(loginUser.getUser().getUserId());
         String jwt = JwtUtil.createJWT(userId);
         Map<String, String> map = new HashMap<>();
         map.put("token", jwt);
-        redisCache.setCacheObject(userId, loginUser);
+        redisCache.setCacheObject(userId, loginUser, 24, TimeUnit.HOURS);
         return HttpResult.success(map, "登录成功");
     }
+
     public HttpResult studentLogout() {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
@@ -66,15 +68,15 @@ public class StudentImpl implements StudentService {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("student_account", account);
         User user = userDao.selectOne(queryWrapper);
-        if(user !=null){
-            if(user.getPassword().equals(oldPassword)){
+        if (user != null) {
+            if (user.getPassword().equals(oldPassword)) {
                 user.setPassword(password);
-                userDao.update(user,queryWrapper);
+                userDao.update(user, queryWrapper);
                 queryWrapper.select("student_account");
-                return HttpResult.success(userDao.selectOne(queryWrapper),"修改成功");
+                return HttpResult.success(userDao.selectOne(queryWrapper), "修改成功");
             }
-            return HttpResult.success(userDao.selectOne(queryWrapper),"密码错误");
-        }else {
+            return HttpResult.success(userDao.selectOne(queryWrapper), "密码错误");
+        } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
@@ -89,7 +91,7 @@ public class StudentImpl implements StudentService {
         QueryWrapper<User> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("student_account", account);
         User user = userDao.selectOne(queryWrapper1);
-        int studentId=user.getUserId();
+        int studentId = user.getUserId();
         UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("student_id", studentId);
         Student student = new Student();
