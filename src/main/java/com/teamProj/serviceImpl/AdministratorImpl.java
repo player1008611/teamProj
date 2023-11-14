@@ -3,6 +3,7 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.teamProj.dao.AdministratorDao;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.dao.UserDao;
 import com.teamProj.entity.LoginUser;
@@ -41,6 +42,9 @@ public class AdministratorImpl implements AdministratorService {
     UserDao userDao;
 
     @Resource
+    AdministratorDao administratorDao;
+
+    @Resource
     private StudentDao studentDao;
 
     public HttpResult administratorLogin(String account, String password) {
@@ -72,7 +76,7 @@ public class AdministratorImpl implements AdministratorService {
     @Override
     public HttpResult queryStudent(String name, String schoolName, Character status, Integer current, Integer size) {
         Page<AdminStudentVo> page = new Page<>(current, size);
-        return HttpResult.success(studentDao.queryStudent(page, name, schoolName, status), "查询成功");
+        return HttpResult.success(administratorDao.queryStudent(page, name, schoolName, status), "查询成功");
     }
 
     @Override
