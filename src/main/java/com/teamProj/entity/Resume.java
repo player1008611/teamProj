@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,25 +18,7 @@ public class Resume {
 
     Integer studentId;
 
-    String selfDescription;
+    byte[] attachmentLink;
 
-    String careerObjective;
-
-    String educationHistory;
-
-    String InternshipExperience;
-
-    String projectExperience;
-
-    String trainingExperience;
-
-    String schoolActivities;
-
-    String certificates;
-
-    String professionalSkills;
-
-    String skillsTags;
-
-    String attachmentLink;
+    Timestamp creationTime;
 }

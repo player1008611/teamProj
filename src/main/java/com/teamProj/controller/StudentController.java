@@ -24,6 +24,7 @@ public class StudentController {
     }
 
     @PatchMapping("/setPassword")
+    @PreAuthorize("hasAuthority('student')")
     HttpResult studentSetPassword(@RequestParam(value = "account") String account, @RequestParam(value = "oldPassword") String oldPassword, @RequestParam(value = "password") String password) {
         return studentService.setStudentPassword(account, oldPassword, password);
     }

@@ -2,9 +2,11 @@ package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.teamProj.dao.ResumeDao;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.dao.UserDao;
 import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.Resume;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
 import com.teamProj.service.StudentService;
@@ -16,9 +18,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.nio.file.Files;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -33,7 +39,11 @@ public class StudentImpl implements StudentService {
     @Resource
     private AuthenticationManager authenticationManager;
     @Resource
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Resource
     private RedisCache redisCache;
+    @Resource
+    private ResumeDao resumeDao;
 
     @Override
     public HttpResult studentLogin(String account, String password) {
@@ -66,13 +76,13 @@ public class StudentImpl implements StudentService {
     @Override
     public HttpResult setStudentPassword(String account, String oldPassword, String password) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("student_account", account);
+        queryWrapper.eq("account", account);
         User user = userDao.selectOne(queryWrapper);
         if (user != null) {
-            if (user.getPassword().equals(oldPassword)) {
-                user.setPassword(password);
+            if (bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+                user.setPassword(bCryptPasswordEncoder.encode(password));
                 userDao.update(user, queryWrapper);
-                queryWrapper.select("student_account");
+                queryWrapper.select("account");
                 return HttpResult.success(userDao.selectOne(queryWrapper), "修改成功");
             }
             return HttpResult.success(userDao.selectOne(queryWrapper), "密码错误");
@@ -83,6 +93,30 @@ public class StudentImpl implements StudentService {
 
     @Override
     public HttpResult createResume(String studentAccount, Map<String, Object> map) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", studentAccount);
+        User user = userDao.selectOne(queryWrapper);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        if(map.get("attachment_link")!=null){
+            Resume resume= new Resume();
+            resume.setAttachmentLink(((String) map.get("attachment_link")).getBytes());
+            resume.setStudentId(user.getUserId());
+            resume.setCreationTime(timestamp);
+            if(resumeDao.insert(resume)>0){
+                QueryWrapper<Resume> queryWrapper1 = new QueryWrapper<>();
+                queryWrapper1.eq("student_id", user.getUserId()).eq("creation_time", timestamp);
+                resume = resumeDao.selectOne(queryWrapper1);
+                return HttpResult.success(resume, "创建成功");
+            }else{
+                return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+            }
+        } else{
+//            byte[] resumeLink = makeResume(map);
+//            Resume resume= new Resume();
+//            resume.setAttachmentLink(resumeLink);
+
+        }
+
         return null;
     }
 
@@ -109,5 +143,10 @@ public class StudentImpl implements StudentService {
         } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
+    }
+
+    @Override
+    public HttpResult queryRecruitmentInfo(String enterpriseName) {
+        return null;
     }
 }

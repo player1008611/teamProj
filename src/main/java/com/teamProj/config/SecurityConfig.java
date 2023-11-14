@@ -37,7 +37,7 @@ public class SecurityConfig {
         return http
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers("/admin/login",
+                .antMatchers("/admin/**",
                         "/student/login",
                         "/swagger-ui.html",
                         "/webjars/**",
