@@ -24,4 +24,6 @@ public class EnterpriseUser {
     String gender;
 
     String graduation_school;
+
+    String tel;
 }
