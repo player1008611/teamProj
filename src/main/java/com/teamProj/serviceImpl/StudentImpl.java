@@ -9,7 +9,6 @@ import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.JwtUtil;
 import com.teamProj.utils.RedisCache;
 import com.teamProj.utils.ResultCodeEnum;
-import net.bytebuddy.asm.Advice;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,8 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.File;
-import java.nio.file.Files;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,13 +26,13 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class StudentImpl implements StudentService {
     @Resource
+    BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Resource
     private StudentDao studentDao;
     @Resource
     private UserDao userDao;
     @Resource
     private AuthenticationManager authenticationManager;
-    @Resource
-    BCryptPasswordEncoder bCryptPasswordEncoder;
     @Resource
     private RedisCache redisCache;
     @Resource
@@ -99,20 +96,20 @@ public class StudentImpl implements StudentService {
         queryWrapper.eq("account", studentAccount);
         User user = userDao.selectOne(queryWrapper);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        if(map.get("attachment_link")!=null){
-            Resume resume= new Resume();
+        if (map.get("attachment_link") != null) {
+            Resume resume = new Resume();
             resume.setAttachmentLink(((String) map.get("attachment_link")).getBytes());
             resume.setStudentId(user.getUserId());
             resume.setCreationTime(timestamp);
-            if(resumeDao.insert(resume)>0){
+            if (resumeDao.insert(resume) > 0) {
                 QueryWrapper<Resume> queryWrapper1 = new QueryWrapper<>();
                 queryWrapper1.eq("student_id", user.getUserId()).eq("creation_time", timestamp);
                 resume = resumeDao.selectOne(queryWrapper1);
                 return HttpResult.success(resume, "创建成功");
-            }else{
+            } else {
                 return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
             }
-        } else{
+        } else {
 //            byte[] resumeLink = makeResume(map);
 //            Resume resume= new Resume();
 //            resume.setAttachmentLink(resumeLink);
@@ -120,6 +117,30 @@ public class StudentImpl implements StudentService {
         }
 
         return null;
+    }
+
+    @Override
+    public HttpResult queryResume(String account) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", account);
+        User user = userDao.selectOne(queryWrapper);
+        QueryWrapper<Resume> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("student_id", user.getUserId());
+        return HttpResult.success(resumeDao.selectList(queryWrapper1), "查询成功");
+    }
+
+    @Override
+    public HttpResult deleteResume(String account, Integer resumeId) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", account);
+        User user = userDao.selectOne(queryWrapper);
+        QueryWrapper<Resume> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("student_id", user.getUserId()).eq("resume_id", resumeId);
+        if (resumeDao.delete(queryWrapper1) > 0) {
+            return HttpResult.success(null, "删除成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
     }
 
     @Override
@@ -162,16 +183,15 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult markRecruitmentInfo(String account,Integer RecruitmentInfoId){
+    public HttpResult markRecruitmentInfo(String account, Integer RecruitmentInfoId) {
         MarkedRecruitmentInfo mri = new MarkedRecruitmentInfo();
         mri.setRecruitmentId(RecruitmentInfoId);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("account", account);
         mri.setStudentId(userDao.selectOne(queryWrapper).getUserId());
-        if(markedRecruitmentInfoDao.insert(mri)>0){
-            return HttpResult.success(mri,"收藏成功");
-        }
-        else {
+        if (markedRecruitmentInfoDao.insert(mri) > 0) {
+            return HttpResult.success(mri, "收藏成功");
+        } else {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }
     }

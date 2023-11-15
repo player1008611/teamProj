@@ -35,6 +35,18 @@ public class StudentController {
         return studentService.createResume(account, map);
     }
 
+    @DeleteMapping("/deleteResume")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult deleteResume(@RequestParam(value = "studentAccount") String account, @RequestParam(value = "resumeId") Integer resumeId) {
+        return studentService.deleteResume(account, resumeId);
+    }
+
+    @GetMapping("/queryResume")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult queryResume(@RequestParam(value = "studentAccount") String account) {
+        return studentService.queryResume(account);
+    }
+
     @PatchMapping("/setStudentInfo")
     @PreAuthorize("hasAuthority('student')")
     HttpResult setStudentInfo(@RequestParam(value = "studentAccount") String account, @RequestBody Map<String, Object> map) {

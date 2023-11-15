@@ -17,4 +17,6 @@ public interface StudentService {
     HttpResult studentLogout();
     HttpResult queryRecruitmentInfo(String enterpriseName);
     HttpResult markRecruitmentInfo(String account, Integer recruitmentInfoId);
+    HttpResult queryResume(String account);
+    HttpResult deleteResume(String account, Integer resumeId);
 }
