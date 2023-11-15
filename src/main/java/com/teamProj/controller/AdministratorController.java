@@ -20,12 +20,6 @@ public class AdministratorController {
     @Resource
     AdministratorService administratorService;
 
-    @GetMapping("/test")
-    @PreAuthorize("hasAuthority('admin')")
-    String hello() {
-        return "hello";
-    }
-
     @PostMapping("/login")
     HttpResult administratorLogin(@RequestParam String account, @RequestParam String password) {
         return administratorService.administratorLogin(account, password);
