@@ -19,11 +19,14 @@ public interface AdministratorService {
 
     HttpResult queryEnterprise(String name, Integer current, Integer size);
 
-    HttpResult queryEnterpriseUser(String enterpriseName, String userName, Integer current, Integer size);
+    HttpResult queryEnterpriseUser(String enterpriseName, String userName, Integer current, Integer size
+    );
 
-    //TODO 不确定的实现
-    //HttpResult createNewEnterprise(String name, String url);
+    HttpResult createNewEnterprise(String name, String url);
 
-    //TODO 参数不确定
-    //HttpResult createNewEnterpriseUser();
+    HttpResult createNewEnterpriseUser(String account, String enterpriseName, String name, String tel);
+
+    HttpResult querySchoolUser(String principal, Character status, Integer current, Integer size);
+
+    HttpResult createNewSchoolUser(String account,String schoolName,String principal,String tel);
 }

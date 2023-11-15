@@ -1,7 +1,5 @@
 package com.teamProj.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,8 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EnterpriseUser {
-    @TableId(type = IdType.AUTO)
-    String userId;
+    Integer userId;
 
     String enterpriseId;
 
@@ -26,4 +23,6 @@ public class EnterpriseUser {
     String graduation_school;
 
     String tel;
+
+    String userStatus;
 }

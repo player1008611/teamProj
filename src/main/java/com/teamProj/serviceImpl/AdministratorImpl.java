@@ -5,13 +5,18 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.AdministratorDao;
 import com.teamProj.dao.EnterpriseDao;
+import com.teamProj.dao.EnterpriseUserDao;
+import com.teamProj.dao.SchoolDao;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.dao.UserDao;
 import com.teamProj.entity.Enterprise;
+import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
 import com.teamProj.entity.vo.AdminEnterpriseUserVo;
+import com.teamProj.entity.vo.AdminSchoolUserVo;
 import com.teamProj.entity.vo.AdminStudentVo;
 import com.teamProj.service.AdministratorService;
 import com.teamProj.utils.HttpResult;
@@ -24,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -53,6 +59,12 @@ public class AdministratorImpl implements AdministratorService {
 
     @Resource
     private EnterpriseDao enterpriseDao;
+
+    @Resource
+    private EnterpriseUserDao enterpriseUserDao;
+
+    @Resource
+    private SchoolDao schoolDao;
 
     public HttpResult administratorLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
@@ -153,6 +165,68 @@ public class AdministratorImpl implements AdministratorService {
     public HttpResult queryEnterpriseUser(String enterpriseName, String userName, Integer current, Integer size) {
         Page<AdminEnterpriseUserVo> page = new Page<>(current, size);
         return HttpResult.success(administratorDao.queryEnterpriseUser(page, enterpriseName, userName), "查询成功");
+    }
+
+    @Override
+    public HttpResult createNewEnterprise(String name, String url) {
+        Enterprise enterprise = new Enterprise(null, name, url);
+        if (enterpriseDao.insert(enterprise) > 0) {
+            return HttpResult.success(name, "创建成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public HttpResult createNewEnterpriseUser(String account, String enterpriseName, String name, String tel) {
+        QueryWrapper<Enterprise> enterpriseQueryWrapper = new QueryWrapper<>();
+        enterpriseQueryWrapper.eq("enterprise_name", enterpriseName);
+        Enterprise enterprise = enterpriseDao.selectOne(enterpriseQueryWrapper);
+        if (Objects.isNull(enterprise)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        User user = new User(null, account, bCryptPasswordEncoder.encode("123456"), "enterprise");
+        try {
+            userDao.insert(user);
+        } catch (Exception e) {
+            return HttpResult.success(null, "用户名重复");
+        }
+
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account);
+        user = userDao.selectOne(userQueryWrapper);
+        EnterpriseUser enterpriseUser = new EnterpriseUser(user.getUserId(), enterprise.getEnterpriseId(), name, null, null, null, null, tel, "1");
+        if (enterpriseUserDao.insert(enterpriseUser) > 0) {
+            return HttpResult.success(name, "添加成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+    }
+
+    @Override
+    public HttpResult querySchoolUser(String principal, Character status, Integer current, Integer size) {
+        Page<AdminSchoolUserVo> page = new Page<>(current, size);
+        return HttpResult.success(administratorDao.querySchoolUser(page, principal, status), "查询成功");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public HttpResult createNewSchoolUser(String account, String schoolName, String principal, String tel) {
+        User user = new User(null, account, bCryptPasswordEncoder.encode("123456"), "school");
+        try {
+            userDao.insert(user);
+        } catch (Exception e) {
+            return HttpResult.success(null, "用户名重复");
+        }
+
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account);
+        user = userDao.selectOne(userQueryWrapper);
+        School schoolUser = new School(user.getUserId(), tel, principal, schoolName, "1");
+        if (schoolDao.insert(schoolUser) > 0) {
+            return HttpResult.success(schoolName, "添加成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
     }
 }
 

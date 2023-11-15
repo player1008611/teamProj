@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,5 +86,38 @@ public class AdministratorController {
             , @RequestParam Integer current
             , @RequestParam Integer size) {
         return administratorService.queryEnterpriseUser(enterpriseName, userName, current, size);
+    }
+
+    @PutMapping("/createNewEnterprise")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult createNewEnterprise(@RequestParam String name, @RequestParam String url) {
+        return administratorService.createNewEnterprise(name, url);
+    }
+
+    @PutMapping("/createNewEnterpriseUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult createNewEnterpriseUser(@RequestParam String account
+            , @RequestParam String enterpriseName
+            , @RequestParam String name
+            , @RequestParam String tel) {
+        return administratorService.createNewEnterpriseUser(account, enterpriseName, name, tel);
+    }
+
+    @GetMapping("/querySchoolUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult querySchoolUser(@RequestParam(required = false) String principal
+            , @RequestParam(required = false) Character status
+            , @RequestParam Integer current
+            , @RequestParam Integer size) {
+        return administratorService.querySchoolUser(principal, status, current, size);
+    }
+
+    @PutMapping("/createNewSchoolUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult createNewSchoolUser(@RequestParam String account
+            , @RequestParam String schoolName
+            , @RequestParam String principal
+            , @RequestParam String tel) {
+        return administratorService.createNewSchoolUser(account, schoolName, principal, tel);
     }
 }
