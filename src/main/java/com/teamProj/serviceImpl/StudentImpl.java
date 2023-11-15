@@ -2,18 +2,14 @@ package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.teamProj.dao.ResumeDao;
-import com.teamProj.dao.StudentDao;
-import com.teamProj.dao.UserDao;
-import com.teamProj.entity.LoginUser;
-import com.teamProj.entity.Resume;
-import com.teamProj.entity.Student;
-import com.teamProj.entity.User;
+import com.teamProj.dao.*;
+import com.teamProj.entity.*;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.JwtUtil;
 import com.teamProj.utils.RedisCache;
 import com.teamProj.utils.ResultCodeEnum;
+import net.bytebuddy.asm.Advice;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,6 +40,12 @@ public class StudentImpl implements StudentService {
     private RedisCache redisCache;
     @Resource
     private ResumeDao resumeDao;
+    @Resource
+    private RecruitmentInfoDao recruitmentInfoDao;
+    @Resource
+    private EnterpriseDao enterpriseDao;
+    @Resource
+    private MarkedRecruitmentInfoDao markedRecruitmentInfoDao;
 
     @Override
     public HttpResult studentLogin(String account, String password) {
@@ -123,7 +125,7 @@ public class StudentImpl implements StudentService {
     @Override
     public HttpResult setStudentInfo(String account, Map<String, Object> map) {
         QueryWrapper<User> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("student_account", account);
+        queryWrapper1.eq("account", account);
         User user = userDao.selectOne(queryWrapper1);
         int studentId = user.getUserId();
         UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
@@ -134,8 +136,8 @@ public class StudentImpl implements StudentService {
         student.setGender((Character) map.get("gender"));
         student.setWechat((String) map.get("wechat"));
         student.setQq((String) map.get("qq"));
-        student.setCollegeId((Integer) map.get("collegeId"));
-        student.setMajorId((Integer) map.get("majorId"));
+        student.setCollegeId((Integer) map.get("college_id"));
+        student.setMajorId((Integer) map.get("major_id"));
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("name").eq("student_id", studentId);
         if (studentDao.update(student, updateWrapper) > 0) {
@@ -147,6 +149,30 @@ public class StudentImpl implements StudentService {
 
     @Override
     public HttpResult queryRecruitmentInfo(String enterpriseName) {
-        return null;
+        QueryWrapper<Enterprise> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("enterprise_name", enterpriseName);
+        Enterprise enterprise = enterpriseDao.selectOne(queryWrapper);
+        if (enterprise != null) {
+            QueryWrapper<RecruitmentInfo> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("enterprise_id", enterprise.getEnterpriseId());
+            return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper1), "查询成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public HttpResult markRecruitmentInfo(String account,Integer RecruitmentInfoId){
+        MarkedRecruitmentInfo mri = new MarkedRecruitmentInfo();
+        mri.setRecruitmentId(RecruitmentInfoId);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", account);
+        mri.setStudentId(userDao.selectOne(queryWrapper).getUserId());
+        if(markedRecruitmentInfoDao.insert(mri)>0){
+            return HttpResult.success(mri,"收藏成功");
+        }
+        else {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
     }
 }

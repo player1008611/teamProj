@@ -16,4 +16,5 @@ public interface StudentService {
     HttpResult setStudentInfo(String account, Map<String, Object> map);
     HttpResult studentLogout();
     HttpResult queryRecruitmentInfo(String enterpriseName);
+    HttpResult markRecruitmentInfo(String account, Integer recruitmentInfoId);
 }
