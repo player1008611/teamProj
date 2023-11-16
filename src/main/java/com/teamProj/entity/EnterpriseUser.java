@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class EnterpriseUser {
     Integer userId;
 
-    String enterpriseId;
+    Integer enterpriseId;
 
     String name;
 
