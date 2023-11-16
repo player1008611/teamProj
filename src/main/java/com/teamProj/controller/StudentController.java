@@ -1,6 +1,7 @@
 package com.teamProj.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
+import com.itextpdf.layout.element.Image;
 import com.teamProj.entity.Administrator;
 import com.teamProj.entity.Resume;
 import com.teamProj.entity.Student;
@@ -10,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.awt.*;
 import java.util.Map;
 
 @RestController
@@ -29,10 +31,19 @@ public class StudentController {
         return studentService.setStudentPassword(account, oldPassword, password);
     }
 
-    @PatchMapping("/createResume")
-    @PreAuthorize("hasAuthority('student')")
-    HttpResult createResume(@RequestParam(value = "studentAccount") String account, @RequestBody Map<String, Object> map) {
-        return studentService.createResume(account, map);
+    @PostMapping("/createResume")
+    //@PreAuthorize("hasAuthority('student')")
+    HttpResult createResume(@RequestParam(value = "studentAccount") String account,
+                            @RequestParam(value = "image") Image image,
+                            @RequestParam(value = "selfDescription") String selfDescription,
+                            @RequestParam(value = "careerObjective") String careerObjective,
+                            @RequestParam(value = "educationExperience") String educationExperience,
+                            @RequestParam(value = "internshipExperience") String InternshipExperience,
+                            @RequestParam(value = "projectExperience") String projectExperience,
+                            @RequestParam(value = "certificates") String certificates,
+                            @RequestParam(value = "skills") String skills
+    ) {
+        return studentService.createResume(account, image, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills);
     }
 
     @DeleteMapping("/deleteResume")
