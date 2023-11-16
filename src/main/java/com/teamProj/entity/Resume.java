@@ -21,4 +21,8 @@ public class Resume {
     byte[] attachmentLink;
 
     Timestamp creationTime;
+
+    String studentName;
+
+    String resumeName;
 }

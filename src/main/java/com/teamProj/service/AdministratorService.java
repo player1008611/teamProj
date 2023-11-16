@@ -1,6 +1,5 @@
 package com.teamProj.service;
 
-import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.utils.HttpResult;
 
 public interface AdministratorService {

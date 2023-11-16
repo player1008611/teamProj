@@ -18,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.awt.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -97,7 +96,7 @@ public class StudentImpl implements StudentService {
     @Override
     public HttpResult createResume(String account, Image image, String selfDescription, String careerObjective,
                                    String educationExperience, String InternshipExperience, String projectExperience,
-                                   String certificates, String skills) {
+                                   String certificates, String skills, String resumeName) {
         QueryWrapper<User> queryWrapper0 = new QueryWrapper<>();
         queryWrapper0.eq("account", account);
         User user = userDao.selectOne(queryWrapper0);
@@ -107,7 +106,7 @@ public class StudentImpl implements StudentService {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Map<String, Object> map = new HashMap<>();
         map.put("name", student.getName());
-        map.put("image",image);
+        map.put("image", image);
         map.put("gender", student.getGender());
         map.put("phone_number", student.getPhoneNumber());
         map.put("self_description", selfDescription);
@@ -123,7 +122,7 @@ public class StudentImpl implements StudentService {
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }
-        Resume resume = new Resume(null, student.getStudentId(), resumePdf, timestamp);
+        Resume resume = new Resume(null, student.getStudentId(), resumePdf, timestamp ,student.getName(),resumeName);
         if (resumeDao.insert(resume) > 0) {
             return HttpResult.success(resume, "创建成功");
         } else {
@@ -137,7 +136,7 @@ public class StudentImpl implements StudentService {
         queryWrapper.eq("account", account);
         User user = userDao.selectOne(queryWrapper);
         QueryWrapper<Resume> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("student_id", user.getUserId());
+        queryWrapper1.eq("student_id", user.getUserId()).select("resume_id", "create_time","student_name","resume_name");
         return HttpResult.success(resumeDao.selectList(queryWrapper1), "查询成功");
     }
 

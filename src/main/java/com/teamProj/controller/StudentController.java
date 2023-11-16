@@ -1,17 +1,12 @@
 package com.teamProj.controller;
 
-import com.baomidou.mybatisplus.extension.api.R;
 import com.itextpdf.layout.element.Image;
-import com.teamProj.entity.Administrator;
-import com.teamProj.entity.Resume;
-import com.teamProj.entity.Student;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.HttpResult;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.awt.*;
 import java.util.Map;
 
 @RestController
@@ -32,7 +27,7 @@ public class StudentController {
     }
 
     @PostMapping("/createResume")
-    //@PreAuthorize("hasAuthority('student')")
+        //@PreAuthorize("hasAuthority('student')")
     HttpResult createResume(@RequestParam(value = "studentAccount") String account,
                             @RequestParam(value = "image") Image image,
                             @RequestParam(value = "selfDescription") String selfDescription,
@@ -41,9 +36,10 @@ public class StudentController {
                             @RequestParam(value = "internshipExperience") String InternshipExperience,
                             @RequestParam(value = "projectExperience") String projectExperience,
                             @RequestParam(value = "certificates") String certificates,
-                            @RequestParam(value = "skills") String skills
+                            @RequestParam(value = "skills") String skills,
+                            @RequestParam(value = "resumeName") String resumeName
     ) {
-        return studentService.createResume(account, image, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills);
+        return studentService.createResume(account, image, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName);
     }
 
     @DeleteMapping("/deleteResume")
@@ -72,13 +68,13 @@ public class StudentController {
 
     @GetMapping("/queryRecruitmentInfo")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryRecruitmentInfo(@RequestParam(value = "enterpriseName") String enterpriseName){
+    HttpResult queryRecruitmentInfo(@RequestParam(value = "enterpriseName") String enterpriseName) {
         return studentService.queryRecruitmentInfo(enterpriseName);
     }
 
     @PostMapping("/markRecruitmentInfo")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult markRecruitmentInfo(@RequestParam(value = "studentAccount") String account, @RequestParam(value = "recruitmentInfoId") Integer recruitmentInfoId){
+    HttpResult markRecruitmentInfo(@RequestParam(value = "studentAccount") String account, @RequestParam(value = "recruitmentInfoId") Integer recruitmentInfoId) {
         return studentService.markRecruitmentInfo(account, recruitmentInfoId);
     }
 }
