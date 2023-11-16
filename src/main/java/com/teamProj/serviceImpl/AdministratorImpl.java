@@ -4,14 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.AdministratorDao;
+import com.teamProj.dao.DepartmentDao;
 import com.teamProj.dao.EnterpriseDao;
 import com.teamProj.dao.EnterpriseUserDao;
 import com.teamProj.dao.SchoolDao;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.dao.UserDao;
+import com.teamProj.entity.Department;
 import com.teamProj.entity.Enterprise;
 import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
@@ -64,15 +67,18 @@ public class AdministratorImpl implements AdministratorService {
     private EnterpriseUserDao enterpriseUserDao;
 
     @Resource
+    private DepartmentDao departmentDao;
+
+    @Resource
     private SchoolDao schoolDao;
 
     public HttpResult administratorLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
-        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-        if (Objects.isNull(authenticate)) {
+        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        if (Objects.isNull(authentication)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
-        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         if (!loginUser.getPermissions().get(0).equals("admin")) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }

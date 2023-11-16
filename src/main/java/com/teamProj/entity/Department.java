@@ -7,13 +7,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class Enterprise {
+@NoArgsConstructor
+public class Department {
     @TableId(type = IdType.AUTO)
+    Integer departmentId;
+
+    String name;
+
     Integer enterpriseId;
-
-    String enterpriseName;
-
-    String website;
 }

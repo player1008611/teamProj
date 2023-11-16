@@ -25,7 +25,7 @@ public class RecruitmentInfo {
 
     String jobDescription;
 
-    String departmentId;
+    Integer departmentId;
 
     String companyName;
 
@@ -44,4 +44,6 @@ public class RecruitmentInfo {
     Integer recruitedNum;
 
     String byword;
+
+    String jobDuties;
 }

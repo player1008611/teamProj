@@ -1,5 +1,6 @@
 package com.teamProj.service;
 
+import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.utils.HttpResult;
 
 public interface AdministratorService {
@@ -28,5 +29,5 @@ public interface AdministratorService {
 
     HttpResult querySchoolUser(String principal, Character status, Integer current, Integer size);
 
-    HttpResult createNewSchoolUser(String account,String schoolName,String principal,String tel);
+    HttpResult createNewSchoolUser(String account, String schoolName, String principal, String tel);
 }
