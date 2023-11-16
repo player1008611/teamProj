@@ -75,13 +75,13 @@ public class AdministratorController {
         return administratorService.queryEnterpriseUser(enterpriseName, userName, current, size);
     }
 
-    @PutMapping("/createNewEnterprise")
+    @PostMapping("/createNewEnterprise")
     @PreAuthorize("hasAuthority('admin')")
     HttpResult createNewEnterprise(@RequestParam String name, @RequestParam String url) {
         return administratorService.createNewEnterprise(name, url);
     }
 
-    @PutMapping("/createNewEnterpriseUser")
+    @PostMapping("/createNewEnterpriseUser")
     @PreAuthorize("hasAuthority('admin')")
     HttpResult createNewEnterpriseUser(@RequestParam String account
             , @RequestParam String enterpriseName
@@ -99,7 +99,7 @@ public class AdministratorController {
         return administratorService.querySchoolUser(principal, status, current, size);
     }
 
-    @PutMapping("/createNewSchoolUser")
+    @PostMapping("/createNewSchoolUser")
     @PreAuthorize("hasAuthority('admin')")
     HttpResult createNewSchoolUser(@RequestParam String account
             , @RequestParam String schoolName

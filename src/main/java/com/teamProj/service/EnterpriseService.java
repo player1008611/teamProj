@@ -9,7 +9,11 @@ public interface EnterpriseService {
 
     HttpResult enterpriseLogout();
 
-    HttpResult createNewDepartment(String enterpriseName, String departmentName);
+    HttpResult createNewDepartment(String departmentName);
 
     HttpResult createNewRecruitmentInfo(String departmentName, RecruitmentInfo recruitmentInfo);
+
+    HttpResult queryRecruitmentInfo(String departmentName,Integer current);
+
+    HttpResult deleteRecruitmentInfo(String departmentName,String jobTitle);
 }

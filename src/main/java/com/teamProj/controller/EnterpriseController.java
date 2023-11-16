@@ -5,7 +5,12 @@ import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.service.EnterpriseService;
 import com.teamProj.utils.HttpResult;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
@@ -30,13 +35,13 @@ public class EnterpriseController {
         return enterpriseService.enterpriseLogout();
     }
 
-    @PutMapping("/createNewDepartment")
+    @PostMapping("/createNewDepartment")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult createNewDepartment(@RequestParam String enterpriseName, @RequestParam String departmentName) {
-        return enterpriseService.createNewDepartment(enterpriseName, departmentName);
+    HttpResult createNewDepartment(@RequestParam String departmentName) {
+        return enterpriseService.createNewDepartment(departmentName);
     }
 
-    @PutMapping("/createNewRecruitmentInfo")
+    @PostMapping("/createNewRecruitmentInfo")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult createNewRecruitmentInfo(@RequestParam String departmentName
             , @RequestParam String jobTitle
@@ -45,7 +50,8 @@ public class EnterpriseController {
             , @RequestParam String city
             , @RequestParam Integer recruitNum
             , @RequestParam String byword
-            , @RequestParam String jobDuties) {
+            , @RequestParam String jobDuties
+            , @RequestParam Character status) {
         RecruitmentInfo recruitmentInfo = new RecruitmentInfo(null
                 , null
                 , null
@@ -55,7 +61,7 @@ public class EnterpriseController {
                 , null
                 , null
                 , city
-                , '0'
+                , status
                 , null
                 , null
                 , null
@@ -64,5 +70,17 @@ public class EnterpriseController {
                 , byword
                 , jobDuties);
         return enterpriseService.createNewRecruitmentInfo(departmentName, recruitmentInfo);
+    }
+
+    @GetMapping("/queryRecruitmentInfo")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult queryRecruitmentInfo(@RequestParam String departmentName, @RequestParam Integer current) {
+        return enterpriseService.queryRecruitmentInfo(departmentName, current);
+    }
+
+    @DeleteMapping("/deleteRecruitmentInfo")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult deleteRecruitmentInfo(@RequestParam String departmentName, @RequestParam String jobTitle) {
+        return enterpriseService.deleteRecruitmentInfo(departmentName, jobTitle);
     }
 }

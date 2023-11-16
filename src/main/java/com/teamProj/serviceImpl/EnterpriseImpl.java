@@ -1,11 +1,14 @@
 package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.DepartmentDao;
 import com.teamProj.dao.EnterpriseDao;
+import com.teamProj.dao.EnterpriseUserDao;
 import com.teamProj.dao.RecruitmentInfoDao;
 import com.teamProj.entity.Department;
 import com.teamProj.entity.Enterprise;
+import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.service.EnterpriseService;
@@ -26,6 +29,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -38,6 +42,9 @@ public class EnterpriseImpl implements EnterpriseService {
     private RedisCache redisCache;
     @Resource
     private EnterpriseDao enterpriseDao;
+
+    @Resource
+    private EnterpriseUserDao enterpriseUserDao;
 
     @Resource
     private DepartmentDao departmentDao;
@@ -68,20 +75,26 @@ public class EnterpriseImpl implements EnterpriseService {
     public HttpResult enterpriseLogout() {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
-        int enterpriseId = loginUser.getUser().getUserId();
-        redisCache.deleteObject(String.valueOf(enterpriseId));
+        int userId = loginUser.getUser().getUserId();
+        redisCache.deleteObject(String.valueOf(userId));
         return HttpResult.success(null, "用户注销");
     }
 
     @Override
-    public HttpResult createNewDepartment(String enterpriseName, String departmentName) {
-        QueryWrapper<Enterprise> enterpriseQueryWrapper = new QueryWrapper<>();
-        enterpriseQueryWrapper.eq("enterprise_name", enterpriseName);
-        Enterprise enterprise = enterpriseDao.selectOne(enterpriseQueryWrapper);
-        if (Objects.isNull(enterprise)) {
+    public HttpResult createNewDepartment(String departmentName) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
-        Department department = new Department(null, departmentName, enterprise.getEnterpriseId());
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+        EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
+        if (Objects.isNull(enterpriseUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        Department department = new Department(null, departmentName, enterpriseUser.getEnterpriseId());
         try {
             departmentDao.insert(department);
         } catch (Exception e) {
@@ -114,8 +127,11 @@ public class EnterpriseImpl implements EnterpriseService {
         recruitmentInfo.setEnterpriseId(department.getEnterpriseId());
         recruitmentInfo.setDepartmentId(department.getDepartmentId());
         recruitmentInfo.setCompanyName(enterprise.getEnterpriseName());
+        recruitmentInfo.setRecruitedNum(0);
+
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         recruitmentInfo.setSubmissionTime(Timestamp.valueOf(formatter.format(date)));
 
         try {
@@ -124,5 +140,57 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }
         return HttpResult.success(null, "添加成功");
+    }
+
+    @Override
+    public HttpResult queryRecruitmentInfo(String departmentName, Integer current) {
+        QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
+        departmentQueryWrapper.eq("name", departmentName);
+        Department department = departmentDao.selectOne(departmentQueryWrapper);
+        if (Objects.isNull(department)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.eq("enterprise_id", department.getEnterpriseId());
+        recruitmentInfoQueryWrapper.eq("department_id", department.getDepartmentId());
+        Page<RecruitmentInfo> page = new Page<>(current, 6);
+        return HttpResult.success(recruitmentInfoDao.selectPage(page, recruitmentInfoQueryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult deleteRecruitmentInfo(String departmentName, String jobTitle) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+        EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
+        if (Objects.isNull(enterpriseUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
+        departmentQueryWrapper.eq("enterprise_id", enterpriseUser.getEnterpriseId());
+        departmentQueryWrapper.eq("name", departmentName);
+        Department department = departmentDao.selectOne(departmentQueryWrapper);
+        if (Objects.isNull(department)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.eq("enterprise_id", department.getEnterpriseId());
+        recruitmentInfoQueryWrapper.eq("department_id", department.getDepartmentId());
+        recruitmentInfoQueryWrapper.eq("job_title", jobTitle);
+
+        try {
+            recruitmentInfoDao.delete(recruitmentInfoQueryWrapper);
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
+        return HttpResult.success(jobTitle, "删除成功");
     }
 }
