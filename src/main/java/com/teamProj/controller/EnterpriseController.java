@@ -91,6 +91,12 @@ public class EnterpriseController {
         return enterpriseService.queryRecruitmentInfo(city, salaryRange, departmentName, current);
     }
 
+    @DeleteMapping("/deleteRecruitmentInfo")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult deleteRecruitmentInfo(@RequestParam String departmentName, @RequestParam String jobTitle) {
+        return enterpriseService.deleteRecruitmentInfo(departmentName, jobTitle);
+    }
+
     @PutMapping("/updateDraft")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult updateDraft(@RequestParam String oldDraftName
@@ -125,9 +131,16 @@ public class EnterpriseController {
         return enterpriseService.updateDraft(oldDraftName, newDraftName, recruitmentInfo);
     }
 
-    @DeleteMapping("/deleteRecruitmentInfo")
+    @GetMapping("/queryDraft")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult deleteRecruitmentInfo(@RequestParam String departmentName, @RequestParam String jobTitle) {
-        return enterpriseService.deleteRecruitmentInfo(departmentName, jobTitle);
+    HttpResult queryDraft() {
+        return enterpriseService.queryDraft();
     }
+
+    @DeleteMapping("/deleteDraft")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult deleteDraft(@RequestParam String draftName) {
+        return enterpriseService.deleteDraft(draftName);
+    }
+
 }

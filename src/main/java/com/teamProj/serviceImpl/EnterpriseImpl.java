@@ -237,39 +237,6 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public HttpResult updateDraft(String oldDraftName, String newDraftName, RecruitmentInfo recruitmentInfo) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
-        if (Objects.isNull(loginUser)) {
-            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
-        }
-        int userId = loginUser.getUser().getUserId();
-        QueryWrapper<Draft> draftQueryWrapper = new QueryWrapper<>();
-        draftQueryWrapper.eq("user_id", userId).eq("draft_name", oldDraftName);
-        Draft draft = draftDao.selectOne(draftQueryWrapper);
-        UpdateWrapper<RecruitmentInfo> recruitmentInfoUpdateWrapper = new UpdateWrapper<>();
-        recruitmentInfoUpdateWrapper.eq("recruitment_id", draft.getRecruitmentId());
-
-        Date date = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-
-        draft.setDraftName(newDraftName);
-        draft.setEditTime(Timestamp.valueOf(formatter.format(date)));
-        try {
-            recruitmentInfoDao.update(recruitmentInfo, recruitmentInfoUpdateWrapper);
-            if(recruitmentInfo.getStatus().equals('0')){
-                draftDao.update(draft, draftQueryWrapper);
-            }
-        } catch (Exception e) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
-        }
-        return HttpResult.success(oldDraftName, "编辑成功");
-    }
-
-    @Override
     public HttpResult deleteRecruitmentInfo(String departmentName, String jobTitle) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
@@ -304,5 +271,73 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }
         return HttpResult.success(jobTitle, "删除成功");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public HttpResult updateDraft(String oldDraftName, String newDraftName, RecruitmentInfo recruitmentInfo) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<Draft> draftQueryWrapper = new QueryWrapper<>();
+        draftQueryWrapper.eq("user_id", userId).eq("draft_name", oldDraftName);
+        Draft draft = draftDao.selectOne(draftQueryWrapper);
+        UpdateWrapper<RecruitmentInfo> recruitmentInfoUpdateWrapper = new UpdateWrapper<>();
+        recruitmentInfoUpdateWrapper.eq("recruitment_id", draft.getRecruitmentId());
+
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+
+        draft.setDraftName(newDraftName);
+        draft.setEditTime(Timestamp.valueOf(formatter.format(date)));
+        try {
+            recruitmentInfoDao.update(recruitmentInfo, recruitmentInfoUpdateWrapper);
+            if (recruitmentInfo.getStatus().equals('0')) {
+                draftDao.update(draft, draftQueryWrapper);
+            }
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
+        return HttpResult.success(oldDraftName, "编辑成功");
+    }
+
+    @Override
+    public HttpResult queryDraft() {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        return HttpResult.success(enterpriseUserDao.queryDraft(userId), "查询成功");
+    }
+
+    @Override
+    public HttpResult deleteDraft(String draftName) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<Draft> draftQueryWrapper = new QueryWrapper<>();
+        draftQueryWrapper.eq("user_id", userId).eq("draft_name", draftName);
+        Draft draft = draftDao.selectOne(draftQueryWrapper);
+        if (Objects.isNull(draft)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.eq("recruitment_id", draft.getRecruitmentId());
+        try {
+            recruitmentInfoDao.delete(recruitmentInfoQueryWrapper);
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
+        return HttpResult.success(draftName, "删除成功");
     }
 }
