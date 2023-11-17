@@ -259,7 +259,9 @@ public class EnterpriseImpl implements EnterpriseService {
         draft.setEditTime(Timestamp.valueOf(formatter.format(date)));
         try {
             recruitmentInfoDao.update(recruitmentInfo, recruitmentInfoUpdateWrapper);
-            draftDao.update(draft, draftQueryWrapper);
+            if(recruitmentInfo.getStatus().equals('0')){
+                draftDao.update(draft, draftQueryWrapper);
+            }
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
