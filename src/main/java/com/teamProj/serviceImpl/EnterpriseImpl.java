@@ -3,10 +3,12 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.DepartmentDao;
+import com.teamProj.dao.DraftDao;
 import com.teamProj.dao.EnterpriseDao;
 import com.teamProj.dao.EnterpriseUserDao;
 import com.teamProj.dao.RecruitmentInfoDao;
 import com.teamProj.entity.Department;
+import com.teamProj.entity.Draft;
 import com.teamProj.entity.Enterprise;
 import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.LoginUser;
@@ -21,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
@@ -51,6 +54,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
     private RecruitmentInfoDao recruitmentInfoDao;
+
+    @Resource
+    private DraftDao draftDao;
 
     @Override
     public HttpResult enterpriseLogin(String account, String password) {
@@ -104,9 +110,47 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult createNewRecruitmentInfo(String departmentName, RecruitmentInfo recruitmentInfo) {
+    public HttpResult queryDepartment() {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+        EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
+        if (Objects.isNull(enterpriseUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
+        departmentQueryWrapper.select("name").eq("enterprise_id", enterpriseUser.getEnterpriseId());
+        return HttpResult.success(departmentDao.selectList(departmentQueryWrapper), "查询成功");
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public HttpResult createNewRecruitmentInfo(String draftName, String departmentName, RecruitmentInfo recruitmentInfo) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+
+
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+        EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
+        if (Objects.isNull(enterpriseUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
         QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
         departmentQueryWrapper.eq("name", departmentName);
+        departmentQueryWrapper.eq("enterprise_id", enterpriseUser.getEnterpriseId());
         Department department = departmentDao.selectOne(departmentQueryWrapper);
         if (Objects.isNull(department)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -118,10 +162,6 @@ public class EnterpriseImpl implements EnterpriseService {
         if (Objects.isNull(enterprise)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
-
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
-        int userId = loginUser.getUser().getUserId();
 
         recruitmentInfo.setUserId(userId);
         recruitmentInfo.setEnterpriseId(department.getEnterpriseId());
@@ -139,6 +179,15 @@ public class EnterpriseImpl implements EnterpriseService {
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }
+
+        if (recruitmentInfo.getStatus().equals('0')) {
+            QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+            recruitmentInfoQueryWrapper.eq("user_id", userId).eq("job_title", recruitmentInfo.getJobTitle());
+            RecruitmentInfo recruitmentInfo1 = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
+            Draft draft = new Draft(null, recruitmentInfo1.getRecruitmentId(), Timestamp.valueOf(formatter.format(date)), draftName);
+            draftDao.insert(draft);
+        }
+
         return HttpResult.success(null, "添加成功");
     }
 
@@ -151,10 +200,28 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
-        recruitmentInfoQueryWrapper.eq("enterprise_id", department.getEnterpriseId());
-        recruitmentInfoQueryWrapper.eq("department_id", department.getDepartmentId());
+        recruitmentInfoQueryWrapper.select("job_title"
+                        , "salary_range"
+                        , "job_description"
+                        , "company_name"
+                        , "city"
+                        , "status"
+                        , "submission_time"
+                        , "approval_time"
+                        , "rejection_reason"
+                        , "recruit_num"
+                        , "recruited_num"
+                        , "byword"
+                        , "job_duties")
+                .eq("enterprise_id", department.getEnterpriseId())
+                .eq("department_id", department.getDepartmentId());
         Page<RecruitmentInfo> page = new Page<>(current, 6);
         return HttpResult.success(recruitmentInfoDao.selectPage(page, recruitmentInfoQueryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult updateDraft() {
+        return null;
     }
 
     @Override

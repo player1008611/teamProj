@@ -41,6 +41,12 @@ public class EnterpriseController {
         return enterpriseService.createNewDepartment(departmentName);
     }
 
+    @GetMapping("/queryDepartment")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult queryDepartment() {
+        return enterpriseService.queryDepartment();
+    }
+
     @PostMapping("/createNewRecruitmentInfo")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult createNewRecruitmentInfo(@RequestParam String departmentName
@@ -51,7 +57,8 @@ public class EnterpriseController {
             , @RequestParam Integer recruitNum
             , @RequestParam String byword
             , @RequestParam String jobDuties
-            , @RequestParam Character status) {
+            , @RequestParam Character status
+            , @RequestParam(required = false) String draftName) {
         RecruitmentInfo recruitmentInfo = new RecruitmentInfo(null
                 , null
                 , null
@@ -69,7 +76,7 @@ public class EnterpriseController {
                 , null
                 , byword
                 , jobDuties);
-        return enterpriseService.createNewRecruitmentInfo(departmentName, recruitmentInfo);
+        return enterpriseService.createNewRecruitmentInfo(draftName, departmentName, recruitmentInfo);
     }
 
     @GetMapping("/queryRecruitmentInfo")

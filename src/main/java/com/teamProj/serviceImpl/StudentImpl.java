@@ -136,7 +136,7 @@ public class StudentImpl implements StudentService {
         queryWrapper.eq("account", account);
         User user = userDao.selectOne(queryWrapper);
         QueryWrapper<Resume> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("student_id", user.getUserId()).select("resume_id", "create_time","student_name","resume_name");
+        queryWrapper1.eq("student_id", user.getUserId()).select("resume_id", "creation_time","student_name","resume_name");
         return HttpResult.success(resumeDao.selectList(queryWrapper1), "查询成功");
     }
 
