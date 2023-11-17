@@ -112,7 +112,7 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult queryDepartment() {
+    public HttpResult queryDepartment(String departmentName) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
@@ -129,6 +129,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
         QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
         departmentQueryWrapper.select("name").eq("enterprise_id", enterpriseUser.getEnterpriseId());
+        if (!Objects.isNull(departmentName) && !departmentName.equals("")) {
+            departmentQueryWrapper.eq("name", departmentName);
+        }
         return HttpResult.success(departmentDao.selectList(departmentQueryWrapper), "查询成功");
     }
 
@@ -198,7 +201,7 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult queryRecruitmentInfo(String departmentName, Integer current) {
+    public HttpResult queryRecruitmentInfo(String city, String salaryRange, String departmentName, Integer current) {
         QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
         departmentQueryWrapper.eq("name", departmentName);
         Department department = departmentDao.selectOne(departmentQueryWrapper);
@@ -207,7 +210,6 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
         recruitmentInfoQueryWrapper.select("job_title"
-                        , "salary_range"
                         , "job_description"
                         , "company_name"
                         , "city"
@@ -218,9 +220,18 @@ public class EnterpriseImpl implements EnterpriseService {
                         , "recruit_num"
                         , "recruited_num"
                         , "byword"
-                        , "job_duties")
+                        , "job_duties"
+                        , "min_salary"
+                        , "max_salary")
                 .eq("enterprise_id", department.getEnterpriseId())
                 .eq("department_id", department.getDepartmentId());
+        if (!Objects.isNull(city) && !city.isEmpty()) {
+            recruitmentInfoQueryWrapper.eq("city", city);
+        }
+        if (!Objects.isNull(salaryRange) && !salaryRange.isEmpty()) {
+            Integer maxSalary = Integer.parseInt(salaryRange.substring(0, salaryRange.length() - 4));
+            recruitmentInfoQueryWrapper.ge("max_salary", maxSalary);
+        }
         Page<RecruitmentInfo> page = new Page<>(current, 6);
         return HttpResult.success(recruitmentInfoDao.selectPage(page, recruitmentInfoQueryWrapper), "查询成功");
     }

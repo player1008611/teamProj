@@ -44,27 +44,27 @@ public class EnterpriseController {
 
     @GetMapping("/queryDepartment")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult queryDepartment() {
-        return enterpriseService.queryDepartment();
+    HttpResult queryDepartment(@RequestParam(required = false) String departmentName) {
+        return enterpriseService.queryDepartment(departmentName);
     }
 
     @PostMapping("/createNewRecruitmentInfo")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult createNewRecruitmentInfo(@RequestParam String departmentName
             , @RequestParam String jobTitle
-            , @RequestParam String salaryRange
             , @RequestParam String jobDescription
             , @RequestParam String city
             , @RequestParam Integer recruitNum
             , @RequestParam String byword
             , @RequestParam String jobDuties
+            , @RequestParam Integer minSalary
+            , @RequestParam Integer maxSalary
             , @RequestParam Character status
             , @RequestParam(required = false) String draftName) {
         RecruitmentInfo recruitmentInfo = new RecruitmentInfo(null
                 , null
                 , null
                 , jobTitle
-                , salaryRange
                 , jobDescription
                 , null
                 , null
@@ -76,14 +76,19 @@ public class EnterpriseController {
                 , recruitNum
                 , null
                 , byword
-                , jobDuties);
+                , jobDuties
+                , minSalary
+                , maxSalary);
         return enterpriseService.createNewRecruitmentInfo(draftName, departmentName, recruitmentInfo);
     }
 
     @GetMapping("/queryRecruitmentInfo")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult queryRecruitmentInfo(@RequestParam String departmentName, @RequestParam Integer current) {
-        return enterpriseService.queryRecruitmentInfo(departmentName, current);
+    HttpResult queryRecruitmentInfo(@RequestParam(required = false) String city
+            , @RequestParam(required = false) String salaryRange
+            , @RequestParam String departmentName
+            , @RequestParam Integer current) {
+        return enterpriseService.queryRecruitmentInfo(city, salaryRange, departmentName, current);
     }
 
     @PutMapping("/updateDraft")
@@ -91,17 +96,17 @@ public class EnterpriseController {
     HttpResult updateDraft(@RequestParam String oldDraftName
             , @RequestParam String newDraftName
             , @RequestParam String jobTitle
-            , @RequestParam String salaryRange
             , @RequestParam String jobDescription
             , @RequestParam String city
             , @RequestParam Integer recruitNum
             , @RequestParam String byword
-            , @RequestParam String jobDuties) {
+            , @RequestParam String jobDuties
+            , @RequestParam Integer minSalary
+            , @RequestParam Integer maxSalary) {
         RecruitmentInfo recruitmentInfo = new RecruitmentInfo(null
                 , null
                 , null
                 , jobTitle
-                , salaryRange
                 , jobDescription
                 , null
                 , null
@@ -113,7 +118,9 @@ public class EnterpriseController {
                 , recruitNum
                 , null
                 , byword
-                , jobDuties);
+                , jobDuties
+                , minSalary
+                , maxSalary);
         return enterpriseService.updateDraft(oldDraftName, newDraftName, recruitmentInfo);
     }
 

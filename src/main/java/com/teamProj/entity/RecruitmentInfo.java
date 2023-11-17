@@ -21,8 +21,6 @@ public class RecruitmentInfo {
 
     String jobTitle;
 
-    String salaryRange;
-
     String jobDescription;
 
     Integer departmentId;
@@ -46,4 +44,8 @@ public class RecruitmentInfo {
     String byword;
 
     String jobDuties;
+
+    Integer minSalary;
+
+    Integer maxSalary;
 }
