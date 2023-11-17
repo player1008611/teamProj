@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.util.Map;
 
 @RestController
@@ -28,7 +29,7 @@ public class StudentController {
     @PostMapping("/createResume")
     @PreAuthorize("hasAuthority('student')")
     HttpResult createResume(@RequestParam(value = "studentAccount") String account,
-                            @RequestParam(value = "image") byte[] imageByte,
+                            @RequestParam(value = "image") File imageByte,
                             @RequestParam(value = "selfDescription") String selfDescription,
                             @RequestParam(value = "careerObjective") String careerObjective,
                             @RequestParam(value = "educationExperience") String educationExperience,

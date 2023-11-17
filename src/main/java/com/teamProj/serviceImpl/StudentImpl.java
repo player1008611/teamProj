@@ -19,6 +19,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -96,7 +99,7 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult createResume(String account, byte[] imageByte, String selfDescription, String careerObjective,
+    public HttpResult createResume(String account, File imageFile, String selfDescription, String careerObjective,
                                    String educationExperience, String InternshipExperience, String projectExperience,
                                    String certificates, String skills, String resumeName, byte[] attachPDF) {
 
@@ -107,6 +110,14 @@ public class StudentImpl implements StudentService {
         queryWrapper1.eq("student_id", user.getUserId());
         Student student = studentDao.selectOne(queryWrapper1);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        FileInputStream fis;
+        byte[] imageByte = new byte[(int) imageFile.length()];
+        try{
+            fis = new FileInputStream(imageFile);
+            fis.read(imageByte);
+        }catch (IOException e){
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
         Image image = new Image(ImageDataFactory.create(imageByte));
 
         byte[] resumePdf;
