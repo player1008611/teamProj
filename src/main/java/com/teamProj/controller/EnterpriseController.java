@@ -102,7 +102,8 @@ public class EnterpriseController {
             , @RequestParam String byword
             , @RequestParam String jobDuties
             , @RequestParam Integer minSalary
-            , @RequestParam Integer maxSalary) {
+            , @RequestParam Integer maxSalary
+            , @RequestParam Character status) {
         RecruitmentInfo recruitmentInfo = new RecruitmentInfo(null
                 , null
                 , null
@@ -111,7 +112,7 @@ public class EnterpriseController {
                 , null
                 , null
                 , city
-                , null
+                , status
                 , null
                 , null
                 , null
