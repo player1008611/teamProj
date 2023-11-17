@@ -1,6 +1,5 @@
 package com.teamProj.service;
 
-import com.itextpdf.layout.element.Image;
 import com.teamProj.utils.HttpResult;
 
 import java.util.Map;
@@ -18,11 +17,19 @@ public interface StudentService {
 
     HttpResult studentLogout();
 
-    HttpResult queryRecruitmentInfo(String enterpriseName);
+    HttpResult queryRecruitmentInfo(String queryInfo,String salaryRange,boolean mark);
+
+    HttpResult queryJobApplicationDetail(Integer recruitmentId);
 
     HttpResult markRecruitmentInfo(String account, Integer recruitmentInfoId);
 
     HttpResult queryResume(String account);
 
     HttpResult deleteResume(String account, Integer resumeId);
+
+    HttpResult createJobApplication(String account, Integer recruitmentInfoId, Integer resumeId);
+
+    HttpResult deleteJobApplication(Integer applicationId);
+
+    HttpResult queryJobApplication(String account);
 }

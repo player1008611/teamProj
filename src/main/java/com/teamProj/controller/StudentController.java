@@ -1,6 +1,5 @@
 package com.teamProj.controller;
 
-import com.itextpdf.layout.element.Image;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.HttpResult;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +26,7 @@ public class StudentController {
     }
 
     @PostMapping("/createResume")
-        //@PreAuthorize("hasAuthority('student')")
+    @PreAuthorize("hasAuthority('student')")
     HttpResult createResume(@RequestParam(value = "studentAccount") String account,
                             @RequestParam(value = "image") byte[] imageByte,
                             @RequestParam(value = "selfDescription") String selfDescription,
@@ -68,13 +67,37 @@ public class StudentController {
 
     @GetMapping("/queryRecruitmentInfo")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryRecruitmentInfo(@RequestParam(value = "enterpriseName") String enterpriseName) {
-        return studentService.queryRecruitmentInfo(enterpriseName);
+    HttpResult queryRecruitmentInfo(@RequestParam(value = "queryInfo") String queryInfo,@RequestParam(value = "salaryRange") String salaryRange,@RequestParam(value = "mark") boolean mark) {
+        return studentService.queryRecruitmentInfo(queryInfo,salaryRange,mark);
     }
 
     @PostMapping("/markRecruitmentInfo")
     @PreAuthorize("hasAuthority('student')")
     HttpResult markRecruitmentInfo(@RequestParam(value = "studentAccount") String account, @RequestParam(value = "recruitmentInfoId") Integer recruitmentInfoId) {
         return studentService.markRecruitmentInfo(account, recruitmentInfoId);
+    }
+
+    @PostMapping("/createJobApplication")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult createJobApplication(@RequestParam(value = "studentAccount") String account, @RequestParam(value = "recruitmentInfoId") Integer recruitmentInfoId, @RequestParam(value = "resumeId") Integer resumeId) {
+        return studentService.createJobApplication(account, recruitmentInfoId, resumeId);
+    }
+
+    @DeleteMapping("/deleteJobApplication")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult deleteJobApplication(@RequestParam(value = "jobApplicationId") Integer jobApplicationId){
+        return studentService.deleteJobApplication(jobApplicationId);
+    }
+
+    @PostMapping("/queryRecruitmentInfo")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult queryRecruitmentInfo(@RequestParam(value = "account") String account){
+        return studentService.queryJobApplication(account);
+    }
+
+    @PostMapping("/queryRecruitmentInfoDetail")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult queryRecruitmentInfoDetail(@RequestParam(value = "recruitmentId") Integer recruitmentId){
+        return studentService.queryJobApplicationDetail(recruitmentId);
     }
 }

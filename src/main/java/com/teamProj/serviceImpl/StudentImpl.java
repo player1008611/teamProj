@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -44,9 +45,9 @@ public class StudentImpl implements StudentService {
     @Resource
     private RecruitmentInfoDao recruitmentInfoDao;
     @Resource
-    private EnterpriseDao enterpriseDao;
-    @Resource
     private MarkedRecruitmentInfoDao markedRecruitmentInfoDao;
+    @Resource
+    private JobApplicationDao jobApplicationDao;
 
     @Override
     public HttpResult studentLogin(String account, String password) {
@@ -182,18 +183,31 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult queryRecruitmentInfo(String enterpriseName) {
-        QueryWrapper<Enterprise> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("enterprise_name", enterpriseName);
-        Enterprise enterprise = enterpriseDao.selectOne(queryWrapper);
-        if (enterprise != null) {
-            QueryWrapper<RecruitmentInfo> queryWrapper1 = new QueryWrapper<>();
-            queryWrapper1.eq("enterprise_id", enterprise.getEnterpriseId());
-            return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper1), "查询成功");
-        } else {
-            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    public HttpResult queryRecruitmentInfo(String queryInfo,String salaryRange,boolean mark) {
+        if(mark){
+            QueryWrapper<MarkedRecruitmentInfo> queryWrapper = new QueryWrapper<>();
+            if(!queryInfo.isEmpty()) {
+                queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
+            }
+            if(!salaryRange.isEmpty()){
+                queryWrapper.eq("salary_range",salaryRange);
+            }
+            queryWrapper.select("recruitment_id","job_title","company_name","city","salary_range","byword");
+            return HttpResult.success(markedRecruitmentInfoDao.selectList(queryWrapper),"查询成功");
+        } else{
+            QueryWrapper<RecruitmentInfo> queryWrapper = new QueryWrapper<>();
+            if(!queryInfo.isEmpty()) {
+                queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
+            }
+            if(!salaryRange.isEmpty()){
+                queryWrapper.eq("salary_range",salaryRange);
+            }
+            queryWrapper.select("recruitment_id","job_title","company_name","city","salary_range","byword");
+            return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper),"查询成功");
         }
     }
+
+
 
     @Override
     public HttpResult markRecruitmentInfo(String account, Integer RecruitmentInfoId) {
@@ -206,6 +220,68 @@ public class StudentImpl implements StudentService {
             return HttpResult.success(mri, "收藏成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public HttpResult createJobApplication(String account, Integer recruitmentInfoId, Integer resumeId) {
+        JobApplication jobApplication = new JobApplication();
+        jobApplication.setRecruitmentId(recruitmentInfoId);
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", account);
+        jobApplication.setStudentId(userDao.selectOne(queryWrapper).getUserId());
+        jobApplication.setResumeId(resumeId);
+        jobApplication.setApplicationTime(new Timestamp(System.currentTimeMillis()));
+        if (jobApplicationDao.insert(jobApplication)>0) {
+            return HttpResult.success(jobApplication, "创建成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public HttpResult queryJobApplicationDetail(Integer applicationId){
+        QueryWrapper<JobApplication> queryWrapper0 = new QueryWrapper<>();
+        JobApplication jobApplication = jobApplicationDao.selectOne(queryWrapper0.eq("application_id",applicationId));
+        QueryWrapper<RecruitmentInfo> queryWrapper1 = new QueryWrapper<>();
+        RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(queryWrapper1.eq("recruitment_id",jobApplication.getRecruitmentId()));
+        QueryWrapper<Resume> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("resume_id",jobApplication.getResumeId());
+        Map<String,String> map = new HashMap<>();
+        map.put("投报职位",recruitmentInfo.getJobTitle());
+        map.put("投报日期",new SimpleDateFormat("yyyy-MM-dd").format(jobApplication.getApplicationTime()));
+        map.put("投报公司名",recruitmentInfo.getCompanyName());
+        String status =""+ jobApplication.getStatus();
+        if(status.equals("1")){
+            status="未审核";
+        } else if(status.equals("2")){
+            status="已安排面试";
+        } else if(status.equals("3")){
+            status="未通过";
+        }
+        map.put("简历情况",status);
+        map.put("薪资情况",recruitmentInfo.getMinSalary()+"-"+recruitmentInfo.getMaxSalary());
+        map.put("投递简历名", resumeDao.selectOne(queryWrapper2).getResumeName());
+        return HttpResult.success(map,"查询成功");
+    }
+
+    @Override
+    public HttpResult queryJobApplication(String account){
+        QueryWrapper<User> queryWrapper0 = new QueryWrapper<>();
+        queryWrapper0.eq("account",account);
+        User user = userDao.selectOne(queryWrapper0);
+        QueryWrapper<JobApplication> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("student_id",user.getUserId());
+        return HttpResult.success(jobApplicationDao.selectList(queryWrapper1),"查询成功");
+    }
+    @Override
+    public HttpResult deleteJobApplication(Integer applicationId){
+        QueryWrapper<JobApplication> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("application_id",applicationId);
+        if(jobApplicationDao.delete(queryWrapper)>0){
+            return HttpResult.success(null, "删除成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }
 }
