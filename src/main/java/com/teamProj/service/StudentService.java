@@ -11,7 +11,7 @@ public interface StudentService {
 
     HttpResult createResume(String account, byte[] imageByte, String selfDescription, String careerObjective,
                             String educationExperience, String InternshipExperience, String projectExperience,
-                            String certificates, String skills,String resumeName);
+                            String certificates, String skills,String resumeName,byte[] attachPDF);
 
     HttpResult setStudentInfo(String account, Map<String, Object> map);
 

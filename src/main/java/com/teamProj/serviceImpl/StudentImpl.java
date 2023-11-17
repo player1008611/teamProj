@@ -98,7 +98,8 @@ public class StudentImpl implements StudentService {
     @Override
     public HttpResult createResume(String account, byte[] imageByte, String selfDescription, String careerObjective,
                                    String educationExperience, String InternshipExperience, String projectExperience,
-                                   String certificates, String skills, String resumeName) {
+                                   String certificates, String skills, String resumeName, byte[] attachPDF) {
+
         QueryWrapper<User> queryWrapper0 = new QueryWrapper<>();
         queryWrapper0.eq("account", account);
         User user = userDao.selectOne(queryWrapper0);
@@ -107,25 +108,31 @@ public class StudentImpl implements StudentService {
         Student student = studentDao.selectOne(queryWrapper1);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Image image = new Image(ImageDataFactory.create(imageByte));
-        Map<String, Object> map = new HashMap<>();
-        map.put("name", student.getName());
-        map.put("image", image);
-        map.put("gender", student.getGender());
-        map.put("phone_number", student.getPhoneNumber());
-        map.put("self_description", selfDescription);
-        map.put("career_objective", careerObjective);
-        map.put("education_experience", educationExperience);
-        map.put("internship_experience", InternshipExperience);
-        map.put("project_experience", projectExperience);
-        map.put("certificates", certificates);
-        map.put("skills", skills);
+
         byte[] resumePdf;
-        try {
-            resumePdf = makeResume(map);
-        } catch (Exception e) {
-            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        if (attachPDF != null) {
+            resumePdf = attachPDF;
+        } else {
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", student.getName());
+            map.put("image", image);
+            map.put("gender", student.getGender());
+            map.put("phone_number", student.getPhoneNumber());
+            map.put("self_description", selfDescription);
+            map.put("career_objective", careerObjective);
+            map.put("education_experience", educationExperience);
+            map.put("internship_experience", InternshipExperience);
+            map.put("project_experience", projectExperience);
+            map.put("certificates", certificates);
+            map.put("skills", skills);
+
+            try {
+                resumePdf = makeResume(map);
+            } catch (Exception e) {
+                return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+            }
         }
-        Resume resume = new Resume(null, student.getStudentId(), resumePdf, timestamp ,student.getName(),resumeName);
+        Resume resume = new Resume(null, student.getStudentId(), resumePdf, timestamp, student.getName(), resumeName);
         if (resumeDao.insert(resume) > 0) {
             return HttpResult.success(resume, "创建成功");
         } else {
@@ -139,7 +146,7 @@ public class StudentImpl implements StudentService {
         queryWrapper.eq("account", account);
         User user = userDao.selectOne(queryWrapper);
         QueryWrapper<Resume> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("student_id", user.getUserId()).select("resume_id", "creation_time","student_name","resume_name");
+        queryWrapper1.eq("student_id", user.getUserId()).select("resume_id", "creation_time", "student_name", "resume_name");
         return HttpResult.success(resumeDao.selectList(queryWrapper1), "查询成功");
     }
 
@@ -183,30 +190,29 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult queryRecruitmentInfo(String queryInfo,String salaryRange,boolean mark) {
-        if(mark){
+    public HttpResult queryRecruitmentInfo(String queryInfo, String salaryRange, boolean mark) {
+        if (mark) {
             QueryWrapper<MarkedRecruitmentInfo> queryWrapper = new QueryWrapper<>();
-            if(!queryInfo.isEmpty()) {
+            if (!queryInfo.isEmpty()) {
                 queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
             }
-            if(!salaryRange.isEmpty()){
-                queryWrapper.eq("salary_range",salaryRange);
+            if (!salaryRange.isEmpty()) {
+                queryWrapper.eq("salary_range", salaryRange);
             }
-            queryWrapper.select("recruitment_id","job_title","company_name","city","salary_range","byword");
-            return HttpResult.success(markedRecruitmentInfoDao.selectList(queryWrapper),"查询成功");
-        } else{
+            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "salary_range", "byword");
+            return HttpResult.success(markedRecruitmentInfoDao.selectList(queryWrapper), "查询成功");
+        } else {
             QueryWrapper<RecruitmentInfo> queryWrapper = new QueryWrapper<>();
-            if(!queryInfo.isEmpty()) {
+            if (!queryInfo.isEmpty()) {
                 queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
             }
-            if(!salaryRange.isEmpty()){
-                queryWrapper.eq("salary_range",salaryRange);
+            if (!salaryRange.isEmpty()) {
+                queryWrapper.eq("salary_range", salaryRange);
             }
-            queryWrapper.select("recruitment_id","job_title","company_name","city","salary_range","byword");
-            return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper),"查询成功");
+            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "salary_range", "byword");
+            return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper), "查询成功");
         }
     }
-
 
 
     @Override
@@ -232,7 +238,7 @@ public class StudentImpl implements StudentService {
         jobApplication.setStudentId(userDao.selectOne(queryWrapper).getUserId());
         jobApplication.setResumeId(resumeId);
         jobApplication.setApplicationTime(new Timestamp(System.currentTimeMillis()));
-        if (jobApplicationDao.insert(jobApplication)>0) {
+        if (jobApplicationDao.insert(jobApplication) > 0) {
             return HttpResult.success(jobApplication, "创建成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
@@ -240,45 +246,46 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult queryJobApplicationDetail(Integer applicationId){
+    public HttpResult queryJobApplicationDetail(Integer applicationId) {
         QueryWrapper<JobApplication> queryWrapper0 = new QueryWrapper<>();
-        JobApplication jobApplication = jobApplicationDao.selectOne(queryWrapper0.eq("application_id",applicationId));
+        JobApplication jobApplication = jobApplicationDao.selectOne(queryWrapper0.eq("application_id", applicationId));
         QueryWrapper<RecruitmentInfo> queryWrapper1 = new QueryWrapper<>();
-        RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(queryWrapper1.eq("recruitment_id",jobApplication.getRecruitmentId()));
+        RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(queryWrapper1.eq("recruitment_id", jobApplication.getRecruitmentId()));
         QueryWrapper<Resume> queryWrapper2 = new QueryWrapper<>();
-        queryWrapper2.eq("resume_id",jobApplication.getResumeId());
-        Map<String,String> map = new HashMap<>();
-        map.put("投报职位",recruitmentInfo.getJobTitle());
-        map.put("投报日期",new SimpleDateFormat("yyyy-MM-dd").format(jobApplication.getApplicationTime()));
-        map.put("投报公司名",recruitmentInfo.getCompanyName());
-        String status =""+ jobApplication.getStatus();
-        if(status.equals("1")){
-            status="未审核";
-        } else if(status.equals("2")){
-            status="已安排面试";
-        } else if(status.equals("3")){
-            status="未通过";
+        queryWrapper2.eq("resume_id", jobApplication.getResumeId());
+        Map<String, String> map = new HashMap<>();
+        map.put("投报职位", recruitmentInfo.getJobTitle());
+        map.put("投报日期", new SimpleDateFormat("yyyy-MM-dd").format(jobApplication.getApplicationTime()));
+        map.put("投报公司名", recruitmentInfo.getCompanyName());
+        String status = "" + jobApplication.getStatus();
+        if (status.equals("1")) {
+            status = "未审核";
+        } else if (status.equals("2")) {
+            status = "已安排面试";
+        } else if (status.equals("3")) {
+            status = "未通过";
         }
-        map.put("简历情况",status);
-        map.put("薪资情况",recruitmentInfo.getMinSalary()+"-"+recruitmentInfo.getMaxSalary());
+        map.put("简历情况", status);
+        map.put("薪资情况", recruitmentInfo.getMinSalary() + "-" + recruitmentInfo.getMaxSalary());
         map.put("投递简历名", resumeDao.selectOne(queryWrapper2).getResumeName());
-        return HttpResult.success(map,"查询成功");
+        return HttpResult.success(map, "查询成功");
     }
 
     @Override
-    public HttpResult queryJobApplication(String account){
+    public HttpResult queryJobApplication(String account) {
         QueryWrapper<User> queryWrapper0 = new QueryWrapper<>();
-        queryWrapper0.eq("account",account);
+        queryWrapper0.eq("account", account);
         User user = userDao.selectOne(queryWrapper0);
         QueryWrapper<JobApplication> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("student_id",user.getUserId());
-        return HttpResult.success(jobApplicationDao.selectList(queryWrapper1),"查询成功");
+        queryWrapper1.eq("student_id", user.getUserId());
+        return HttpResult.success(jobApplicationDao.selectList(queryWrapper1), "查询成功");
     }
+
     @Override
-    public HttpResult deleteJobApplication(Integer applicationId){
+    public HttpResult deleteJobApplication(Integer applicationId) {
         QueryWrapper<JobApplication> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("application_id",applicationId);
-        if(jobApplicationDao.delete(queryWrapper)>0){
+        queryWrapper.eq("application_id", applicationId);
+        if (jobApplicationDao.delete(queryWrapper) > 0) {
             return HttpResult.success(null, "删除成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
