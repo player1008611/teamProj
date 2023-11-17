@@ -16,6 +16,8 @@ public class Draft {
     @TableId(type = IdType.AUTO)
     Integer draftId;
 
+    Integer userId;
+
     Integer recruitmentId;
 
     Timestamp editTime;

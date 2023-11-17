@@ -17,7 +17,7 @@ public interface EnterpriseService {
 
     HttpResult queryRecruitmentInfo(String departmentName, Integer current);
 
-    HttpResult updateDraft();
+    HttpResult updateDraft(String oldDraftName,String newDraftName,RecruitmentInfo recruitmentInfo);
 
     HttpResult deleteRecruitmentInfo(String departmentName, String jobTitle);
 }

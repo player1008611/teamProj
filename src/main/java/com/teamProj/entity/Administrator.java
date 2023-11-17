@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Administrator {
-    @TableId(type = IdType.AUTO)
     private Integer adminId;
 
     private String name;

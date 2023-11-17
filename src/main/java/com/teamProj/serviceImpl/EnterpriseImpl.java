@@ -1,6 +1,7 @@
 package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.DepartmentDao;
 import com.teamProj.dao.DraftDao;
@@ -24,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
@@ -184,10 +186,14 @@ public class EnterpriseImpl implements EnterpriseService {
             QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
             recruitmentInfoQueryWrapper.eq("user_id", userId).eq("job_title", recruitmentInfo.getJobTitle());
             RecruitmentInfo recruitmentInfo1 = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
-            Draft draft = new Draft(null, recruitmentInfo1.getRecruitmentId(), Timestamp.valueOf(formatter.format(date)), draftName);
-            draftDao.insert(draft);
+            Draft draft = new Draft(null, userId, recruitmentInfo1.getRecruitmentId(), Timestamp.valueOf(formatter.format(date)), draftName);
+            try {
+                draftDao.insert(draft);
+            } catch (Exception e) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+            }
         }
-
         return HttpResult.success(null, "添加成功");
     }
 
@@ -220,8 +226,34 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult updateDraft() {
-        return null;
+    @Transactional(rollbackFor = Exception.class)
+    public HttpResult updateDraft(String oldDraftName, String newDraftName, RecruitmentInfo recruitmentInfo) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<Draft> draftQueryWrapper = new QueryWrapper<>();
+        draftQueryWrapper.eq("user_id", userId).eq("draft_name", oldDraftName);
+        Draft draft = draftDao.selectOne(draftQueryWrapper);
+        UpdateWrapper<RecruitmentInfo> recruitmentInfoUpdateWrapper = new UpdateWrapper<>();
+        recruitmentInfoUpdateWrapper.eq("recruitment_id", draft.getRecruitmentId());
+
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+
+        draft.setDraftName(newDraftName);
+        draft.setEditTime(Timestamp.valueOf(formatter.format(date)));
+        try {
+            recruitmentInfoDao.update(recruitmentInfo, recruitmentInfoUpdateWrapper);
+            draftDao.update(draft, draftQueryWrapper);
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
+        return HttpResult.success(oldDraftName, "编辑成功");
     }
 
     @Override

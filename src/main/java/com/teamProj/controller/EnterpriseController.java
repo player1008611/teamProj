@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -83,6 +84,37 @@ public class EnterpriseController {
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult queryRecruitmentInfo(@RequestParam String departmentName, @RequestParam Integer current) {
         return enterpriseService.queryRecruitmentInfo(departmentName, current);
+    }
+
+    @PutMapping("/updateDraft")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult updateDraft(@RequestParam String oldDraftName
+            , @RequestParam String newDraftName
+            , @RequestParam String jobTitle
+            , @RequestParam String salaryRange
+            , @RequestParam String jobDescription
+            , @RequestParam String city
+            , @RequestParam Integer recruitNum
+            , @RequestParam String byword
+            , @RequestParam String jobDuties) {
+        RecruitmentInfo recruitmentInfo = new RecruitmentInfo(null
+                , null
+                , null
+                , jobTitle
+                , salaryRange
+                , jobDescription
+                , null
+                , null
+                , city
+                , null
+                , null
+                , null
+                , null
+                , recruitNum
+                , null
+                , byword
+                , jobDuties);
+        return enterpriseService.updateDraft(oldDraftName, newDraftName, recruitmentInfo);
     }
 
     @DeleteMapping("/deleteRecruitmentInfo")
