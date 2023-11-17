@@ -17,7 +17,7 @@ public interface StudentService {
 
     HttpResult studentLogout();
 
-    HttpResult queryRecruitmentInfo(String queryInfo,String salaryRange,boolean mark);
+    HttpResult queryRecruitmentInfo(String queryInfo,String minSalary,String maxSalary,boolean mark);
 
     HttpResult queryJobApplicationDetail(Integer recruitmentId);
 

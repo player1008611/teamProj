@@ -69,8 +69,8 @@ public class StudentController {
 
     @GetMapping("/queryRecruitmentInfo")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryRecruitmentInfo(@RequestParam(value = "queryInfo") String queryInfo, @RequestParam(value = "salaryRange") String salaryRange, @RequestParam(value = "mark") boolean mark) {
-        return studentService.queryRecruitmentInfo(queryInfo, salaryRange, mark);
+    HttpResult queryRecruitmentInfo(@RequestParam(value = "queryInfo") String queryInfo, @RequestParam(value = "minSalary") String minSalary,@RequestParam(value = "maxSalary") String maxSalary, @RequestParam(value = "mark") boolean mark) {
+        return studentService.queryRecruitmentInfo(queryInfo, minSalary,maxSalary, mark);
     }
 
     @PostMapping("/markRecruitmentInfo")

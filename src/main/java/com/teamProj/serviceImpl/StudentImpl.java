@@ -190,26 +190,26 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult queryRecruitmentInfo(String queryInfo, String salaryRange, boolean mark) {
+    public HttpResult queryRecruitmentInfo(String queryInfo, String minSalary,String maxSalary, boolean mark) {
         if (mark) {
             QueryWrapper<MarkedRecruitmentInfo> queryWrapper = new QueryWrapper<>();
             if (!queryInfo.isEmpty()) {
                 queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
             }
-            if (!salaryRange.isEmpty()) {
-                queryWrapper.eq("salary_range", salaryRange);
+            if (!minSalary.isEmpty()&&!maxSalary.isEmpty()) {
+                queryWrapper.ge("min_salary", minSalary).le("max_salary", maxSalary);
             }
-            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "salary_range", "byword");
+            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "min_salary","max_salary", "byword");
             return HttpResult.success(markedRecruitmentInfoDao.selectList(queryWrapper), "查询成功");
         } else {
             QueryWrapper<RecruitmentInfo> queryWrapper = new QueryWrapper<>();
             if (!queryInfo.isEmpty()) {
                 queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
             }
-            if (!salaryRange.isEmpty()) {
-                queryWrapper.eq("salary_range", salaryRange);
+            if (!minSalary.isEmpty()&&!maxSalary.isEmpty()) {
+                queryWrapper.ge("min_salary", minSalary).le("max_salary", maxSalary);
             }
-            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "salary_range", "byword");
+            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "min_salary","max_salary", "byword");
             return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper), "查询成功");
         }
     }
