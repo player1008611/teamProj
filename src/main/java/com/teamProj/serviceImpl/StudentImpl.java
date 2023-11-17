@@ -2,6 +2,7 @@ package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.layout.element.Image;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
@@ -94,7 +95,7 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult createResume(String account, Image image, String selfDescription, String careerObjective,
+    public HttpResult createResume(String account, byte[] imageByte, String selfDescription, String careerObjective,
                                    String educationExperience, String InternshipExperience, String projectExperience,
                                    String certificates, String skills, String resumeName) {
         QueryWrapper<User> queryWrapper0 = new QueryWrapper<>();
@@ -104,6 +105,7 @@ public class StudentImpl implements StudentService {
         queryWrapper1.eq("student_id", user.getUserId());
         Student student = studentDao.selectOne(queryWrapper1);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        Image image = new Image(ImageDataFactory.create(imageByte));
         Map<String, Object> map = new HashMap<>();
         map.put("name", student.getName());
         map.put("image", image);

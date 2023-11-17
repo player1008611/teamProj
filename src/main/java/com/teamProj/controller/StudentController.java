@@ -29,7 +29,7 @@ public class StudentController {
     @PostMapping("/createResume")
         //@PreAuthorize("hasAuthority('student')")
     HttpResult createResume(@RequestParam(value = "studentAccount") String account,
-                            @RequestParam(value = "image") Image image,
+                            @RequestParam(value = "image") byte[] imageByte,
                             @RequestParam(value = "selfDescription") String selfDescription,
                             @RequestParam(value = "careerObjective") String careerObjective,
                             @RequestParam(value = "educationExperience") String educationExperience,
@@ -39,7 +39,7 @@ public class StudentController {
                             @RequestParam(value = "skills") String skills,
                             @RequestParam(value = "resumeName") String resumeName
     ) {
-        return studentService.createResume(account, image, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName);
+        return studentService.createResume(account, imageByte, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName);
     }
 
     @DeleteMapping("/deleteResume")

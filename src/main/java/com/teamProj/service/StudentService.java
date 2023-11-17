@@ -10,7 +10,7 @@ public interface StudentService {
 
     HttpResult setStudentPassword(String account, String oldPassword, String password);
 
-    HttpResult createResume(String account, Image image, String selfDescription, String careerObjective,
+    HttpResult createResume(String account, byte[] imageByte, String selfDescription, String careerObjective,
                             String educationExperience, String InternshipExperience, String projectExperience,
                             String certificates, String skills,String resumeName);
 
