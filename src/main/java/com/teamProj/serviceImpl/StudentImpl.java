@@ -99,6 +99,22 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
+    public HttpResult studentRegister(String account, String password) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", account);
+        if (userDao.selectOne(queryWrapper) != null) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        } else {
+            User user = new User();
+            user.setAccount(account);
+            user.setPassword(bCryptPasswordEncoder.encode(password));
+            user.setPermission("student");
+            userDao.insert(user);
+            return HttpResult.success(user, "注册成功");
+        }
+    }
+
+    @Override
     public HttpResult createResume(String account, MultipartFile imageFile, String selfDescription, String careerObjective,
                                    String educationExperience, String InternshipExperience, String projectExperience,
                                    String certificates, String skills, String resumeName, MultipartFile attachPDF) {

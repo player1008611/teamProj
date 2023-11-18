@@ -15,6 +15,8 @@ public interface StudentService {
                             String educationExperience, String InternshipExperience, String projectExperience,
                             String certificates, String skills, String resumeName, MultipartFile attachPDF);
 
+    HttpResult studentRegister(String account, String password);
+
     HttpResult setStudentInfo(String account, Map<String, Object> map);
 
     HttpResult studentLogout();

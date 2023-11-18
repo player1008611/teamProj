@@ -50,6 +50,7 @@ public class MakeResume {
             document.add(image);
             document.close();
         }
+        //TODO 修复奇怪的exception
         //form.flattenFields();
         pdfDocument.close();
         return outputStream.toByteArray();

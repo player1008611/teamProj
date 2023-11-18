@@ -21,10 +21,27 @@ public class StudentController {
         return studentService.studentLogin(account, password);
     }
 
+    @PostMapping("/logout")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult studentLogout() {
+        return studentService.studentLogout();
+    }
+
+    @PostMapping("/register")
+    HttpResult studentRegister(@RequestParam(value = "account") String account, @RequestParam(value = "password") String password) {
+        return studentService.studentRegister(account, password);
+    }
+
     @PatchMapping("/setPassword")
     @PreAuthorize("hasAuthority('student')")
     HttpResult studentSetPassword(@RequestParam(value = "account") String account, @RequestParam(value = "oldPassword") String oldPassword, @RequestParam(value = "password") String password) {
         return studentService.setStudentPassword(account, oldPassword, password);
+    }
+
+    @PatchMapping("/setStudentInfo")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult setStudentInfo(@RequestParam(value = "studentAccount") String account, @RequestBody Map<String, Object> map) {
+        return studentService.setStudentInfo(account, map);
     }
 
     @PostMapping("/createResume")
@@ -60,18 +77,6 @@ public class StudentController {
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryResumeDetail(@RequestParam(value = "resumeId") Integer resumeId){
         return studentService.queryResumeDetail(resumeId);
-    }
-
-    @PatchMapping("/setStudentInfo")
-    @PreAuthorize("hasAuthority('student')")
-    HttpResult setStudentInfo(@RequestParam(value = "studentAccount") String account, @RequestBody Map<String, Object> map) {
-        return studentService.setStudentInfo(account, map);
-    }
-
-    @PostMapping("/logout")
-    @PreAuthorize("hasAuthority('student')")
-    HttpResult studentLogout() {
-        return studentService.studentLogout();
     }
 
     @GetMapping("/queryRecruitmentInfo")
