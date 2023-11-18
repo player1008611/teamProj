@@ -4,6 +4,7 @@ import com.teamProj.service.StudentService;
 import com.teamProj.utils.HttpResult;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -28,17 +29,17 @@ public class StudentController {
 
     @PostMapping("/createResume")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult createResume(@RequestParam(value = "studentAccount") String account,
-                            @RequestParam(value = "image") File imageByte,
-                            @RequestParam(value = "selfDescription") String selfDescription,
-                            @RequestParam(value = "careerObjective") String careerObjective,
-                            @RequestParam(value = "educationExperience") String educationExperience,
-                            @RequestParam(value = "internshipExperience") String InternshipExperience,
-                            @RequestParam(value = "projectExperience") String projectExperience,
-                            @RequestParam(value = "certificates") String certificates,
-                            @RequestParam(value = "skills") String skills,
-                            @RequestParam(value = "resumeName") String resumeName,
-                            @RequestParam(value = "attachPDF") byte[] attachPDF
+    HttpResult createResume(@RequestParam(value = "studentAccount",required = false) String account,
+                            @RequestParam(value = "image",required = false) MultipartFile imageByte,
+                            @RequestParam(value = "selfDescription",required = false) String selfDescription,
+                            @RequestParam(value = "careerObjective",required = false) String careerObjective,
+                            @RequestParam(value = "educationExperience",required = false) String educationExperience,
+                            @RequestParam(value = "internshipExperience",required = false) String InternshipExperience,
+                            @RequestParam(value = "projectExperience",required = false) String projectExperience,
+                            @RequestParam(value = "certificates",required = false) String certificates,
+                            @RequestParam(value = "skills",required = false) String skills,
+                            @RequestParam(value = "resumeName",required = false) String resumeName,
+                            @RequestParam(value = "attachPDF", required = false) byte[] attachPDF
 
     ) {
         return studentService.createResume(account, imageByte, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName, attachPDF);
@@ -92,15 +93,17 @@ public class StudentController {
         return studentService.deleteJobApplication(jobApplicationId);
     }
 
-    @PostMapping("/queryRecruitmentInfo")
+    @PostMapping("/queryJobApplication")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryRecruitmentInfo(@RequestParam(value = "account") String account) {
         return studentService.queryJobApplication(account);
     }
 
-    @PostMapping("/queryRecruitmentInfoDetail")
+    @PostMapping("/queryJobApplicationDetail")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryRecruitmentInfoDetail(@RequestParam(value = "recruitmentId") Integer recruitmentId) {
-        return studentService.queryJobApplicationDetail(recruitmentId);
+    HttpResult queryRecruitmentInfoDetail(@RequestParam(value = "studentAccount") Integer applicationId) {
+        return studentService.queryJobApplicationDetail(applicationId);
     }
+
+
 }

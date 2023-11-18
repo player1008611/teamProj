@@ -1,6 +1,7 @@
 package com.teamProj.service;
 
 import com.teamProj.utils.HttpResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.Map;
@@ -10,7 +11,7 @@ public interface StudentService {
 
     HttpResult setStudentPassword(String account, String oldPassword, String password);
 
-    HttpResult createResume(String account, File imageByte, String selfDescription, String careerObjective,
+    HttpResult createResume(String account, MultipartFile imageByte, String selfDescription, String careerObjective,
                             String educationExperience, String InternshipExperience, String projectExperience,
                             String certificates, String skills, String resumeName, byte[] attachPDF);
 
