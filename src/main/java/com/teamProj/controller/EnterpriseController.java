@@ -149,7 +149,9 @@ public class EnterpriseController {
 
     @DeleteMapping("/deleteJobApplication")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult deleteJobApplication(@RequestParam String departmentName, @RequestParam String jobTitle) {
-        return enterpriseService.deleteJobApplication(departmentName, jobTitle);
+    HttpResult deleteJobApplication(@RequestParam String studentAccount
+            , @RequestParam String departmentName
+            , @RequestParam String jobTitle) {
+        return enterpriseService.deleteJobApplication(studentAccount, departmentName, jobTitle);
     }
 }

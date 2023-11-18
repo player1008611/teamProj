@@ -11,4 +11,6 @@ public class EnterpriseJobApplicationVo {
     String departmentName;
 
     String jobTitle;
+
+    String studentAccount;
 }

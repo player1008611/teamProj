@@ -9,6 +9,7 @@ import com.teamProj.dao.EnterpriseDao;
 import com.teamProj.dao.EnterpriseUserDao;
 import com.teamProj.dao.JobApplicationDao;
 import com.teamProj.dao.RecruitmentInfoDao;
+import com.teamProj.dao.UserDao;
 import com.teamProj.entity.Department;
 import com.teamProj.entity.Draft;
 import com.teamProj.entity.Enterprise;
@@ -16,6 +17,7 @@ import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.JobApplication;
 import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.RecruitmentInfo;
+import com.teamProj.entity.User;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.service.EnterpriseService;
 import com.teamProj.utils.HttpResult;
@@ -65,6 +67,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
     private JobApplicationDao jobApplicationDao;
+
+    @Resource
+    private UserDao userDao;
 
     @Override
     public HttpResult enterpriseLogin(String account, String password) {
@@ -360,7 +365,7 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult deleteJobApplication(String departmentName, String jobTitle) {
+    public HttpResult deleteJobApplication(String studentAccount, String departmentName, String jobTitle) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
@@ -375,6 +380,13 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
 
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", studentAccount);
+        User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
         recruitmentInfoQueryWrapper.eq("department_id", department.getDepartmentId())
                 .eq("job_title", jobTitle)
@@ -385,7 +397,8 @@ public class EnterpriseImpl implements EnterpriseService {
         }
 
         UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>();
-        jobApplicationUpdateWrapper.eq("recruitment_id", recruitmentInfo.getRecruitmentId());
+        jobApplicationUpdateWrapper.eq("recruitment_id", recruitmentInfo.getRecruitmentId())
+                .eq("student_id", user.getUserId());
         try {
             jobApplicationDao.delete(jobApplicationUpdateWrapper);
         } catch (Exception e) {
