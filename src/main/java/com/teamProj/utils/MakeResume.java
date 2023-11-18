@@ -18,7 +18,7 @@ import java.util.Map;
 
 public class MakeResume {
     public static byte[] makeResume(Map<String, Object> map) throws IOException {
-        File resumeTemplate = new File("com/teamProj/utils/Resume.pdf");
+        File resumeTemplate = new File("src/main/java/com/teamProj/utils/Resume.pdf");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfReader reader = new PdfReader(resumeTemplate);
         PdfWriter writer = new PdfWriter(outputStream);
@@ -31,24 +31,26 @@ public class MakeResume {
             PdfFormField field = form.getField(entry.getKey());
             field.setValue(entry.getValue().toString());
         }
-        Image image = (Image) map.get("image");
-        PdfFormField field = form.getField("image");
-        List<PdfWidgetAnnotation> widgets = field.getWidgets();
-        PdfWidgetAnnotation widget = widgets.get(0);
-        float x1 = widget.getRectangle().getAsNumber(0).floatValue();
-        float y1 = widget.getRectangle().getAsNumber(1).floatValue();
-        float x2 = widget.getRectangle().getAsNumber(2).floatValue();
-        float y2 = widget.getRectangle().getAsNumber(3).floatValue();
-        float fieldWidth = x2 - x1;
-        float fieldHeight = y2 - y1;
-        image.scaleToFit(fieldWidth, fieldHeight);
-        float centerX = x1 + fieldWidth / 2 - image.getImageScaledWidth() / 2;
-        float centerY = y1 + fieldHeight / 2 - image.getImageScaledHeight() / 2;
-        image.setFixedPosition(centerX, centerY);
-        Document document = new Document(pdfDocument);
-        document.add(image);
-        form.flattenFields();
-        document.close();
+        if (map.get("image") != null) {
+            Image image = (Image) map.get("image");
+            PdfFormField field = form.getField("image");
+            List<PdfWidgetAnnotation> widgets = field.getWidgets();
+            PdfWidgetAnnotation widget = widgets.get(0);
+            float x1 = widget.getRectangle().getAsNumber(0).floatValue();
+            float y1 = widget.getRectangle().getAsNumber(1).floatValue();
+            float x2 = widget.getRectangle().getAsNumber(2).floatValue();
+            float y2 = widget.getRectangle().getAsNumber(3).floatValue();
+            float fieldWidth = x2 - x1;
+            float fieldHeight = y2 - y1;
+            image.scaleToFit(fieldWidth, fieldHeight);
+            float centerX = x1 + fieldWidth / 2 - image.getImageScaledWidth() / 2;
+            float centerY = y1 + fieldHeight / 2 - image.getImageScaledHeight() / 2;
+            image.setFixedPosition(centerX, centerY);
+            Document document = new Document(pdfDocument);
+            document.add(image);
+            document.close();
+        }
+        //form.flattenFields();
         pdfDocument.close();
         return outputStream.toByteArray();
     }

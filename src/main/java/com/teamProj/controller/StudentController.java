@@ -39,7 +39,7 @@ public class StudentController {
                             @RequestParam(value = "certificates",required = false) String certificates,
                             @RequestParam(value = "skills",required = false) String skills,
                             @RequestParam(value = "resumeName",required = false) String resumeName,
-                            @RequestParam(value = "attachPDF", required = false) byte[] attachPDF
+                            @RequestParam(value = "attachPDF", required = false) MultipartFile attachPDF
 
     ) {
         return studentService.createResume(account, imageByte, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName, attachPDF);
@@ -47,14 +47,19 @@ public class StudentController {
 
     @DeleteMapping("/deleteResume")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult deleteResume(@RequestParam(value = "studentAccount") String account, @RequestParam(value = "resumeId") Integer resumeId) {
-        return studentService.deleteResume(account, resumeId);
+    HttpResult deleteResume(@RequestParam(value = "resumeId") Integer resumeId) {
+        return studentService.deleteResume(resumeId);
     }
 
     @GetMapping("/queryResume")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryResume(@RequestParam(value = "studentAccount") String account) {
-        return studentService.queryResume(account);
+    HttpResult queryResume() {
+        return studentService.queryResume();
+    }
+    @GetMapping("/queryResumeDetail")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult queryResumeDetail(@RequestParam(value = "resumeId") Integer resumeId){
+        return studentService.queryResumeDetail(resumeId);
     }
 
     @PatchMapping("/setStudentInfo")
@@ -93,13 +98,13 @@ public class StudentController {
         return studentService.deleteJobApplication(jobApplicationId);
     }
 
-    @PostMapping("/queryJobApplication")
+    @GetMapping("/queryJobApplication")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryRecruitmentInfo(@RequestParam(value = "account") String account) {
         return studentService.queryJobApplication(account);
     }
 
-    @PostMapping("/queryJobApplicationDetail")
+    @GetMapping("/queryJobApplicationDetail")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryRecruitmentInfoDetail(@RequestParam(value = "studentAccount") Integer applicationId) {
         return studentService.queryJobApplicationDetail(applicationId);

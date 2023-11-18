@@ -22,7 +22,5 @@ public class Resume {
 
     Timestamp creationTime;
 
-    String studentName;
-
     String resumeName;
 }
