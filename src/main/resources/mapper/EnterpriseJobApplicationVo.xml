@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.EnterpriseUserDao">
+    <select id="queryJobApplication" resultType="com.teamProj.entity.vo.EnterpriseJobApplicationVo">
+        SELECT student.`name` as studentName, department.`name` as departmentName, job_application.`status` as status
+        FROM student,
+        school,
+        department,
+        job_application,
+        recruitment_info,
+        enterprise_user
+        WHERE enterprise_user.user_id = #{userId}
+        AND enterprise_user.enterprise_id = recruitment_info.enterprise_id
+        AND recruitment_info.recruitment_id = job_application.recruitment_id
+        AND recruitment_info.department_id = department.department_id
+        AND job_application.student_id = student.student_id
+        AND student.school_id = school.school_id
+        <if test="schoolName!=null and schoolName!=''">
+            AND school.school_name = #{schoolName}
+        </if>
+        <if test="departmentName!=null and departmentName!=''">
+            AND recruitment_info.department_id = #{departmentId}
+        </if>
+    </select>
+</mapper>

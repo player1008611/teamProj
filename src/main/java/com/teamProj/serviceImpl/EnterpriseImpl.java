@@ -14,6 +14,7 @@ import com.teamProj.entity.Enterprise;
 import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.RecruitmentInfo;
+import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.service.EnterpriseService;
 import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.JwtUtil;
@@ -339,5 +340,17 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }
         return HttpResult.success(draftName, "删除成功");
+    }
+
+    @Override
+    public HttpResult queryJobApplication(String schoolName, String departmentName, Integer current) {
+        Page<EnterpriseJobApplicationVo> page = new Page<>(current, 7);
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        return HttpResult.success(enterpriseUserDao.queryJobApplication(page, schoolName, departmentName, userId), "查询成功");
     }
 }

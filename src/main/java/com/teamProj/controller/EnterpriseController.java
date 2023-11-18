@@ -143,4 +143,11 @@ public class EnterpriseController {
         return enterpriseService.deleteDraft(draftName);
     }
 
+    @GetMapping("/queryJobApplication")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult queryJobApplication(@RequestParam(required = false) String schoolName
+            , @RequestParam(required = false) String departmentName
+            , @RequestParam Integer current) {
+        return enterpriseService.queryJobApplication(schoolName, departmentName, current);
+    }
 }
