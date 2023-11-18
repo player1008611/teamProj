@@ -25,5 +25,7 @@ public interface EnterpriseService {
 
     HttpResult deleteDraft(String draftName);
 
-    HttpResult queryJobApplication(String schoolName,String departmentName,Integer current);
+    HttpResult queryJobApplication(String schoolName, String departmentName, Integer current);
+
+    HttpResult deleteJobApplication(String departmentName, String jobTitle);
 }

@@ -7,11 +7,13 @@ import com.teamProj.dao.DepartmentDao;
 import com.teamProj.dao.DraftDao;
 import com.teamProj.dao.EnterpriseDao;
 import com.teamProj.dao.EnterpriseUserDao;
+import com.teamProj.dao.JobApplicationDao;
 import com.teamProj.dao.RecruitmentInfoDao;
 import com.teamProj.entity.Department;
 import com.teamProj.entity.Draft;
 import com.teamProj.entity.Enterprise;
 import com.teamProj.entity.EnterpriseUser;
+import com.teamProj.entity.JobApplication;
 import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
@@ -60,6 +62,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
     private DraftDao draftDao;
+
+    @Resource
+    private JobApplicationDao jobApplicationDao;
 
     @Override
     public HttpResult enterpriseLogin(String account, String password) {
@@ -352,5 +357,40 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         int userId = loginUser.getUser().getUserId();
         return HttpResult.success(enterpriseUserDao.queryJobApplication(page, schoolName, departmentName, userId), "查询成功");
+    }
+
+    @Override
+    public HttpResult deleteJobApplication(String departmentName, String jobTitle) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+
+        QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
+        departmentQueryWrapper.eq("name", departmentName);
+        Department department = departmentDao.selectOne(departmentQueryWrapper);
+        if (Objects.isNull(department)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.eq("department_id", department.getDepartmentId())
+                .eq("job_title", jobTitle)
+                .eq("user_id", userId);
+        RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
+        if (Objects.isNull(recruitmentInfo)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>();
+        jobApplicationUpdateWrapper.eq("recruitment_id", recruitmentInfo.getRecruitmentId());
+        try {
+            jobApplicationDao.delete(jobApplicationUpdateWrapper);
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
+        return HttpResult.success(jobTitle, "删除成功");
     }
 }

@@ -1,6 +1,5 @@
 package com.teamProj.controller;
 
-import com.teamProj.dao.RecruitmentInfoDao;
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.service.EnterpriseService;
 import com.teamProj.utils.HttpResult;
@@ -21,9 +20,6 @@ public class EnterpriseController {
 
     @Resource
     EnterpriseService enterpriseService;
-
-    @Resource
-    RecruitmentInfoDao recruitmentInfoDao;
 
     @PostMapping("/login")
     HttpResult enterpriseLogin(@RequestParam String account, @RequestParam String password) {
@@ -149,5 +145,11 @@ public class EnterpriseController {
             , @RequestParam(required = false) String departmentName
             , @RequestParam Integer current) {
         return enterpriseService.queryJobApplication(schoolName, departmentName, current);
+    }
+
+    @DeleteMapping("/deleteJobApplication")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult deleteJobApplication(@RequestParam String departmentName, @RequestParam String jobTitle) {
+        return enterpriseService.deleteJobApplication(departmentName, jobTitle);
     }
 }

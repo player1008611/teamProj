@@ -9,4 +9,6 @@ public class EnterpriseJobApplicationVo {
     String studentName;
 
     String departmentName;
+
+    String jobTitle;
 }
