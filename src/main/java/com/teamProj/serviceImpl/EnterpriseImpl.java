@@ -37,6 +37,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -123,7 +124,9 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult queryDepartment(String departmentName) {
+    public HttpResult queryDepartment(String departmentName)
+
+    {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
@@ -139,11 +142,19 @@ public class EnterpriseImpl implements EnterpriseService {
         }
 
         QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
-        departmentQueryWrapper.select("name").eq("enterprise_id", enterpriseUser.getEnterpriseId());
+        departmentQueryWrapper.eq("enterprise_id", enterpriseUser.getEnterpriseId());
         if (!Objects.isNull(departmentName) && !departmentName.equals("")) {
             departmentQueryWrapper.eq("name", departmentName);
         }
-        return HttpResult.success(departmentDao.selectList(departmentQueryWrapper), "查询成功");
+        Map<String, Integer> map = new HashMap<>();
+        List<Department> departmentList = departmentDao.selectList(departmentQueryWrapper);
+        for (Department department : departmentList) {
+            QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+            recruitmentInfoQueryWrapper.eq("department_id", department.getDepartmentId());
+            List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
+            map.put(department.getName(), recruitmentInfoList.size());
+        }
+        return HttpResult.success(map, "查询成功");
     }
 
     @Override

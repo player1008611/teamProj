@@ -45,7 +45,7 @@ public class HttpResult<T> implements Serializable {
     }
 
     public static <T> HttpResult<T> failure(ResultCodeEnum resultCode, String message) {
-        return new HttpResult<T>(resultCode);
+        return new HttpResult<T>(resultCode, message);
     }
 
     public Boolean getSuccess() {
