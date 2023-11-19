@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.EnterpriseUserDao">
     <select id="queryDraft" resultType="com.teamProj.entity.vo.EnterpriseDraftVo">
-        SELECT draft.draft_name, draft.edit_time, recruitment_info.submission_time
+        SELECT draft.draft_name as draftName, draft.edit_time as editTime, recruitment_info.submission_time as submissionTime
         FROM draft,
              recruitment_info
         WHERE draft.recruitment_id = recruitment_info.recruitment_id

@@ -193,7 +193,7 @@ public class EnterpriseImpl implements EnterpriseService {
         try {
             recruitmentInfoDao.insert(recruitmentInfo);
         } catch (Exception e) {
-            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "聘文已存在");
         }
 
         if (recruitmentInfo.getStatus().equals('0')) {
@@ -205,7 +205,7 @@ public class EnterpriseImpl implements EnterpriseService {
                 draftDao.insert(draft);
             } catch (Exception e) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+                return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "草稿已存在");
             }
         }
         return HttpResult.success(null, "添加成功");

@@ -26,6 +26,12 @@ public class HttpResult<T> implements Serializable {
         this.message = resultCode.getMessage();
     }
 
+    private HttpResult(ResultCodeEnum resultCode, String message) {
+        this.success = false;
+        this.code = resultCode.getCode();
+        this.message = message;
+    }
+
     public static <T> HttpResult<T> success() {
         return new HttpResult<T>();
     }
@@ -35,6 +41,10 @@ public class HttpResult<T> implements Serializable {
     }
 
     public static <T> HttpResult<T> failure(ResultCodeEnum resultCode) {
+        return new HttpResult<T>(resultCode);
+    }
+
+    public static <T> HttpResult<T> failure(ResultCodeEnum resultCode, String message) {
         return new HttpResult<T>(resultCode);
     }
 

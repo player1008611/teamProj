@@ -9,9 +9,11 @@ import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface EnterpriseUserDao extends BaseMapper<EnterpriseUser> {
-    EnterpriseDraftVo queryDraft(@Param("userId") Integer userId);
+    List<EnterpriseDraftVo> queryDraft(@Param("userId") Integer userId);
 
     IPage<EnterpriseJobApplicationVo> queryJobApplication(Page<EnterpriseJobApplicationVo> page
             , @Param("schoolName") String schoolName
