@@ -20,10 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.*;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -199,10 +200,28 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult queryResumeDetail(Integer resumeId){
+    public HttpResult queryResumeDetail(Integer resumeId) throws SQLException {
         QueryWrapper<Resume> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("resume_id",resumeId).select("attachment_link");
-        return HttpResult.success(resumeDao.selectOne(queryWrapper),"查询成功");
+        queryWrapper.eq("resume_id", resumeId).select("attachment_link");
+        byte[] bytes = resumeDao.selectOne(queryWrapper).getAttachmentLink();
+//        File file = new File("./temp/resume.pdf");
+//        OutputStream output = null;
+//        try {
+//            output = new FileOutputStream(file);
+//            BufferedOutputStream bufferedOutput = new BufferedOutputStream(output);
+//            bufferedOutput.write(bytes);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        } finally {
+//            if (output != null) {
+//                try {
+//                    output.close();
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        }
+        return HttpResult.success(bytes, "查询成功");
     }
 
     @Override
@@ -233,21 +252,13 @@ public class StudentImpl implements StudentService {
     @Override
     public HttpResult queryRecruitmentInfo(String queryInfo, String minSalary, String maxSalary, boolean mark) {
         if (mark) {
-            QueryWrapper<MarkedRecruitmentInfo> queryWrapper = new QueryWrapper<>();
-            if (!queryInfo.isEmpty()) {
-                queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
-            }
-            if (!minSalary.isEmpty() && !maxSalary.isEmpty()) {
-                queryWrapper.ge("min_salary", minSalary).le("max_salary", maxSalary);
-            }
-            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "min_salary", "max_salary", "byword");
-            return HttpResult.success(markedRecruitmentInfoDao.selectList(queryWrapper), "查询成功");
+            return HttpResult.success(recruitmentInfoDao.queryMarkedRecruitment(queryInfo,maxSalary,minSalary), "查询成功");
         } else {
             QueryWrapper<RecruitmentInfo> queryWrapper = new QueryWrapper<>();
-            if (!queryInfo.isEmpty()) {
+            if (queryInfo != null && !queryInfo.isEmpty()) {
                 queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
             }
-            if (!minSalary.isEmpty() && !maxSalary.isEmpty()) {
+            if (minSalary != null && maxSalary != null && !minSalary.isEmpty() && !maxSalary.isEmpty()) {
                 queryWrapper.ge("min_salary", minSalary).le("max_salary", maxSalary);
             }
             queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "min_salary", "max_salary", "byword");
@@ -255,7 +266,7 @@ public class StudentImpl implements StudentService {
         }
     }
 
-
+//TODO 实现取关
     @Override
     public HttpResult markRecruitmentInfo(String account, Integer RecruitmentInfoId) {
         MarkedRecruitmentInfo mri = new MarkedRecruitmentInfo();

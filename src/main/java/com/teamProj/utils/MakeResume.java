@@ -2,6 +2,8 @@ package com.teamProj.utils;
 
 import com.itextpdf.forms.PdfAcroForm;
 import com.itextpdf.forms.fields.PdfFormField;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -23,12 +25,13 @@ public class MakeResume {
         PdfReader reader = new PdfReader(resumeTemplate);
         PdfWriter writer = new PdfWriter(outputStream);
         PdfDocument pdfDocument = new PdfDocument(reader, writer);
+        PdfFont font = PdfFontFactory.createFont("STSong-Light","UniGB-UCS2-H");
         PdfAcroForm form = PdfAcroForm.getAcroForm(pdfDocument, false);
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             if (entry.getKey().equals("image")) {
                 continue;
             }
-            PdfFormField field = form.getField(entry.getKey());
+            PdfFormField field = form.getField(entry.getKey()).setFont(font);
             field.setValue(entry.getValue().toString());
         }
         if (map.get("image") != null) {
@@ -48,10 +51,10 @@ public class MakeResume {
             image.setFixedPosition(centerX, centerY);
             Document document = new Document(pdfDocument);
             document.add(image);
+            form.removeField("image");
+            form.flattenFields();
             document.close();
         }
-        //TODO 修复奇怪的exception
-        //form.flattenFields();
         pdfDocument.close();
         return outputStream.toByteArray();
     }

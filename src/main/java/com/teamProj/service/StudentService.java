@@ -4,6 +4,7 @@ import com.teamProj.utils.HttpResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.util.Map;
 
 public interface StudentService {
@@ -29,7 +30,7 @@ public interface StudentService {
 
     HttpResult queryResume();
 
-    HttpResult queryResumeDetail(Integer resumeId);
+    HttpResult queryResumeDetail(Integer resumeId) throws SQLException;
 
     HttpResult deleteResume(Integer resumeId);
 

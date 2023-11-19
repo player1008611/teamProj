@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.File;
+import java.sql.SQLException;
 import java.util.Map;
+
+import static com.teamProj.utils.ResultCodeEnum.SERVER_ERROR;
 
 @RestController
 @RequestMapping("/student")
@@ -46,16 +48,16 @@ public class StudentController {
 
     @PostMapping("/createResume")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult createResume(@RequestParam(value = "studentAccount",required = false) String account,
-                            @RequestParam(value = "image",required = false) MultipartFile imageByte,
-                            @RequestParam(value = "selfDescription",required = false) String selfDescription,
-                            @RequestParam(value = "careerObjective",required = false) String careerObjective,
-                            @RequestParam(value = "educationExperience",required = false) String educationExperience,
-                            @RequestParam(value = "internshipExperience",required = false) String InternshipExperience,
-                            @RequestParam(value = "projectExperience",required = false) String projectExperience,
-                            @RequestParam(value = "certificates",required = false) String certificates,
-                            @RequestParam(value = "skills",required = false) String skills,
-                            @RequestParam(value = "resumeName",required = false) String resumeName,
+    HttpResult createResume(@RequestParam(value = "studentAccount", required = false) String account,
+                            @RequestParam(value = "image", required = false) MultipartFile imageByte,
+                            @RequestParam(value = "selfDescription", required = false) String selfDescription,
+                            @RequestParam(value = "careerObjective", required = false) String careerObjective,
+                            @RequestParam(value = "educationExperience", required = false) String educationExperience,
+                            @RequestParam(value = "internshipExperience", required = false) String InternshipExperience,
+                            @RequestParam(value = "projectExperience", required = false) String projectExperience,
+                            @RequestParam(value = "certificates", required = false) String certificates,
+                            @RequestParam(value = "skills", required = false) String skills,
+                            @RequestParam(value = "resumeName", required = false) String resumeName,
                             @RequestParam(value = "attachPDF", required = false) MultipartFile attachPDF
 
     ) {
@@ -73,16 +75,23 @@ public class StudentController {
     HttpResult queryResume() {
         return studentService.queryResume();
     }
+
     @GetMapping("/queryResumeDetail")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryResumeDetail(@RequestParam(value = "resumeId") Integer resumeId){
+    HttpResult queryResumeDetail(@RequestParam(value = "resumeId") Integer resumeId) throws SQLException {
         return studentService.queryResumeDetail(resumeId);
     }
 
     @GetMapping("/queryRecruitmentInfo")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryRecruitmentInfo(@RequestParam(value = "queryInfo") String queryInfo, @RequestParam(value = "minSalary") String minSalary,@RequestParam(value = "maxSalary") String maxSalary, @RequestParam(value = "mark") boolean mark) {
-        return studentService.queryRecruitmentInfo(queryInfo, minSalary,maxSalary, mark);
+    HttpResult queryRecruitmentInfo(@RequestParam(value = "queryInfo",required = false) String queryInfo, @RequestParam(value = "minSalary",required = false) String minSalary, @RequestParam(value = "maxSalary", required = false) String maxSalary, @RequestParam(value = "mark") String mark) {
+        if (mark.equalsIgnoreCase("T") || mark.equalsIgnoreCase("True")) {
+            return studentService.queryRecruitmentInfo(queryInfo, minSalary, maxSalary, true);
+        } else if (mark.equalsIgnoreCase("F") || mark.equalsIgnoreCase("False")) {
+            return studentService.queryRecruitmentInfo(queryInfo, minSalary, maxSalary, false);
+        } else {
+            return HttpResult.failure(SERVER_ERROR);
+        }
     }
 
     @PostMapping("/markRecruitmentInfo")
@@ -105,13 +114,13 @@ public class StudentController {
 
     @GetMapping("/queryJobApplication")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryRecruitmentInfo(@RequestParam(value = "account") String account) {
+    HttpResult queryJobApplication(@RequestParam(value = "account") String account) {
         return studentService.queryJobApplication(account);
     }
 
     @GetMapping("/queryJobApplicationDetail")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryRecruitmentInfoDetail(@RequestParam(value = "studentAccount") Integer applicationId) {
+    HttpResult queryJobApplicationDetail(@RequestParam(value = "applicationId") Integer applicationId) {
         return studentService.queryJobApplicationDetail(applicationId);
     }
 

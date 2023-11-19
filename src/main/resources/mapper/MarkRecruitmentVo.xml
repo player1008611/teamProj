@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.RecruitmentInfoDao">
+    <select id="queryMarkedRecruitment" resultType="com.teamProj.entity.vo.MarkRecruitmentVo">
+        SELECT recruitment_info.recruitment_id ,
+               recruitment_info.job_title      ,
+               recruitment_info.city           ,
+               recruitment_info.min_salary     ,
+               recruitment_info.max_salary     ,
+               recruitment_info.byword
+        FROM recruitment_info,
+             marked_recruitment_info
+        WHERE recruitment_info.recruitment_id = marked_recruitment_info.recruitment_id
+        AND recruitment_info.min_salary &gt;= #{minSalary} AND recruitment_info.max_salary &lt;= #{maxSalary}
+            AND (recruitment_info.job_title LIKE CONCAT('%', #{queryInfo}, '%')
+                OR recruitment_info.company_name LIKE CONCAT('%', #{queryInfo}, '%'))
+    </select>
+</mapper>
