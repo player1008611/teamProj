@@ -11,4 +11,6 @@ public class EnterpriseDraftVo {
     String draftName;
 
     Timestamp submissionTime;
+
+    String departmentName;
 }

@@ -44,6 +44,12 @@ public class EnterpriseController {
         return enterpriseService.queryDepartment(departmentName);
     }
 
+    @DeleteMapping("/deleteDepartment")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult deleteDepartment(@RequestParam String departmentName) {
+        return enterpriseService.deleteDepartment(departmentName);
+    }
+
     @PostMapping("/createNewRecruitmentInfo")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult createNewRecruitmentInfo(@RequestParam String departmentName
@@ -83,8 +89,9 @@ public class EnterpriseController {
     HttpResult queryRecruitmentInfo(@RequestParam(required = false) String city
             , @RequestParam(required = false) String salaryRange
             , @RequestParam String departmentName
+            , @RequestParam Integer statusNum
             , @RequestParam Integer current) {
-        return enterpriseService.queryRecruitmentInfo(city, salaryRange, departmentName, current);
+        return enterpriseService.queryRecruitmentInfo(city, salaryRange, departmentName, statusNum, current);
     }
 
     @DeleteMapping("/deleteRecruitmentInfo")

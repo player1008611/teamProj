@@ -13,9 +13,11 @@ public interface EnterpriseService {
 
     HttpResult queryDepartment(String departmentName);
 
+    HttpResult deleteDepartment(String departmentName);
+
     HttpResult createNewRecruitmentInfo(String draftName, String departmentName, RecruitmentInfo recruitmentInfo);
 
-    HttpResult queryRecruitmentInfo(String city, String salaryRange, String departmentName, Integer current);
+    HttpResult queryRecruitmentInfo(String city, String salaryRange, String departmentName, Integer statusName, Integer current);
 
     HttpResult deleteRecruitmentInfo(String departmentName, String jobTitle);
 

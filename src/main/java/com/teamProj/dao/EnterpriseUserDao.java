@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.vo.EnterpriseDraftVo;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
+import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,4 +20,12 @@ public interface EnterpriseUserDao extends BaseMapper<EnterpriseUser> {
             , @Param("schoolName") String schoolName
             , @Param("departmentName") String departmentName
             , @Param("userId") Integer userId);
+
+    IPage<EnterpriseRecruitmentVo> queryRecruitmentInfo(Page<EnterpriseRecruitmentVo> page
+            , @Param("userId") Integer userId
+            , @Param("city") String city
+            , @Param("maxSalary") Integer maxSalary
+            , @Param("departmentName") String departmentName
+            , @Param("statusNum") Integer statusNum
+    );
 }

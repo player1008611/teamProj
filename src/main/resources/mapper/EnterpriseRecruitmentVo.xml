@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.EnterpriseUserDao">
+    <select id="queryRecruitmentInfo" resultType="com.teamProj.entity.vo.EnterpriseRecruitmentVo">
+        SELECT
+        enterprise_user.`name` as
+        name,job_title,job_description,company_name,city,`status`,submission_time,approval_time,rejection_reason,recruit_num,recruited_num,byword,job_duties,min_salary,max_salary
+        FROM recruitment_info,enterprise_user,department
+        WHERE enterprise_user.user_id=#{userId}
+        AND department.enterprise_id=enterprise_user.enterprise_id
+        AND department.name=#{departmentName}
+        AND recruitment_info.department_id=department.department_id
+        AND recruitment_info.enterprise_id=department.enterprise_id
+        <if test="statusNum==1">
+            AND recruitment_info.status=2
+        </if>
+        <if test="statusNum==2">
+            AND recruitment_info.status=3
+        </if>
+        <if test="statusNum==3">
+            AND (recruitment_info.status=2
+            OR recruitment_info.status=3)
+        </if>
+        <if test="statusNum==4">
+            AND recruitment_info.status=1
+        </if>
+        <if test="statusNum==5">
+            AND (recruitment_info.status=1
+            OR recruitment_info.status=2)
+        </if>
+        <if test="statusNum==6">
+            AND (recruitment_info.status=1
+            OR recruitment_info.status=2)
+        </if>
+        <if test="statusNum==7">
+            AND (recruitment_info.status=1
+            OR recruitment_info.status=2
+            OR recruitment_info.status=3)
+        </if>
+        <if test="city!=null and city!=''">
+            AND recruitment_info.city=#{city}
+        </if>
+        <if test="maxSalary!=null and maxSalary!=''">
+            AND recruitment_info.max_salary>=#{maxSalary}
+        </if>
+    </select>
+</mapper>

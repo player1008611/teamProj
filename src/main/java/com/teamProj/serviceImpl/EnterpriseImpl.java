@@ -19,6 +19,7 @@ import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.entity.User;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
+import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import com.teamProj.service.EnterpriseService;
 import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.JwtUtil;
@@ -35,6 +36,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -124,9 +126,7 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult queryDepartment(String departmentName)
-
-    {
+    public HttpResult queryDepartment(String departmentName) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
@@ -144,17 +144,59 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
         departmentQueryWrapper.eq("enterprise_id", enterpriseUser.getEnterpriseId());
         if (!Objects.isNull(departmentName) && !departmentName.equals("")) {
-            departmentQueryWrapper.eq("name", departmentName);
+            departmentQueryWrapper.like("name", departmentName);
         }
-        Map<String, Integer> map = new HashMap<>();
+
+        List<Map<String, Object>> list = new ArrayList<>();
         List<Department> departmentList = departmentDao.selectList(departmentQueryWrapper);
         for (Department department : departmentList) {
             QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
-            recruitmentInfoQueryWrapper.eq("department_id", department.getDepartmentId());
+            recruitmentInfoQueryWrapper.orderByDesc("submission_time").eq("department_id", department.getDepartmentId());
             List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
-            map.put(department.getName(), recruitmentInfoList.size());
+            Map<String, Object> map = new HashMap<>();
+            map.put("departmentName", department.getName());
+            map.put("recruitmentInfoNum", recruitmentInfoList.size());
+            List<RecruitmentInfo> recruitmentInfos = new ArrayList<>();
+            for (RecruitmentInfo recruitmentInfo : recruitmentInfoList) {
+                if (recruitmentInfos.size() < 4) {
+                    recruitmentInfos.add(recruitmentInfo);
+                } else {
+                    break;
+                }
+            }
+            map.put("latest", recruitmentInfos);
+            list.add(map);
         }
-        return HttpResult.success(map, "查询成功");
+        return HttpResult.success(list, "查询成功");
+    }
+
+    @Override
+    public HttpResult deleteDepartment(String departmentName) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+        EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
+        if (Objects.isNull(enterpriseUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        UpdateWrapper<Department> departmentUpdateWrapper = new UpdateWrapper<>();
+        departmentUpdateWrapper.eq("enterprise_id", enterpriseUser.getEnterpriseId());
+        if (!Objects.isNull(departmentName) && !departmentName.equals("")) {
+            departmentUpdateWrapper.like("name", departmentName);
+        }
+        try {
+            departmentDao.delete(departmentUpdateWrapper);
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "删除失败");
+        }
+        return HttpResult.success(departmentName, "删除成功");
     }
 
     @Override
@@ -196,7 +238,7 @@ public class EnterpriseImpl implements EnterpriseService {
         recruitmentInfo.setCompanyName(enterprise.getEnterpriseName());
         recruitmentInfo.setRecruitedNum(0);
 
-        Date date = new Date();
+        Date date = new java.sql.Date(new java.util.Date().getTime());
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         recruitmentInfo.setSubmissionTime(Timestamp.valueOf(formatter.format(date)));
@@ -223,39 +265,22 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult queryRecruitmentInfo(String city, String salaryRange, String departmentName, Integer current) {
-        QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
-        departmentQueryWrapper.eq("name", departmentName);
-        Department department = departmentDao.selectOne(departmentQueryWrapper);
-        if (Objects.isNull(department)) {
+    public HttpResult queryRecruitmentInfo(String city, String salaryRange, String departmentName, Integer statusNum, Integer current) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
-        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
-        recruitmentInfoQueryWrapper.select("job_title"
-                        , "job_description"
-                        , "company_name"
-                        , "city"
-                        , "status"
-                        , "submission_time"
-                        , "approval_time"
-                        , "rejection_reason"
-                        , "recruit_num"
-                        , "recruited_num"
-                        , "byword"
-                        , "job_duties"
-                        , "min_salary"
-                        , "max_salary")
-                .eq("enterprise_id", department.getEnterpriseId())
-                .eq("department_id", department.getDepartmentId());
-        if (!Objects.isNull(city) && !city.isEmpty()) {
-            recruitmentInfoQueryWrapper.eq("city", city);
+        int userId = loginUser.getUser().getUserId();
+        if (statusNum < 0 || statusNum > 7) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "状态码错误");
         }
+        Integer maxSalary = null;
         if (!Objects.isNull(salaryRange) && !salaryRange.isEmpty()) {
-            Integer maxSalary = Integer.parseInt(salaryRange.substring(0, salaryRange.length() - 4));
-            recruitmentInfoQueryWrapper.ge("max_salary", maxSalary);
+            maxSalary = Integer.parseInt(salaryRange.substring(0, salaryRange.length() - 4));
         }
-        Page<RecruitmentInfo> page = new Page<>(current, 6);
-        return HttpResult.success(recruitmentInfoDao.selectPage(page, recruitmentInfoQueryWrapper), "查询成功");
+        Page<EnterpriseRecruitmentVo> page = new Page<>(current, 6);
+        return HttpResult.success(enterpriseUserDao.queryRecruitmentInfo(page, userId, city, maxSalary, departmentName, statusNum), "查询成功");
     }
 
     @Override
