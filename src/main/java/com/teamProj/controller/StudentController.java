@@ -30,8 +30,12 @@ public class StudentController {
     }
 
     @PostMapping("/register")
-    HttpResult studentRegister(@RequestParam(value = "account") String account, @RequestParam(value = "password") String password) {
-        return studentService.studentRegister(account, password);
+    HttpResult studentRegister(@RequestParam(value = "account") String account,
+                               @RequestParam(value = "password") String password,
+                               @RequestParam(value = "schoolName") String schoolName,
+                               @RequestParam(value = "name") String name
+    ) {
+        return studentService.studentRegister(account, password, schoolName, name);
     }
 
     @PatchMapping("/setPassword")
@@ -48,7 +52,7 @@ public class StudentController {
 
     @PostMapping("/createResume")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult createResume(@RequestParam(value = "studentAccount", required = false) String account,
+    HttpResult createResume(@RequestParam(value = "studentAccount") String account,
                             @RequestParam(value = "image", required = false) MultipartFile imageByte,
                             @RequestParam(value = "selfDescription", required = false) String selfDescription,
                             @RequestParam(value = "careerObjective", required = false) String careerObjective,
@@ -57,7 +61,7 @@ public class StudentController {
                             @RequestParam(value = "projectExperience", required = false) String projectExperience,
                             @RequestParam(value = "certificates", required = false) String certificates,
                             @RequestParam(value = "skills", required = false) String skills,
-                            @RequestParam(value = "resumeName", required = false) String resumeName,
+                            @RequestParam(value = "resumeName") String resumeName,
                             @RequestParam(value = "attachPDF", required = false) MultipartFile attachPDF
 
     ) {
@@ -84,11 +88,15 @@ public class StudentController {
 
     @GetMapping("/queryRecruitmentInfo")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryRecruitmentInfo(@RequestParam(value = "queryInfo",required = false) String queryInfo, @RequestParam(value = "minSalary",required = false) String minSalary, @RequestParam(value = "maxSalary", required = false) String maxSalary, @RequestParam(value = "mark") String mark) {
+    HttpResult queryRecruitmentInfo(@RequestParam(value = "account") String account,
+                                    @RequestParam(value = "queryInfo", required = false) String queryInfo,
+                                    @RequestParam(value = "minSalary", required = false) String minSalary,
+                                    @RequestParam(value = "maxSalary", required = false) String maxSalary,
+                                    @RequestParam(value = "mark") String mark) {
         if (mark.equalsIgnoreCase("T") || mark.equalsIgnoreCase("True")) {
-            return studentService.queryRecruitmentInfo(queryInfo, minSalary, maxSalary, true);
+            return studentService.queryRecruitmentInfo(account, queryInfo, minSalary, maxSalary, true);
         } else if (mark.equalsIgnoreCase("F") || mark.equalsIgnoreCase("False")) {
-            return studentService.queryRecruitmentInfo(queryInfo, minSalary, maxSalary, false);
+            return studentService.queryRecruitmentInfo(account, queryInfo, minSalary, maxSalary, false);
         } else {
             return HttpResult.failure(SERVER_ERROR);
         }

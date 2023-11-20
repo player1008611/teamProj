@@ -16,13 +16,13 @@ public interface StudentService {
                             String educationExperience, String InternshipExperience, String projectExperience,
                             String certificates, String skills, String resumeName, MultipartFile attachPDF);
 
-    HttpResult studentRegister(String account, String password);
+    HttpResult studentRegister(String account, String password,String schoolName,String name);
 
     HttpResult setStudentInfo(String account, Map<String, Object> map);
 
     HttpResult studentLogout();
 
-    HttpResult queryRecruitmentInfo(String queryInfo,String minSalary,String maxSalary,boolean mark);
+    HttpResult queryRecruitmentInfo(String account,String queryInfo,String minSalary,String maxSalary,boolean mark);
 
     HttpResult queryJobApplicationDetail(Integer recruitmentId);
 

@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers("/**/login",
+                        "/student/register",
                         "/swagger-ui.html",
                         "/webjars/**",
                         "/swagger-resources/**",

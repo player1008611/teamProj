@@ -12,7 +12,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Student {
-    @TableId(type = IdType.AUTO)
+
     Integer studentId;
 
     Integer schoolId;
@@ -21,11 +21,11 @@ public class Student {
 
     String phoneNumber;
 
-    Character userStatus;
+    String userStatus;
 
     Timestamp creationTime;
 
-    Character gender;
+    String gender;
 
     String wechat;
 

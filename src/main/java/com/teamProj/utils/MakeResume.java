@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class MakeResume {
     public static byte[] makeResume(Map<String, Object> map) throws IOException {
-        File resumeTemplate = new File("./Resume.pdf");
+        File resumeTemplate = new File("src/main/java/com/teamProj/utils/Resume.pdf");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfReader reader = new PdfReader(resumeTemplate);
         PdfWriter writer = new PdfWriter(outputStream);

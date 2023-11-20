@@ -20,8 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.sql.rowset.serial.SerialBlob;
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -38,6 +38,8 @@ public class StudentImpl implements StudentService {
     BCryptPasswordEncoder bCryptPasswordEncoder;
     @Resource
     private StudentDao studentDao;
+    @Resource
+    private SchoolDao schoolDao;
     @Resource
     private UserDao userDao;
     @Resource
@@ -100,19 +102,28 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult studentRegister(String account, String password) {
+    public HttpResult studentRegister(String account, String password, String schoolName, String name) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("account", account);
+        User user = new User();
         if (userDao.selectOne(queryWrapper) != null) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         } else {
-            User user = new User();
             user.setAccount(account);
             user.setPassword(bCryptPasswordEncoder.encode(password));
             user.setPermission("student");
             userDao.insert(user);
-            return HttpResult.success(user, "注册成功");
         }
+        QueryWrapper<School> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("school_name", schoolName);
+        School school = schoolDao.selectOne(queryWrapper1);
+        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, null, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null);
+        if (studentDao.insert(student) > 0) {
+            return HttpResult.success(student, "注册成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
+
     }
 
     @Override
@@ -168,6 +179,7 @@ public class StudentImpl implements StudentService {
             }
         }
 
+
         Resume resume = new Resume(null, student.getStudentId(), resumePdf, timestamp, resumeName);
 
         if (resumeDao.insert(resume) > 0) {
@@ -221,6 +233,19 @@ public class StudentImpl implements StudentService {
 //                }
 //            }
 //        }
+//        FileOutputStream stream = new FileOutputStream(File);
+        System.out.println(bytes.toString());
+        String encodedFilePath = "C:/Users/playe/Desktop/简历2.txt";
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(encodedFilePath);
+            outputStream.write(bytes);
+            outputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        //bytes = Base64.getDecoder().decode(bytes);
         return HttpResult.success(bytes, "查询成功");
     }
 
@@ -235,7 +260,7 @@ public class StudentImpl implements StudentService {
         Student student = new Student();
         student.setName((String) map.get("name"));
         student.setPhoneNumber((String) map.get("phoneNumber"));
-        student.setGender((Character) map.get("gender"));
+        student.setGender((String) map.get("gender"));
         student.setWechat((String) map.get("wechat"));
         student.setQq((String) map.get("qq"));
         student.setCollegeId((Integer) map.get("college_id"));
@@ -250,9 +275,9 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult queryRecruitmentInfo(String queryInfo, String minSalary, String maxSalary, boolean mark) {
+    public HttpResult queryRecruitmentInfo(String account, String queryInfo, String minSalary, String maxSalary, boolean mark) {
         if (mark) {
-            return HttpResult.success(recruitmentInfoDao.queryMarkedRecruitment(queryInfo,maxSalary,minSalary), "查询成功");
+            return HttpResult.success(recruitmentInfoDao.queryMarkedRecruitment(queryInfo, maxSalary, minSalary), "查询成功");
         } else {
             QueryWrapper<RecruitmentInfo> queryWrapper = new QueryWrapper<>();
             if (queryInfo != null && !queryInfo.isEmpty()) {
@@ -263,21 +288,36 @@ public class StudentImpl implements StudentService {
             }
             queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "min_salary", "max_salary", "byword");
             return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper), "查询成功");
+//            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+//            queryWrapper.eq("account", account);
+//            User user = userDao.selectOne(queryWrapper);
+//            return HttpResult.success(recruitmentInfoDao.queryRecruitmentInfo(queryInfo,minSalary,maxSalary, user.getUserId()), "查询成功");
         }
     }
 
-//TODO 实现取关
+
+
+
     @Override
     public HttpResult markRecruitmentInfo(String account, Integer RecruitmentInfoId) {
+        QueryWrapper<MarkedRecruitmentInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("recruitment_id", RecruitmentInfoId).eq("student_id",
+                userDao.selectOne(new QueryWrapper<User>().eq("account", account)).getUserId());
+        if(markedRecruitmentInfoDao.selectOne(queryWrapper)!=null){
+            markedRecruitmentInfoDao.delete(queryWrapper);
+            return HttpResult.success(null, "取消收藏成功");
+        }
+        else {
         MarkedRecruitmentInfo mri = new MarkedRecruitmentInfo();
         mri.setRecruitmentId(RecruitmentInfoId);
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("account", account);
-        mri.setStudentId(userDao.selectOne(queryWrapper).getUserId());
+        QueryWrapper<User> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("account", account);
+        mri.setStudentId(userDao.selectOne(queryWrapper1).getUserId());
         if (markedRecruitmentInfoDao.insert(mri) > 0) {
             return HttpResult.success(mri, "收藏成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
         }
     }
 
@@ -324,12 +364,10 @@ public class StudentImpl implements StudentService {
 
     @Override
     public HttpResult queryJobApplication(String account) {
-        QueryWrapper<User> queryWrapper0 = new QueryWrapper<>();
-        queryWrapper0.eq("account", account);
-        User user = userDao.selectOne(queryWrapper0);
-        QueryWrapper<JobApplication> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("student_id", user.getUserId());
-        return HttpResult.success(jobApplicationDao.selectList(queryWrapper1), "查询成功");
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", account);
+        User user = userDao.selectOne(queryWrapper);
+        return HttpResult.success(jobApplicationDao.queryJobApplication(user.getUserId()), "查询成功");
     }
 
     @Override
