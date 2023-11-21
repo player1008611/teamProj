@@ -15,9 +15,15 @@
         FROM recruitment_info AS r
         ,marked_recruitment_info AS m
         WHERE 1=1
+        <if test="queryInfo !=null and queryInfo != ''">
         AND (r.job_title LIKE CONCAT('%', #{queryInfo}, '%')
         OR r.company_name LIKE CONCAT('%', #{queryInfo}, '%'))
+        </if>
+        <if test="minSalary !=null and minSalary != ''">
         AND r.min_salary &gt;= #{minSalary}
+        </if>
+        <if test="maxSalary !=null and maxSalary != ''">
         AND r.max_salary &lt;= #{maxSalary}
+        </if>
     </select>
 </mapper>
