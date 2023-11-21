@@ -28,14 +28,15 @@ public class StudentController {
     HttpResult studentLogout() {
         return studentService.studentLogout();
     }
-
+3
     @PostMapping("/register")
     HttpResult studentRegister(@RequestParam(value = "account") String account,
                                @RequestParam(value = "password") String password,
                                @RequestParam(value = "schoolName") String schoolName,
-                               @RequestParam(value = "name") String name
+                               @RequestParam(value = "name") String name,
+                               @RequestParam(value = "phoneNumber") String phoneNumber
     ) {
-        return studentService.studentRegister(account, password, schoolName, name);
+        return studentService.studentRegister(account, password, schoolName, name,phoneNumber);
     }
 
     @PatchMapping("/setPassword")

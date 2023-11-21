@@ -103,7 +103,7 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult studentRegister(String account, String password, String schoolName, String name) {
+    public HttpResult studentRegister(String account, String password, String schoolName, String name, String phoneNumber) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("account", account);
         User user = new User();
@@ -118,7 +118,7 @@ public class StudentImpl implements StudentService {
         QueryWrapper<School> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("school_name", schoolName);
         School school = schoolDao.selectOne(queryWrapper1);
-        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, null, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null);
+        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null);
         if (studentDao.insert(student) > 0) {
             return HttpResult.success(student, "注册成功");
         } else {
