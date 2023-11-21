@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.sql.rowset.serial.SerialBlob;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -129,7 +130,7 @@ public class StudentImpl implements StudentService {
     @Override
     public HttpResult createResume(String account, MultipartFile imageFile, String selfDescription, String careerObjective,
                                    String educationExperience, String InternshipExperience, String projectExperience,
-                                   String certificates, String skills, String resumeName, MultipartFile attachPDF) {
+                                   String certificates, String skills, String resumeName) {
 
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
@@ -138,49 +139,54 @@ public class StudentImpl implements StudentService {
         queryWrapper1.eq("student_id", user.getUserId());
         Student student = studentDao.selectOne(queryWrapper1);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        Image image = null;
+//        Image image = null;
+//
+//        if (imageFile != null && !imageFile.isEmpty()) {
+//            byte[] imageByte;
+//            try {
+//                imageByte = imageFile.getBytes();
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//
+//            //image = new Image(ImageDataFactory.create(imageByte));
+//        }
+//
+//        byte[] resumePdf;
+//        if (attachPDF != null && !attachPDF.isEmpty()) {
+//            try {
+//                resumePdf = attachPDF.getBytes();
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        } else {
+//            Map<String, Object> map = new HashMap<>();
+//            map.put("name", student.getName());
+//            map.put("image", image);
+//            map.put("gender", student.getGender());
+//            map.put("phone_number", student.getPhoneNumber());
+//            map.put("self_description", selfDescription);
+//            map.put("career_objective", careerObjective);
+//            map.put("education_experience", educationExperience);
+//            map.put("internship_experience", InternshipExperience);
+//            map.put("project_experience", projectExperience);
+//            map.put("certificates", certificates);
+//            map.put("skills", skills);
+//
+//            try {
+//                resumePdf = makeResume(map);
+//            } catch (Exception e) {
+//                return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+//            }
+//        }
 
-        if (imageFile != null && !imageFile.isEmpty()) {
-            byte[] imageByte;
-            try {
-                imageByte = imageFile.getBytes();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
 
-            image = new Image(ImageDataFactory.create(imageByte));
+        Resume resume;
+        try {
+            resume = new Resume(null, student.getStudentId(), timestamp, resumeName,selfDescription,careerObjective,educationExperience,InternshipExperience,projectExperience,certificates,skills,imageFile.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        byte[] resumePdf;
-        if (attachPDF != null && !attachPDF.isEmpty()) {
-            try {
-                resumePdf = attachPDF.getBytes();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            Map<String, Object> map = new HashMap<>();
-            map.put("name", student.getName());
-            map.put("image", image);
-            map.put("gender", student.getGender());
-            map.put("phone_number", student.getPhoneNumber());
-            map.put("self_description", selfDescription);
-            map.put("career_objective", careerObjective);
-            map.put("education_experience", educationExperience);
-            map.put("internship_experience", InternshipExperience);
-            map.put("project_experience", projectExperience);
-            map.put("certificates", certificates);
-            map.put("skills", skills);
-
-            try {
-                resumePdf = makeResume(map);
-            } catch (Exception e) {
-                return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
-            }
-        }
-
-
-        Resume resume = new Resume(null, student.getStudentId(), resumePdf, timestamp, resumeName);
 
         if (resumeDao.insert(resume) > 0) {
             return HttpResult.success(resume, "创建成功");
@@ -212,10 +218,10 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult queryResumeDetail(Integer resumeId) throws SQLException {
+    public HttpResult queryResumeDetail(Integer resumeId)  {
         QueryWrapper<Resume> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("resume_id", resumeId).select("attachment_link");
-        byte[] bytes = resumeDao.selectOne(queryWrapper).getAttachmentLink();
+        queryWrapper.eq("resume_id", resumeId);
+        return HttpResult.success(resumeDao.selectOne(queryWrapper), "查询成功");
 //        File file = new File("./temp/resume.pdf");
 //        OutputStream output = null;
 //        try {
@@ -234,19 +240,7 @@ public class StudentImpl implements StudentService {
 //            }
 //        }
 //        FileOutputStream stream = new FileOutputStream(File);
-        System.out.println(bytes.toString());
-        String encodedFilePath = "C:/Users/playe/Desktop/简历2.txt";
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(encodedFilePath);
-            outputStream.write(bytes);
-            outputStream.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-        //bytes = Base64.getDecoder().decode(bytes);
-        return HttpResult.success(bytes, "查询成功");
     }
 
     @Override
@@ -279,19 +273,19 @@ public class StudentImpl implements StudentService {
         if (mark) {
             return HttpResult.success(recruitmentInfoDao.queryMarkedRecruitment(queryInfo, maxSalary, minSalary), "查询成功");
         } else {
-            QueryWrapper<RecruitmentInfo> queryWrapper = new QueryWrapper<>();
-            if (queryInfo != null && !queryInfo.isEmpty()) {
-                queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
-            }
-            if (minSalary != null && maxSalary != null && !minSalary.isEmpty() && !maxSalary.isEmpty()) {
-                queryWrapper.ge("min_salary", minSalary).le("max_salary", maxSalary);
-            }
-            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "min_salary", "max_salary", "byword");
-            return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper), "查询成功");
-//            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-//            queryWrapper.eq("account", account);
-//            User user = userDao.selectOne(queryWrapper);
-//            return HttpResult.success(recruitmentInfoDao.queryRecruitmentInfo(queryInfo,minSalary,maxSalary, user.getUserId()), "查询成功");
+//            QueryWrapper<RecruitmentInfo> queryWrapper = new QueryWrapper<>();
+//            if (queryInfo != null && !queryInfo.isEmpty()) {
+//                queryWrapper.like("company_name", queryInfo).or().like("job_title", queryInfo);
+//            }
+//            if (minSalary != null && maxSalary != null && !minSalary.isEmpty() && !maxSalary.isEmpty()) {
+//                queryWrapper.ge("min_salary", minSalary).le("max_salary", maxSalary);
+//            }
+//            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "min_salary", "max_salary", "byword");
+//            return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper), "查询成功");
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("account", account);
+            User user = userDao.selectOne(queryWrapper);
+            return HttpResult.success(recruitmentInfoDao.queryRecruitmentInfo(queryInfo,minSalary,maxSalary, user.getUserId()), "查询成功");
         }
     }
 

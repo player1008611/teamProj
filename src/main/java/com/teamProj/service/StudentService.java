@@ -14,7 +14,7 @@ public interface StudentService {
 
     HttpResult createResume(String account, MultipartFile imageByte, String selfDescription, String careerObjective,
                             String educationExperience, String InternshipExperience, String projectExperience,
-                            String certificates, String skills, String resumeName, MultipartFile attachPDF);
+                            String certificates, String skills, String resumeName);
 
     HttpResult studentRegister(String account, String password,String schoolName,String name);
 

@@ -19,9 +19,23 @@ public class Resume {
 
     Integer studentId;
 
-    byte[] attachmentLink;
-
     Timestamp creationTime;
 
     String resumeName;
+
+    String selfDescription;
+
+    String careerObjective;
+
+    String educationExperience;
+
+    String internshipExperience;
+
+    String projectExperience;
+
+    String certificates;
+
+    String skills;
+
+    byte[] imageByte;
 }

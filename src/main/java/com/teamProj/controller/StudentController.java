@@ -53,7 +53,7 @@ public class StudentController {
     @PostMapping("/createResume")
     @PreAuthorize("hasAuthority('student')")
     HttpResult createResume(@RequestParam(value = "studentAccount") String account,
-                            @RequestParam(value = "image", required = false) MultipartFile imageByte,
+                            @RequestParam(value = "image"/*, required = false*/) MultipartFile imageFile,
                             @RequestParam(value = "selfDescription", required = false) String selfDescription,
                             @RequestParam(value = "careerObjective", required = false) String careerObjective,
                             @RequestParam(value = "educationExperience", required = false) String educationExperience,
@@ -61,11 +61,10 @@ public class StudentController {
                             @RequestParam(value = "projectExperience", required = false) String projectExperience,
                             @RequestParam(value = "certificates", required = false) String certificates,
                             @RequestParam(value = "skills", required = false) String skills,
-                            @RequestParam(value = "resumeName") String resumeName,
-                            @RequestParam(value = "attachPDF", required = false) MultipartFile attachPDF
+                            @RequestParam(value = "resumeName") String resumeName
 
     ) {
-        return studentService.createResume(account, imageByte, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName, attachPDF);
+        return studentService.createResume(account, imageFile, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName);
     }
 
     @DeleteMapping("/deleteResume")
