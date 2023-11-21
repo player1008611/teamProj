@@ -4,20 +4,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.RecruitmentInfoDao">
     <select id="queryRecruitmentInfo" resultType="com.teamProj.entity.vo.RecruitmentVo">
-        SELECT r.recruitment_id,
-        job_title,
-        company_name,
-        city,
-        min_salary,
-        max_salary,
-        byword,
-        IF(r.recruitment_id=m.recruitment_id AND m.student_id=#{userId}, 1, 0) AS state
-        FROM recruitment_info as r,marked_recruitment_info as m
+        SELECT r.recruitment_id as recruitmentId,
+        job_title as jobTitle,
+        company_name as companyName,
+        city as city,
+        min_salary as minSalary,
+        max_salary as maxSalary,
+        byword as byword,
+        CASE WHEN r.recruitment_id = m.recruitment_id AND m.student_id=#{userId} THEN 1 ELSE 0 END AS state
+        FROM recruitment_info AS r
+        ,marked_recruitment_info AS m
         WHERE 1=1
-            AND (r.job_title LIKE CONCAT('%', #{queryInfo}, '%')
-            OR r.company_name LIKE CONCAT('%', #{queryInfo}, '%'))
-            AND r.min_salary &gt;= #{minSalary}
-            AND r.max_salary &lt;= #{maxSalary}
-
+        AND (r.job_title LIKE CONCAT('%', #{queryInfo}, '%')
+        OR r.company_name LIKE CONCAT('%', #{queryInfo}, '%'))
+        AND r.min_salary &gt;= #{minSalary}
+        AND r.max_salary &lt;= #{maxSalary}
     </select>
 </mapper>

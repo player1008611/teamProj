@@ -285,7 +285,7 @@ public class StudentImpl implements StudentService {
             QueryWrapper<User> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("account", account);
             User user = userDao.selectOne(queryWrapper);
-            return HttpResult.success(recruitmentInfoDao.queryRecruitmentInfo(queryInfo,minSalary,maxSalary, user.getUserId()), "查询成功");
+            return HttpResult.success(recruitmentInfoDao.queryRecruitmentInfo(queryInfo,maxSalary,minSalary, user.getUserId()), "查询成功");
         }
     }
 
