@@ -28,7 +28,7 @@ public class StudentController {
     HttpResult studentLogout() {
         return studentService.studentLogout();
     }
-3
+
     @PostMapping("/register")
     HttpResult studentRegister(@RequestParam(value = "account") String account,
                                @RequestParam(value = "password") String password,
