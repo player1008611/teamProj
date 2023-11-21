@@ -270,8 +270,11 @@ public class StudentImpl implements StudentService {
 
     @Override
     public HttpResult queryRecruitmentInfo(String account, String queryInfo, String minSalary, String maxSalary, boolean mark) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", account);
+        User user = userDao.selectOne(queryWrapper);
         if (mark) {
-            return HttpResult.success(recruitmentInfoDao.queryMarkedRecruitment(queryInfo, maxSalary, minSalary), "查询成功");
+            return HttpResult.success(recruitmentInfoDao.queryMarkedRecruitment(queryInfo, maxSalary, minSalary, user.getUserId()), "查询成功");
         } else {
 //            QueryWrapper<RecruitmentInfo> queryWrapper = new QueryWrapper<>();
 //            if (queryInfo != null && !queryInfo.isEmpty()) {
@@ -282,9 +285,6 @@ public class StudentImpl implements StudentService {
 //            }
 //            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "min_salary", "max_salary", "byword");
 //            return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper), "查询成功");
-            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("account", account);
-            User user = userDao.selectOne(queryWrapper);
             return HttpResult.success(recruitmentInfoDao.queryRecruitmentInfo(queryInfo,maxSalary,minSalary, user.getUserId()), "查询成功");
         }
     }

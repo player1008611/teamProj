@@ -11,9 +11,14 @@
         min_salary as minSalary,
         max_salary as maxSalary,
         byword as byword,
-        CASE WHEN r.recruitment_id = m.recruitment_id AND m.student_id=#{userId} THEN 1 ELSE 0 END AS state
+        CASE
+            WHEN r.recruitment_id = m.recruitment_id AND m.student_id=#{userId}
+                THEN 1
+            ELSE 0
+        END AS state
         FROM recruitment_info AS r
-        ,marked_recruitment_info AS m
+        LEFT JOIN
+        marked_recruitment_info AS m ON r.recruitment_id = m.recruitment_id
         WHERE 1=1
         <if test="queryInfo !=null and queryInfo != ''">
         AND (r.job_title LIKE CONCAT('%', #{queryInfo}, '%')
