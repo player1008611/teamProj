@@ -3,8 +3,19 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.teamProj.dao.*;
-import com.teamProj.entity.*;
+import com.teamProj.dao.AdministratorDao;
+import com.teamProj.dao.DepartmentDao;
+import com.teamProj.dao.EnterpriseDao;
+import com.teamProj.dao.EnterpriseUserDao;
+import com.teamProj.dao.SchoolDao;
+import com.teamProj.dao.StudentDao;
+import com.teamProj.dao.UserDao;
+import com.teamProj.entity.Enterprise;
+import com.teamProj.entity.EnterpriseUser;
+import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.School;
+import com.teamProj.entity.Student;
+import com.teamProj.entity.User;
 import com.teamProj.entity.vo.AdminEnterpriseUserVo;
 import com.teamProj.entity.vo.AdminSchoolUserVo;
 import com.teamProj.entity.vo.AdminStudentVo;
@@ -194,6 +205,58 @@ public class AdministratorImpl implements AdministratorService {
             return HttpResult.success(name, "添加成功");
         }
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+    }
+
+    @Override
+    public HttpResult resetEnterpriseUserPassword(String account) {
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("account", account).eq("permission", "enterprise").set("password", bCryptPasswordEncoder.encode("123456"));
+        if (userDao.update(null, updateWrapper) > 0) {
+            return HttpResult.success(account, "重置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult enableEnterpriseUser(String account) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account).eq("permission", "enterprise");
+        User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        UpdateWrapper<EnterpriseUser> enterpriseUserUpdateWrapper = new UpdateWrapper<>();
+        enterpriseUserUpdateWrapper.eq("user_id", user.getUserId()).set("user_status", '1');
+        if (enterpriseUserDao.update(null, enterpriseUserUpdateWrapper) > 0) {
+            return HttpResult.success(account, "设置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult disableEnterpriseUser(String account) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account).eq("permission", "enterprise");
+        User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        UpdateWrapper<EnterpriseUser> enterpriseUserUpdateWrapper = new UpdateWrapper<>();
+        enterpriseUserUpdateWrapper.eq("user_id", user.getUserId()).set("user_status", '2');
+        if (enterpriseUserDao.update(null, enterpriseUserUpdateWrapper) > 0) {
+            return HttpResult.success(account, "设置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult deleteEnterpriseUser(String account) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account).eq("permission", "enterprise");
+        if (userDao.delete(userQueryWrapper) > 0) {
+            return HttpResult.success(account, "删除成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
     }
 
     @Override

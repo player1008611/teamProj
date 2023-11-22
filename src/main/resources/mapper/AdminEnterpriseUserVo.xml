@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.AdministratorDao">
     <select id="queryEnterpriseUser" resultType="com.teamProj.entity.vo.AdminEnterpriseUserVo">
-        SELECT enterprise_name, `name`, tel, user_state, account
+        SELECT enterprise_name as enterpriseName, `name`, tel, user_status as userStatus, account
         FROM `user`,
         enterprise,
         enterprise_user

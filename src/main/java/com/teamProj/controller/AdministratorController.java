@@ -3,7 +3,13 @@ package com.teamProj.controller;
 import com.teamProj.service.AdministratorService;
 import com.teamProj.utils.HttpResult;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
@@ -88,6 +94,30 @@ public class AdministratorController {
             , @RequestParam String name
             , @RequestParam String tel) {
         return administratorService.createNewEnterpriseUser(account, enterpriseName, name, tel);
+    }
+
+    @PatchMapping("resetEnterpriseUserPassword")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult resetEnterpriseUserPassword(@RequestParam String account) {
+        return administratorService.resetEnterpriseUserPassword(account);
+    }
+
+    @PatchMapping("/enableEnterpriseUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult enableEnterpriseUser(@RequestParam String account) {
+        return administratorService.enableEnterpriseUser(account);
+    }
+
+    @PatchMapping("/disableEnterpriseUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult disableEnterpriseUser(@RequestParam String account) {
+        return administratorService.disableEnterpriseUser(account);
+    }
+
+    @DeleteMapping("/deleteEnterpriseUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult deleteEnterpriseUser(@RequestParam String account) {
+        return administratorService.deleteEnterpriseUser(account);
     }
 
     @GetMapping("/querySchoolUser")

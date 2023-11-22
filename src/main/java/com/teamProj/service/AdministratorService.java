@@ -19,12 +19,19 @@ public interface AdministratorService {
 
     HttpResult queryEnterprise(String name, Integer current, Integer size);
 
-    HttpResult queryEnterpriseUser(String enterpriseName, String userName, Integer current, Integer size
-    );
+    HttpResult queryEnterpriseUser(String enterpriseName, String userName, Integer current, Integer size);
 
     HttpResult createNewEnterprise(String name, String url);
 
     HttpResult createNewEnterpriseUser(String account, String enterpriseName, String name, String tel);
+
+    HttpResult resetEnterpriseUserPassword(String account);
+
+    HttpResult enableEnterpriseUser(String account);
+
+    HttpResult disableEnterpriseUser(String account);
+
+    HttpResult deleteEnterpriseUser(String account);
 
     HttpResult querySchoolUser(String principal, Character status, Integer current, Integer size);
 
