@@ -137,4 +137,28 @@ public class AdministratorController {
             , @RequestParam String tel) {
         return administratorService.createNewSchoolUser(account, schoolName, principal, tel);
     }
+
+    @PatchMapping("resetSchoolUserPassword")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult resetSchoolUserPassword(@RequestParam String account) {
+        return administratorService.resetSchoolUserPassword(account);
+    }
+
+    @PatchMapping("enableSchoolUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult enableSchoolUser(@RequestParam String account) {
+        return administratorService.enableSchoolUser(account);
+    }
+
+    @PatchMapping("disableSchoolUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult disableSchoolUser(@RequestParam String account) {
+        return administratorService.disableSchoolUser(account);
+    }
+
+    @DeleteMapping("deleteSchoolUser")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult deleteSchoolUser(@RequestParam String account) {
+        return administratorService.deleteSchoolUser(account);
+    }
 }
