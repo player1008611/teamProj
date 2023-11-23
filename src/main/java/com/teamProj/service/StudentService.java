@@ -39,4 +39,6 @@ public interface StudentService {
     HttpResult deleteJobApplication(Integer applicationId);
 
     HttpResult queryJobApplication(String account);
+
+    HttpResult verification(String email);
 }

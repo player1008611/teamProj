@@ -7,10 +7,7 @@ import com.itextpdf.layout.element.Image;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
 import com.teamProj.service.StudentService;
-import com.teamProj.utils.HttpResult;
-import com.teamProj.utils.JwtUtil;
-import com.teamProj.utils.RedisCache;
-import com.teamProj.utils.ResultCodeEnum;
+import com.teamProj.utils.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -108,7 +105,7 @@ public class StudentImpl implements StudentService {
         queryWrapper.eq("account", account);
         User user = new User();
         if (userDao.selectOne(queryWrapper) != null) {
-            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "账号已存在");
         } else {
             user.setAccount(account);
             user.setPassword(bCryptPasswordEncoder.encode(password));
@@ -125,6 +122,13 @@ public class StudentImpl implements StudentService {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }
 
+    }
+
+    @Override
+    public HttpResult verification(String email){
+        EmailVerification emailVerification = new EmailVerification();
+        String captcha = emailVerification.verificationService(email);
+        return HttpResult.success(captcha,"发送成功");
     }
 
     @Override

@@ -132,5 +132,10 @@ public class StudentController {
         return studentService.queryJobApplicationDetail(applicationId);
     }
 
+    @PostMapping("/verification")
+    HttpResult verification(@RequestParam(value = "email") String email) {
+        return studentService.verification(email);
+    }
+
 
 }
