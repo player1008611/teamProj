@@ -36,7 +36,7 @@ public class StudentController {
                                @RequestParam(value = "name") String name,
                                @RequestParam(value = "phoneNumber") String phoneNumber
     ) {
-        return studentService.studentRegister(account, password, schoolName, name,phoneNumber);
+        return studentService.studentRegister(account, password, schoolName, name, phoneNumber);
     }
 
     @PatchMapping("/setPassword")
@@ -84,6 +84,20 @@ public class StudentController {
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryResumeDetail(@RequestParam(value = "resumeId") Integer resumeId) throws SQLException {
         return studentService.queryResumeDetail(resumeId);
+    }
+
+    @PostMapping("/editResume")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult editResume(@RequestParam(value = "resumeId") String resumeId,
+                          @RequestParam(value = "selfDescription", required = false) String selfDescription,
+                          @RequestParam(value = "careerObjective", required = false) String careerObjective,
+                          @RequestParam(value = "educationExperience", required = false) String educationExperience,
+                          @RequestParam(value = "internshipExperience", required = false) String InternshipExperience,
+                          @RequestParam(value = "projectExperience", required = false) String projectExperience,
+                          @RequestParam(value = "certificates", required = false) String certificates,
+                          @RequestParam(value = "skills", required = false) String skills,
+                          @RequestParam(value = "resumeName") String resumeName) {
+        return studentService.editResume(resumeId, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName);
     }
 
     @GetMapping("/queryRecruitmentInfo")

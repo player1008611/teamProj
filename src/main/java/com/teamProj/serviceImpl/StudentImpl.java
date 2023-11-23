@@ -2,8 +2,6 @@ package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.itextpdf.io.image.ImageDataFactory;
-import com.itextpdf.layout.element.Image;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
 import com.teamProj.service.StudentService;
@@ -17,18 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.sql.rowset.serial.SerialBlob;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
-import static com.teamProj.utils.MakeResume.makeResume;
 
 @Service
 public class StudentImpl implements StudentService {
@@ -125,10 +118,10 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult verification(String email){
+    public HttpResult verification(String email) {
         EmailVerification emailVerification = new EmailVerification();
         String captcha = emailVerification.verificationService(email);
-        return HttpResult.success(captcha,"发送成功");
+        return HttpResult.success(captcha, "发送成功");
     }
 
     @Override
@@ -187,7 +180,7 @@ public class StudentImpl implements StudentService {
 
         Resume resume;
         try {
-            resume = new Resume(null, student.getStudentId(), timestamp, resumeName,selfDescription,careerObjective,educationExperience,InternshipExperience,projectExperience,certificates,skills,imageFile.getBytes());
+            resume = new Resume(null, student.getStudentId(), timestamp, resumeName, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, imageFile.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -222,7 +215,29 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult queryResumeDetail(Integer resumeId)  {
+    public HttpResult editResume(String resumeId, String selfDescription, String careerObjective,
+                                 String educationExperience, String InternshipExperience, String projectExperience,
+                                 String certificates, String skills, String resumeName) {
+        UpdateWrapper<Resume> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("resume_id", resumeId);
+        updateWrapper.set("self_description", selfDescription)
+                .set("career_objective", careerObjective)
+                .set("education_experience", educationExperience)
+                .set("internship_experience", InternshipExperience)
+                .set("project_experience", projectExperience)
+                .set("certificates", certificates)
+                .set("skills", skills)
+                .set("resume_name", resumeName);
+        if (resumeDao.update(null, updateWrapper) > 0) {
+            return HttpResult.success(resumeDao.selectById(resumeId), "修改成功");
+        }
+        else {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public HttpResult queryResumeDetail(Integer resumeId) {
         QueryWrapper<Resume> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("resume_id", resumeId);
         return HttpResult.success(resumeDao.selectOne(queryWrapper), "查询成功");
@@ -289,11 +304,9 @@ public class StudentImpl implements StudentService {
 //            }
 //            queryWrapper.select("recruitment_id", "job_title", "company_name", "city", "min_salary", "max_salary", "byword");
 //            return HttpResult.success(recruitmentInfoDao.selectList(queryWrapper), "查询成功");
-            return HttpResult.success(recruitmentInfoDao.queryRecruitmentInfo(queryInfo,maxSalary,minSalary, user.getUserId()), "查询成功");
+            return HttpResult.success(recruitmentInfoDao.queryRecruitmentInfo(queryInfo, maxSalary, minSalary, user.getUserId()), "查询成功");
         }
     }
-
-
 
 
     @Override
@@ -301,21 +314,20 @@ public class StudentImpl implements StudentService {
         QueryWrapper<MarkedRecruitmentInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("recruitment_id", RecruitmentInfoId).eq("student_id",
                 userDao.selectOne(new QueryWrapper<User>().eq("account", account)).getUserId());
-        if(markedRecruitmentInfoDao.selectOne(queryWrapper)!=null){
+        if (markedRecruitmentInfoDao.selectOne(queryWrapper) != null) {
             markedRecruitmentInfoDao.delete(queryWrapper);
             return HttpResult.success(null, "取消收藏成功");
-        }
-        else {
-        MarkedRecruitmentInfo mri = new MarkedRecruitmentInfo();
-        mri.setRecruitmentId(RecruitmentInfoId);
-        QueryWrapper<User> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("account", account);
-        mri.setStudentId(userDao.selectOne(queryWrapper1).getUserId());
-        if (markedRecruitmentInfoDao.insert(mri) > 0) {
-            return HttpResult.success(mri, "收藏成功");
         } else {
-            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
-        }
+            MarkedRecruitmentInfo mri = new MarkedRecruitmentInfo();
+            mri.setRecruitmentId(RecruitmentInfoId);
+            QueryWrapper<User> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("account", account);
+            mri.setStudentId(userDao.selectOne(queryWrapper1).getUserId());
+            if (markedRecruitmentInfoDao.insert(mri) > 0) {
+                return HttpResult.success(mri, "收藏成功");
+            } else {
+                return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+            }
         }
     }
 
