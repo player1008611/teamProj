@@ -36,4 +36,12 @@ public interface AdministratorService {
     HttpResult querySchoolUser(String principal, Character status, Integer current, Integer size);
 
     HttpResult createNewSchoolUser(String account, String schoolName, String principal, String tel);
+
+    HttpResult resetSchoolUserPassword(String account);
+
+    HttpResult enableSchoolUser(String account);
+
+    HttpResult disableSchoolUser(String account);
+
+    HttpResult deleteSchoolUser(String account);
 }

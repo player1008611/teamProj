@@ -284,5 +284,57 @@ public class AdministratorImpl implements AdministratorService {
         }
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
     }
+
+    @Override
+    public HttpResult resetSchoolUserPassword(String account) {
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("account", account).eq("permission", "school").set("password", bCryptPasswordEncoder.encode("123456"));
+        if (userDao.update(null, updateWrapper) > 0) {
+            return HttpResult.success(account, "重置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult enableSchoolUser(String account) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account).eq("permission", "school");
+        User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        UpdateWrapper<School> schoolUpdateWrapper = new UpdateWrapper<>();
+        schoolUpdateWrapper.eq("school_id", user.getUserId()).set("status", '1');
+        if (schoolDao.update(null, schoolUpdateWrapper) > 0) {
+            return HttpResult.success(account, "设置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult disableSchoolUser(String account) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account).eq("permission", "school");
+        User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        UpdateWrapper<School> schoolUpdateWrapper = new UpdateWrapper<>();
+        schoolUpdateWrapper.eq("school_id", user.getUserId()).set("status", '0');
+        if (schoolDao.update(null, schoolUpdateWrapper) > 0) {
+            return HttpResult.success(account, "设置成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult deleteSchoolUser(String account) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account).eq("permission", "school");
+        if (userDao.delete(userQueryWrapper) > 0) {
+            return HttpResult.success(account, "删除成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
 }
 
