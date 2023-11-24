@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers("/**/login",
                         "/student/register",
+                        "/student/verification",
                         "/swagger-ui.html",
                         "/webjars/**",
                         "/swagger-resources/**",

@@ -25,7 +25,7 @@ public class EmailVerification {
         message.setDatafrom("player10086@qq.com"); // 发件人，在邮件的发件人栏目中显示
         message.setDatato(toMail); // 收件人，在邮件的收件人栏目中显示
         message.setUser("player10086@qq.com"); // 登陆邮箱的用户名
-        message.setPassword("pflocreyskfiddaj"); // 登陆邮箱的密码
+        message.setPassword("eqvkgpoubscybjga"); // 登陆邮箱的密码
 
         SendEmail smtp;
         try {
