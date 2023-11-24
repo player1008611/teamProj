@@ -121,7 +121,11 @@ public class StudentImpl implements StudentService {
     public HttpResult verification(String email) {
         EmailVerification emailVerification = new EmailVerification();
         String captcha = emailVerification.verificationService(email);
-        return HttpResult.success(captcha, "发送成功");
+        if(captcha!=null){
+        return HttpResult.success(captcha, "发送成功");}
+        else {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR,"发送失败");
+        }
     }
 
     @Override

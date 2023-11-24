@@ -35,7 +35,7 @@ public class SendEmail {
         result = sendServer("HELO " + server, in, out);
         // HELO命令成功后返回250
         if (result != 250) {
-            throw new IOException("注册邮件服务器失败！");
+            throw new IOException("注册邮件服务器失败！"+result);
         }
         getResult(in);
         getResult(in);

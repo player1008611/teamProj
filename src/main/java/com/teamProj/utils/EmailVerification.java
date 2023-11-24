@@ -15,7 +15,7 @@ public class EmailVerification {
         this.sendEmail = sendEmail;
     }
 
-    private void sendEmail(String toMail, String subject, String content) {
+    private boolean sendEmail(String toMail, String subject, String content) {
         MailMessage message = new MailMessage();
         message.setFrom("player10086@qq.com"); // 发件人
         message.setTo(toMail); // 收件人
@@ -34,14 +34,17 @@ public class EmailVerification {
             flag = smtp.sendMail(message, server);
             if (flag) {
                 System.out.println("邮件发送成功！");
+                return true;
             } else {
                 System.out.println("邮件发送失败！");
+                return false;
             }
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public String verificationService(String email) {
@@ -49,7 +52,11 @@ public class EmailVerification {
         String subject = "B5就业平台";
         String captcha = String.valueOf(random.nextInt(899999) + 100000);
         String content = "验证码为：" + captcha;
-        sendEmail(email, subject, content);
-        return captcha;
+        boolean state = sendEmail(email, subject, content);
+        if (state) {
+            return captcha;
+        } else {
+            return null;
+        }
     }
 }
