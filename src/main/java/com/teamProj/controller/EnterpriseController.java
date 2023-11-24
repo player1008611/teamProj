@@ -94,6 +94,12 @@ public class EnterpriseController {
         return enterpriseService.queryRecruitmentInfo(city, salaryRange, departmentName, statusNum, current);
     }
 
+    @GetMapping("queryRecruitmentInfoByDraft")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult queryRecruitmentInfoByDraft(@RequestParam String draftName) {
+        return enterpriseService.queryRecruitmentInfoByDraft(draftName);
+    }
+
     @DeleteMapping("/deleteRecruitmentInfo")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult deleteRecruitmentInfo(@RequestParam String departmentName, @RequestParam String jobTitle) {

@@ -284,6 +284,27 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
+    public HttpResult queryRecruitmentInfoByDraft(String draftName) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<Draft> draftQueryWrapper = new QueryWrapper<>();
+        draftQueryWrapper.eq("draft_name", draftName).eq("user_id", userId);
+        Draft draft = draftDao.selectOne(draftQueryWrapper);
+        if (Objects.isNull(draft)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.select("job_title", "job_description", "company_name", "city", "status", "submission_time", "approval_time", "recruit_num", "recruited_num", "byword", "job_duties", "min_salary", "max_salary");
+        recruitmentInfoQueryWrapper.eq("recruitment_id", draft.getRecruitmentId());
+        return HttpResult.success(recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper), "查询成功");
+    }
+
+
+    @Override
     public HttpResult deleteRecruitmentInfo(String departmentName, String jobTitle) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
