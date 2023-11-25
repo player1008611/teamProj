@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.AdministratorDao">
+    <select id="queryRecruitment" resultType="com.teamProj.entity.vo.AdminRecruitmentVo">
+        SELECT job_title as jobTitle,
+        job_description as jobDescription,
+        company_name as companyName,
+        city as city,
+        `status` as status,
+        submission_time as submissionTime,
+        approval_time as approvalTime,
+        rejection_reason as rejectionReason,
+        recruit_num as recruitNum,
+        recruited_num as recruitedNum,
+        byword as byword,
+        job_duties as jobDuties,
+        min_salary as minSalary,
+        max_salary as maxSalary,
+        `name` as departmentName
+        FROM recruitment_info,
+        enterprise,
+        department
+        WHERE recruitment_info.enterprise_id = enterprise.enterprise_id
+        AND recruitment_info.department_id = department.department_id
+        <if test="departmentName!=null and departmentName!=''">
+            AND department.name=#{departmentName}
+        </if>
+        <if test="companyName!=null and companyName!=''">
+            AND company_name=#{companyName}
+        </if>
+        <if test="jobTitle!=null and jobTitle!=''">
+            AND job_title=#{jobTitle}
+        </if>
+    </select>
+</mapper>

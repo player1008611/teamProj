@@ -4,7 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.AdministratorDao">
     <select id="queryStudent" resultType="com.teamProj.entity.vo.AdminStudentVo">
-        SELECT account, `name`, phone_number, user_status, creation_time, school_name
+        SELECT account, `name`, phone_number as phoneNumber, user_status as userStatus, creation_time as creationTime,
+        school_name as schoolName
         FROM `user`,
         student,
         school

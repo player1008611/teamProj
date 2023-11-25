@@ -1,6 +1,10 @@
 package com.teamProj.utils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Base64;
@@ -35,14 +39,14 @@ public class SendEmail {
         result = sendServer("HELO " + server, in, out);
         // HELO命令成功后返回250
         if (result != 250) {
-            throw new IOException("注册邮件服务器失败！"+result);
+            throw new IOException("注册邮件服务器失败！" + result);
         }
         getResult(in);
         getResult(in);
     }
 
     private int sendServer(String str, BufferedReader in, BufferedWriter out) throws IOException {
-        out.write(str+"\r\n");
+        out.write(str + "\r\n");
         out.flush();
         if (debug) {
             System.out.println("已发送命令:" + str);

@@ -6,8 +6,8 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class EnterpriseRecruitmentVo {
-    String name;
+public class AdminRecruitmentVo {
+    String departmentName;
 
     String jobTitle;
 

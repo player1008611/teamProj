@@ -2,6 +2,7 @@ package com.teamProj.controller;
 
 import com.teamProj.service.AdministratorService;
 import com.teamProj.utils.HttpResult;
+import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/admin")
@@ -160,5 +162,28 @@ public class AdministratorController {
     @PreAuthorize("hasAuthority('admin')")
     HttpResult deleteSchoolUser(@RequestParam String account) {
         return administratorService.deleteSchoolUser(account);
+    }
+
+    @GetMapping("queryRecruitmentInfo")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult queryRecruitmentInfo(@RequestParam(required = false) String companyName
+            , @RequestParam(required = false) String departmentName
+            , @RequestParam(required = false) String jobTitle
+            , @RequestParam Integer current
+            , @RequestParam Integer size) {
+        return administratorService.queryRecruitmentInfo(companyName, departmentName, jobTitle, current, size);
+    }
+
+    @PatchMapping("auditRecruitmentInfo")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult auditRecruitmentInfo(@RequestParam String enterpriseName
+            , @RequestParam String departmentName
+            , @RequestParam String jobTitle
+            , @RequestParam String status
+            , @RequestParam(required = false) String rejectReason) {
+        if (status.equals("3") && (Objects.isNull(rejectReason) || rejectReason.isEmpty())) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "请填写拒绝理由");
+        }
+        return administratorService.auditRecruitmentInfo(enterpriseName, departmentName, jobTitle, status, rejectReason);
     }
 }

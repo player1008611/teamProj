@@ -7,16 +7,20 @@ import com.teamProj.dao.AdministratorDao;
 import com.teamProj.dao.DepartmentDao;
 import com.teamProj.dao.EnterpriseDao;
 import com.teamProj.dao.EnterpriseUserDao;
+import com.teamProj.dao.RecruitmentInfoDao;
 import com.teamProj.dao.SchoolDao;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.dao.UserDao;
+import com.teamProj.entity.Department;
 import com.teamProj.entity.Enterprise;
 import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
 import com.teamProj.entity.vo.AdminEnterpriseUserVo;
+import com.teamProj.entity.vo.AdminRecruitmentVo;
 import com.teamProj.entity.vo.AdminSchoolUserVo;
 import com.teamProj.entity.vo.AdminStudentVo;
 import com.teamProj.service.AdministratorService;
@@ -69,6 +73,9 @@ public class AdministratorImpl implements AdministratorService {
 
     @Resource
     private SchoolDao schoolDao;
+
+    @Resource
+    private RecruitmentInfoDao recruitmentInfoDao;
 
     public HttpResult administratorLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
@@ -335,6 +342,42 @@ public class AdministratorImpl implements AdministratorService {
             return HttpResult.success(account, "删除成功");
         }
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult queryRecruitmentInfo(String companyName, String departmentName, String jobTitle, Integer current, Integer size) {
+        Page<AdminRecruitmentVo> page = new Page<>(current, size);
+        return HttpResult.success(administratorDao.queryRecruitment(page, companyName, departmentName, jobTitle), "查询成功");
+    }
+
+    @Override
+    public HttpResult auditRecruitmentInfo(String enterpriseName, String departmentName, String jobTitle, String status, String rejectReason) {
+        QueryWrapper<Enterprise> enterpriseQueryWrapper = new QueryWrapper<>();
+        enterpriseQueryWrapper.eq("enterprise_name", enterpriseName);
+        Enterprise enterprise = enterpriseDao.selectOne(enterpriseQueryWrapper);
+        if (Objects.isNull(enterprise)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
+        departmentQueryWrapper.eq("name", departmentName).eq("enterprise_id", enterprise.getEnterpriseId());
+        Department department = departmentDao.selectOne(departmentQueryWrapper);
+        if (Objects.isNull(department)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        UpdateWrapper<RecruitmentInfo> recruitmentInfoUpdateWrapper = new UpdateWrapper<>();
+        recruitmentInfoUpdateWrapper.eq("enterprise_id", enterprise.getEnterpriseId())
+                .eq("department_id", department.getDepartmentId())
+                .eq("job_title", jobTitle)
+                .set("status", status);
+        if (status.equals("3")) {
+            recruitmentInfoUpdateWrapper.set("rejection_reason", rejectReason);
+        }
+        if (recruitmentInfoDao.update(null, recruitmentInfoUpdateWrapper) > 0) {
+            return HttpResult.success(jobTitle, "审批成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "审批失败");
     }
 }
 

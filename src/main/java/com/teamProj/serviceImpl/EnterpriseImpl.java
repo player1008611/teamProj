@@ -151,7 +151,7 @@ public class EnterpriseImpl implements EnterpriseService {
         List<Department> departmentList = departmentDao.selectList(departmentQueryWrapper);
         for (Department department : departmentList) {
             QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
-            recruitmentInfoQueryWrapper.orderByDesc("submission_time").eq("department_id", department.getDepartmentId());
+            recruitmentInfoQueryWrapper.ne("status", "0").orderByDesc("submission_time").eq("department_id", department.getDepartmentId());
             List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
             Map<String, Object> map = new HashMap<>();
             map.put("departmentName", department.getName());

@@ -44,4 +44,8 @@ public interface AdministratorService {
     HttpResult disableSchoolUser(String account);
 
     HttpResult deleteSchoolUser(String account);
+
+    HttpResult queryRecruitmentInfo(String companyName, String departmentName, String jobTitle, Integer current, Integer size);
+
+    HttpResult auditRecruitmentInfo(String enterpriseName, String departmentName, String jobTitle, String status, String rejectReason);
 }

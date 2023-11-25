@@ -344,6 +344,7 @@ public class StudentImpl implements StudentService {
         jobApplication.setStudentId(userDao.selectOne(queryWrapper).getUserId());
         jobApplication.setResumeId(resumeId);
         jobApplication.setApplicationTime(new Timestamp(System.currentTimeMillis()));
+        jobApplication.setStatus('0');
         if (jobApplicationDao.insert(jobApplication) > 0) {
             return HttpResult.success(jobApplication, "创建成功");
         } else {

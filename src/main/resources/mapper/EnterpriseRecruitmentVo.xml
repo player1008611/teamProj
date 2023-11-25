@@ -5,8 +5,10 @@
 <mapper namespace="com.teamProj.dao.EnterpriseUserDao">
     <select id="queryRecruitmentInfo" resultType="com.teamProj.entity.vo.EnterpriseRecruitmentVo">
         SELECT
-        enterprise_user.`name` as
-        name,job_title,job_description,company_name,city,`status`,submission_time,approval_time,rejection_reason,recruit_num,recruited_num,byword,job_duties,min_salary,max_salary
+        enterprise_user.`name` as name,job_title as jobTitle,job_description as jobDescription,company_name as
+        companyName,city,`status`,submission_time as submissionTime,approval_time as approvalTime,rejection_reason as
+        rejectionReason,recruit_num as recruitNum,recruited_num as recruitedNum,byword,job_duties as
+        jobDuties,min_salary as minSalary,max_salary as maxSalary
         FROM recruitment_info,enterprise_user,department
         WHERE enterprise_user.user_id=#{userId}
         AND department.enterprise_id=enterprise_user.enterprise_id

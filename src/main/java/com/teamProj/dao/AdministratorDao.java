@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.entity.Administrator;
 import com.teamProj.entity.vo.AdminEnterpriseUserVo;
+import com.teamProj.entity.vo.AdminRecruitmentVo;
 import com.teamProj.entity.vo.AdminSchoolUserVo;
 import com.teamProj.entity.vo.AdminStudentVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -25,4 +26,9 @@ public interface AdministratorDao extends BaseMapper<Administrator> {
     IPage<AdminSchoolUserVo> querySchoolUser(Page<AdminSchoolUserVo> page
             , @Param("principal") String principal
             , @Param("status") Character status);
+
+    IPage<AdminRecruitmentVo> queryRecruitment(Page<AdminRecruitmentVo> page
+            , @Param("companyName") String companyName
+            , @Param("departmentName") String departmentName
+            , @Param("jobTitle") String jobTitle);
 }
