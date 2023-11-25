@@ -42,8 +42,7 @@ public class SendEmail {
     }
 
     private int sendServer(String str, BufferedReader in, BufferedWriter out) throws IOException {
-        out.write(str);
-        out.newLine();
+        out.write(str+"\r\n");
         out.flush();
         if (debug) {
             System.out.println("已发送命令:" + str);
