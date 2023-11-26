@@ -3,6 +3,8 @@ package com.teamProj.service;
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.utils.HttpResult;
 
+import java.sql.Timestamp;
+
 public interface EnterpriseService {
 
     HttpResult enterpriseLogin(String account, String password);
@@ -32,4 +34,8 @@ public interface EnterpriseService {
     HttpResult queryJobApplication(String schoolName, String departmentName, Integer current);
 
     HttpResult deleteJobApplication(String studentAccount, String departmentName, String jobTitle);
+
+    HttpResult disagreeJobApplication(Integer id,String rejectReason);
+
+    HttpResult agreeJobApplication(Integer id, Timestamp date,String position);
 }

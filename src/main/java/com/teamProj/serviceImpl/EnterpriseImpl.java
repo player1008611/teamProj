@@ -7,6 +7,7 @@ import com.teamProj.dao.DepartmentDao;
 import com.teamProj.dao.DraftDao;
 import com.teamProj.dao.EnterpriseDao;
 import com.teamProj.dao.EnterpriseUserDao;
+import com.teamProj.dao.InterviewInfoDao;
 import com.teamProj.dao.JobApplicationDao;
 import com.teamProj.dao.RecruitmentInfoDao;
 import com.teamProj.dao.UserDao;
@@ -14,6 +15,7 @@ import com.teamProj.entity.Department;
 import com.teamProj.entity.Draft;
 import com.teamProj.entity.Enterprise;
 import com.teamProj.entity.EnterpriseUser;
+import com.teamProj.entity.InterviewInfo;
 import com.teamProj.entity.JobApplication;
 import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.RecruitmentInfo;
@@ -73,6 +75,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
     private UserDao userDao;
+
+    @Resource
+    private InterviewInfoDao interviewInfoDao;
 
     @Override
     public HttpResult enterpriseLogin(String account, String password) {
@@ -462,5 +467,37 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }
         return HttpResult.success(jobTitle, "删除成功");
+    }
+
+    @Override
+    public HttpResult disagreeJobApplication(Integer id, String rejectReason) {
+        UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>();
+        jobApplicationUpdateWrapper.set("status", "1")
+                .set("rejection_reason", rejectReason)
+                .eq("application_id", id);
+        if (jobApplicationDao.update(null, jobApplicationUpdateWrapper) > 0) {
+            return HttpResult.success();
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "操作失败");
+    }
+
+    @Override
+    public HttpResult agreeJobApplication(Integer id, Timestamp date, String position) {
+        QueryWrapper<JobApplication> jobApplicationQueryWrapper = new QueryWrapper<>();
+        jobApplicationQueryWrapper.eq("application_id", id).eq("status", "0");
+        JobApplication jobApplication = jobApplicationDao.selectOne(jobApplicationQueryWrapper);
+        if (Objects.isNull(jobApplication)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "信息不存在或已审核");
+        }
+        InterviewInfo interviewInfo = new InterviewInfo(null, jobApplication.getStudentId(), jobApplication.getApplicationId(), date, position, '0', '0');
+        try {
+            interviewInfoDao.insert(interviewInfo);
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "新建面试失败");
+        }
+        UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>(jobApplication);
+        jobApplicationUpdateWrapper.set("status", '2');
+        jobApplicationDao.update(null, jobApplicationUpdateWrapper);
+        return HttpResult.success();
     }
 }
