@@ -33,6 +33,8 @@ public interface EnterpriseService {
 
     HttpResult queryJobApplication(String schoolName, String departmentName, Integer current);
 
+    HttpResult queryResume(Integer jobApplicationId);
+
     HttpResult deleteJobApplication(String studentAccount, String departmentName, String jobTitle);
 
     HttpResult disagreeJobApplication(Integer id,String rejectReason);

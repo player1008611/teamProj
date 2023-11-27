@@ -20,6 +20,8 @@ import com.teamProj.entity.JobApplication;
 import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.entity.User;
+import com.teamProj.dao.*;
+import com.teamProj.entity.*;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import com.teamProj.service.EnterpriseService;
@@ -78,6 +80,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
     private InterviewInfoDao interviewInfoDao;
+
+    @Resource
+    private ResumeDao resumeDao;
 
     @Override
     public HttpResult enterpriseLogin(String account, String password) {
@@ -424,6 +429,24 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         int userId = loginUser.getUser().getUserId();
         return HttpResult.success(enterpriseUserDao.queryJobApplication(page, schoolName, departmentName, userId), "查询成功");
+    }
+
+    @Override
+    public HttpResult queryResume(Integer jobApplicationId){
+        QueryWrapper<JobApplication> jobApplicationQueryWrapper = new QueryWrapper<>();
+        jobApplicationQueryWrapper.eq("application_id", jobApplicationId);
+        JobApplication jobApplication = jobApplicationDao.selectOne(jobApplicationQueryWrapper);
+        if (Objects.isNull(jobApplication)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        QueryWrapper<Resume> resumeQueryWrapper = new QueryWrapper<>();
+        resumeQueryWrapper.eq("resume_id", jobApplication.getResumeId());
+        Resume resume = resumeDao.selectOne(resumeQueryWrapper);
+        if(Objects.isNull(resume)){
+            return HttpResult.success(resumeDao.selectOne(resumeQueryWrapper), "查询成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
     }
 
     @Override

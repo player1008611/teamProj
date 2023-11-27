@@ -366,9 +366,9 @@ public class StudentImpl implements StudentService {
         map.put("投报公司名", recruitmentInfo.getCompanyName());
         String status = "" + jobApplication.getStatus();
         status = switch (status) {
-            case "1" -> "未审核";
+            case "0" -> "未审核";
             case "2" -> "已安排面试";
-            case "3" -> "未通过";
+            case "1" -> "未通过";
             default -> status;
         };
         map.put("简历情况", status);

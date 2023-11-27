@@ -181,4 +181,10 @@ public class EnterpriseController {
     HttpResult agreeJobApplication(@RequestParam Integer id, @RequestParam String date, @RequestParam String position) {
         return enterpriseService.agreeJobApplication(id, Timestamp.valueOf(date), position);
     }
+
+    @GetMapping("/queryResume")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult queryResume(@RequestParam(value = "jobApplicationId") Integer jobApplicationId) {
+        return enterpriseService.queryResume(jobApplicationId);
+    }
 }
