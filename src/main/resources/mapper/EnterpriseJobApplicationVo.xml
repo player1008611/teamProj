@@ -29,7 +29,7 @@
             AND school.school_name = #{schoolName}
         </if>
         <if test="departmentName!=null and departmentName!=''">
-            AND recruitment_info.department_id = #{departmentId}
+            AND department.name=#{departmentName}
         </if>
     </select>
 </mapper>
