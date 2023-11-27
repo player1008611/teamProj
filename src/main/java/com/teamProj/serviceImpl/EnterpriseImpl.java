@@ -443,7 +443,7 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<Resume> resumeQueryWrapper = new QueryWrapper<>();
         resumeQueryWrapper.eq("resume_id", jobApplication.getResumeId());
         Resume resume = resumeDao.selectOne(resumeQueryWrapper);
-        if (Objects.isNull(resume)) {
+        if(!Objects.isNull(resume)){
             return HttpResult.success(resumeDao.selectOne(resumeQueryWrapper), "查询成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
