@@ -359,7 +359,7 @@ public class StudentImpl implements StudentService {
         queryWrapper.eq("account", account);
         jobApplication.setStudentId(userDao.selectOne(queryWrapper).getUserId());
         jobApplication.setResumeId(resumeId);
-        jobApplication.setApplicationTime(new Timestamp(System.currentTimeMillis()));
+        jobApplication.setApplicationTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()));
         jobApplication.setStatus('0');
         if (jobApplicationDao.insert(jobApplication) > 0) {
             return HttpResult.success(jobApplication, "创建成功");

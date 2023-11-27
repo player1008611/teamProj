@@ -23,10 +23,10 @@ public class JobApplication {
     Integer recruitmentId;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    Timestamp applicationTime;
+    String applicationTime;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    Timestamp approvalTime;
+    String approvalTime;
 
     Character status;
 
