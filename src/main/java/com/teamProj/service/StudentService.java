@@ -3,7 +3,6 @@ package com.teamProj.service;
 import com.teamProj.utils.HttpResult;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -20,13 +19,13 @@ public interface StudentService {
                           String educationExperience, String InternshipExperience, String projectExperience,
                           String certificates, String skills, String resumeName);
 
-    HttpResult studentRegister(String account, String password,String schoolName,String name,String phoneNumber);
+    HttpResult studentRegister(String account, String password, String schoolName, String name, String phoneNumber);
 
     HttpResult setStudentInfo(String account, Map<String, Object> map);
 
     HttpResult studentLogout();
 
-    HttpResult queryRecruitmentInfo(String account,String queryInfo,String minSalary,String maxSalary,boolean mark);
+    HttpResult queryRecruitmentInfo(String account, String queryInfo, String minSalary, String maxSalary, boolean mark);
 
     HttpResult queryJobApplicationDetail(Integer recruitmentId);
 

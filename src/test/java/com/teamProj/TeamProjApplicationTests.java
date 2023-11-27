@@ -163,8 +163,8 @@ class TeamProjApplicationTests {
     }
 
     @Test
-    void TestBCryptPasswordEncoder(){
-        BCryptPasswordEncoder passwordEncoder=new BCryptPasswordEncoder();
+    void TestBCryptPasswordEncoder() {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         System.out.println(passwordEncoder.encode("123456"));
     }
 }

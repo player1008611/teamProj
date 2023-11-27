@@ -4,7 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.ResumeDao">
     <select id="queryResume" resultType="com.teamProj.entity.vo.StudentResumeVo">
-        SELECT resume.resume_name as resumeName, resume.creation_time as creationTime, resume.resume_id as resumeId, student.name as name
+        SELECT resume.resume_name   as resumeName,
+               resume.creation_time as creationTime,
+               resume.resume_id     as resumeId,
+               student.name         as name
         FROM resume,
              student
         WHERE resume.student_id = student.student_id

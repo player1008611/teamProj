@@ -35,7 +35,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             Claims claims = JwtUtil.parseJWT(token);
             id = claims.getSubject();
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException("token非法");
         }
         LoginUser loginUser = redisCache.getCacheObject(id);

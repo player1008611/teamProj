@@ -2,10 +2,27 @@ package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.teamProj.dao.*;
-import com.teamProj.entity.*;
+import com.teamProj.dao.JobApplicationDao;
+import com.teamProj.dao.MarkedRecruitmentInfoDao;
+import com.teamProj.dao.RecruitmentInfoDao;
+import com.teamProj.dao.ResumeDao;
+import com.teamProj.dao.SchoolDao;
+import com.teamProj.dao.StudentDao;
+import com.teamProj.dao.UserDao;
+import com.teamProj.entity.JobApplication;
+import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.MarkedRecruitmentInfo;
+import com.teamProj.entity.RecruitmentInfo;
+import com.teamProj.entity.Resume;
+import com.teamProj.entity.School;
+import com.teamProj.entity.Student;
+import com.teamProj.entity.User;
 import com.teamProj.service.StudentService;
-import com.teamProj.utils.*;
+import com.teamProj.utils.EmailVerification;
+import com.teamProj.utils.HttpResult;
+import com.teamProj.utils.JwtUtil;
+import com.teamProj.utils.RedisCache;
+import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -121,10 +138,10 @@ public class StudentImpl implements StudentService {
     public HttpResult verification(String email) {
         EmailVerification emailVerification = new EmailVerification();
         String captcha = emailVerification.verificationService(email);
-        if(captcha!=null){
-        return HttpResult.success(captcha, "发送成功");}
-        else {
-            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR,"发送失败");
+        if (captcha != null) {
+            return HttpResult.success(captcha, "发送成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "发送失败");
         }
     }
 
@@ -234,8 +251,7 @@ public class StudentImpl implements StudentService {
                 .set("resume_name", resumeName);
         if (resumeDao.update(null, updateWrapper) > 0) {
             return HttpResult.success(resumeDao.selectById(resumeId), "修改成功");
-        }
-        else {
+        } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
     }

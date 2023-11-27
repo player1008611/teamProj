@@ -7,7 +7,7 @@
         SELECT draft.draft_name                 as draftName,
                draft.edit_time                  as editTime,
                recruitment_info.submission_time as submissionTime,
-               department.name        as departmentName
+               department.name                  as departmentName
         FROM draft,
              recruitment_info,
              department

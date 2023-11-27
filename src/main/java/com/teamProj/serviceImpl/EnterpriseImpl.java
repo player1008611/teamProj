@@ -443,7 +443,7 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<Resume> resumeQueryWrapper = new QueryWrapper<>();
         resumeQueryWrapper.eq("resume_id", jobApplication.getResumeId());
         Resume resume = resumeDao.selectOne(resumeQueryWrapper);
-        if(!Objects.isNull(resume)){
+        if (!Objects.isNull(resume)) {
             return HttpResult.success(resumeDao.selectOne(resumeQueryWrapper), "查询成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -506,7 +506,7 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult agreeJobApplication(Integer id, Timestamp date, String position) {
+    public HttpResult agreeJobApplication(Integer id, String date, String position) {
         QueryWrapper<JobApplication> jobApplicationQueryWrapper = new QueryWrapper<>();
         jobApplicationQueryWrapper.eq("application_id", id).eq("status", "0");
         JobApplication jobApplication = jobApplicationDao.selectOne(jobApplicationQueryWrapper);
@@ -540,7 +540,7 @@ public class EnterpriseImpl implements EnterpriseService {
                 + "向" + recruitmentInfo.getCompanyName()
                 + "的" + department.getName()
                 + "申请" + recruitmentInfo.getJobTitle()
-                + "的简历已经通过，面试将在" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(interviewInfo.getDateTime())
+                + "的简历已经通过，面试将在" + date
                 + "于" + interviewInfo.getPosition()
                 + "进行,请按时参加。";
         if (!emailVerification.interviewReminderService(user.getAccount(), content)) {

@@ -37,7 +37,7 @@ public interface EnterpriseService {
 
     HttpResult deleteJobApplication(String studentAccount, String departmentName, String jobTitle);
 
-    HttpResult disagreeJobApplication(Integer id,String rejectReason);
+    HttpResult disagreeJobApplication(Integer id, String rejectReason);
 
-    HttpResult agreeJobApplication(Integer id, Timestamp date,String position);
+    HttpResult agreeJobApplication(Integer id, String date, String position);
 }

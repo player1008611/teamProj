@@ -20,8 +20,7 @@ public class InterviewInfo {
 
     Integer applicationId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    Timestamp dateTime;
+    String dateTime;
 
     String position;
 

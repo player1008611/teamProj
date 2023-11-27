@@ -4,10 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.JobApplicationDao">
     <select id="queryJobApplication" resultType="com.teamProj.entity.vo.JobApplicationRecruitmentVo">
-        SELECT a.application_id as applicationId,
+        SELECT a.application_id   as applicationId,
                a.application_time as Time,
-               r.company_name as companyName,
-               r.job_title as jobTitle
+               r.company_name     as companyName,
+               r.job_title        as jobTitle
         FROM recruitment_info as r,
              job_application as a
         WHERE r.recruitment_id = a.recruitment_id

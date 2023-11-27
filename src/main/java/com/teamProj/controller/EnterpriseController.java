@@ -179,7 +179,7 @@ public class EnterpriseController {
     @PostMapping("/agreeJobApplication")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult agreeJobApplication(@RequestParam Integer id, @RequestParam String date, @RequestParam String position) {
-        return enterpriseService.agreeJobApplication(id, Timestamp.valueOf(date), position);
+        return enterpriseService.agreeJobApplication(id, date, position);
     }
 
     @GetMapping("/queryResume")

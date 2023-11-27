@@ -115,10 +115,10 @@ public class SendEmail {
         if (result != 354) {
             throw new IOException("不能发送数据");
         }
-        out.write("From: " + from+"\r\n");
-        out.write("To: " + to+"\r\n");
-        out.write("Subject: " + subject+"\r\n"+"\r\n");
-        out.write(content+"\r\n");
+        out.write("From: " + from + "\r\n");
+        out.write("To: " + to + "\r\n");
+        out.write("Subject: " + subject + "\r\n" + "\r\n");
+        out.write(content + "\r\n");
         // 句点加回车结束邮件内容输入
         result = sendServer(".", in, out);
         System.out.println(result);

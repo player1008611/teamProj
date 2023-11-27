@@ -25,7 +25,7 @@ public class MakeResume {
         PdfReader reader = new PdfReader(resumeTemplate);
         PdfWriter writer = new PdfWriter(outputStream);
         PdfDocument pdfDocument = new PdfDocument(reader, writer);
-        PdfFont font = PdfFontFactory.createFont("STSong-Light","UniGB-UCS2-H");
+        PdfFont font = PdfFontFactory.createFont("STSong-Light", "UniGB-UCS2-H");
         PdfAcroForm form = PdfAcroForm.getAcroForm(pdfDocument, false);
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             if (entry.getKey().equals("image")) {
