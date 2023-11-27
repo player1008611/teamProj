@@ -59,4 +59,11 @@ public class EmailVerification {
             return null;
         }
     }
+
+    public Boolean interviewReminderService(String email, String content) {
+        if (!email.matches("^\\s*\\w+(?:\\.{0,1}[\\w-]+)*@[a-zA-Z0-9]+(?:[-.][a-zA-Z0-9]+)*\\.[a-zA-Z]+\\s*$")) {
+            return false;
+        }
+        return sendEmail(email, "B5就业平台", content);
+    }
 }

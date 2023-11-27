@@ -10,6 +10,7 @@ import com.teamProj.dao.EnterpriseUserDao;
 import com.teamProj.dao.InterviewInfoDao;
 import com.teamProj.dao.JobApplicationDao;
 import com.teamProj.dao.RecruitmentInfoDao;
+import com.teamProj.dao.ResumeDao;
 import com.teamProj.dao.UserDao;
 import com.teamProj.entity.Department;
 import com.teamProj.entity.Draft;
@@ -19,12 +20,12 @@ import com.teamProj.entity.InterviewInfo;
 import com.teamProj.entity.JobApplication;
 import com.teamProj.entity.LoginUser;
 import com.teamProj.entity.RecruitmentInfo;
+import com.teamProj.entity.Resume;
 import com.teamProj.entity.User;
-import com.teamProj.dao.*;
-import com.teamProj.entity.*;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import com.teamProj.service.EnterpriseService;
+import com.teamProj.utils.EmailVerification;
 import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.JwtUtil;
 import com.teamProj.utils.RedisCache;
@@ -432,7 +433,7 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult queryResume(Integer jobApplicationId){
+    public HttpResult queryResume(Integer jobApplicationId) {
         QueryWrapper<JobApplication> jobApplicationQueryWrapper = new QueryWrapper<>();
         jobApplicationQueryWrapper.eq("application_id", jobApplicationId);
         JobApplication jobApplication = jobApplicationDao.selectOne(jobApplicationQueryWrapper);
@@ -442,7 +443,7 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<Resume> resumeQueryWrapper = new QueryWrapper<>();
         resumeQueryWrapper.eq("resume_id", jobApplication.getResumeId());
         Resume resume = resumeDao.selectOne(resumeQueryWrapper);
-        if(Objects.isNull(resume)){
+        if (Objects.isNull(resume)) {
             return HttpResult.success(resumeDao.selectOne(resumeQueryWrapper), "查询成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -521,6 +522,30 @@ public class EnterpriseImpl implements EnterpriseService {
         UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>(jobApplication);
         jobApplicationUpdateWrapper.set("status", '2');
         jobApplicationDao.update(null, jobApplicationUpdateWrapper);
+        //给学生发邮箱提醒
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.eq("recruitment_id", jobApplication.getRecruitmentId());
+        RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
+        QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
+        departmentQueryWrapper.eq("department_id", recruitmentInfo.getDepartmentId());
+        Department department = departmentDao.selectOne(departmentQueryWrapper);
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("user_id", jobApplication.getStudentId());
+        User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "学生信息不存在");
+        }
+        EmailVerification emailVerification = new EmailVerification();
+        String content = "您于" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobApplication.getApplicationTime())
+                + "向" + recruitmentInfo.getCompanyName()
+                + "的" + department.getName()
+                + "申请" + recruitmentInfo.getJobTitle()
+                + "的简历已经通过，面试将在" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(interviewInfo.getDateTime())
+                + "于" + interviewInfo.getPosition()
+                + "进行,请按时参加。";
+        if (!emailVerification.interviewReminderService(user.getAccount(), content)) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "邮件发送失败");
+        }
         return HttpResult.success();
     }
 }
