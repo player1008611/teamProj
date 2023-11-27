@@ -3,27 +3,11 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.teamProj.dao.DepartmentDao;
-import com.teamProj.dao.DraftDao;
-import com.teamProj.dao.EnterpriseDao;
-import com.teamProj.dao.EnterpriseUserDao;
-import com.teamProj.dao.InterviewInfoDao;
-import com.teamProj.dao.JobApplicationDao;
-import com.teamProj.dao.RecruitmentInfoDao;
-import com.teamProj.dao.ResumeDao;
-import com.teamProj.dao.UserDao;
-import com.teamProj.entity.Department;
-import com.teamProj.entity.Draft;
-import com.teamProj.entity.Enterprise;
-import com.teamProj.entity.EnterpriseUser;
-import com.teamProj.entity.InterviewInfo;
-import com.teamProj.entity.JobApplication;
-import com.teamProj.entity.LoginUser;
-import com.teamProj.entity.RecruitmentInfo;
-import com.teamProj.entity.Resume;
-import com.teamProj.entity.User;
+import com.teamProj.dao.*;
+import com.teamProj.entity.*;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
+import com.teamProj.entity.vo.StudentResumeAllVo;
 import com.teamProj.service.EnterpriseService;
 import com.teamProj.utils.EmailVerification;
 import com.teamProj.utils.HttpResult;
@@ -84,6 +68,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
     private ResumeDao resumeDao;
+
+    @Resource
+    private StudentDao studentDao;
 
     @Override
     public HttpResult enterpriseLogin(String account, String password) {
@@ -443,8 +430,12 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<Resume> resumeQueryWrapper = new QueryWrapper<>();
         resumeQueryWrapper.eq("resume_id", jobApplication.getResumeId());
         Resume resume = resumeDao.selectOne(resumeQueryWrapper);
+        QueryWrapper<Student> studentQueryWrapper = new QueryWrapper<>();
+        studentQueryWrapper.eq("student_id", resume.getStudentId());
+        Student student=studentDao.selectOne(studentQueryWrapper);
+        StudentResumeAllVo data = new StudentResumeAllVo(resume, student.getName(), student.getGender(), student.getPhoneNumber());
         if(!Objects.isNull(resume)){
-            return HttpResult.success(resumeDao.selectOne(resumeQueryWrapper), "查询成功");
+            return HttpResult.success(data, "查询成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
