@@ -8,7 +8,7 @@
         FROM `user`,school
         WHERE `user`.user_id=school_id
         <if test="principal != null and principal != ''">
-            AND principal like concat('%'#{principal}'%')
+            AND principal like concat('%',#{principal},'%')
         </if>
         <if test="status != null and status != ''">
             AND status = #{status}
