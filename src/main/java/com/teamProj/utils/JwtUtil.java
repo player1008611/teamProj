@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 public class JwtUtil {
     //有效期为
-    public static final Long JWT_TTL = 60 * 60 * 1000L;// 60 * 60 *1000 一个小时
+    public static final Long JWT_TTL = 24 * 60 * 60 * 1000L;// 一天
     //设置秘钥明文
     public static final String JWT_KEY = "pegasus";
 
@@ -25,7 +25,7 @@ public class JwtUtil {
     }
 
     /**
-     * 生成jtw
+     * 生成jwt
      *
      * @param subject token中要存放的数据（json格式）
      * @return
@@ -36,7 +36,7 @@ public class JwtUtil {
     }
 
     /**
-     * 生成jtw
+     * 生成jwt
      *
      * @param subject   token中要存放的数据（json格式）
      * @param ttlMillis token超时时间
@@ -61,7 +61,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setId(uuid) //唯一的ID
                 .setSubject(subject) // 主题 可以是JSON数据
-                .setIssuer("sg") // 签发者
+                .setIssuer("xyx") // 签发者
                 .setIssuedAt(now) // 签发时间
                 .signWith(signatureAlgorithm, secretKey) //使用HS256对称加密算法签名, 第二个参数为秘钥
                 .setExpiration(expDate);
