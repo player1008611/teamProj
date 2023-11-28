@@ -12,7 +12,7 @@
         AND enterprise_user.user_id = `user`.user_id
         AND enterprise.enterprise_name = #{enterpriseName}
         <if test="name!=null and name!=''">
-            AND enterprise_user.`name` like concat('%'#{name}'%')
+            AND enterprise_user.`name` like concat('%',#{name},'%')
         </if>
     </select>
 </mapper>

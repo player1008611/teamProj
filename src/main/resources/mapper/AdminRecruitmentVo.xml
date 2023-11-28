@@ -25,13 +25,13 @@
         WHERE recruitment_info.enterprise_id = enterprise.enterprise_id
         AND recruitment_info.department_id = department.department_id
         <if test="departmentName!=null and departmentName!=''">
-            AND department.name like concat('%'#{departmentName}'%')
+            AND department.name like concat('%',#{departmentName},'%')
         </if>
         <if test="companyName!=null and companyName!=''">
-            AND company_name like concat('%'#{companyName}'%')
+            AND company_name like concat('%',#{companyName},'%')
         </if>
         <if test="jobTitle!=null and jobTitle!=''">
-            AND job_title like concat('%'#{jobTitle}'%')
+            AND job_title like concat('%',#{jobTitle},'%')
         </if>
     </select>
 </mapper>
