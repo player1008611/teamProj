@@ -167,7 +167,7 @@ public class AdministratorImpl implements AdministratorService {
         QueryWrapper<Enterprise> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("enterprise_name", "website");
         if (!Objects.isNull(name) && !name.isEmpty()) {
-            queryWrapper.eq("enterprise_name", name);
+            queryWrapper.like("enterprise_name", name);
         }
         return HttpResult.success(enterpriseDao.selectPage(page, queryWrapper), "查询成功");
     }
