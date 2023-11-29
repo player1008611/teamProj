@@ -46,6 +46,11 @@ public class StudentController {
         return studentService.studentRegister(account, password, schoolName, name, phoneNumber);
     }
 
+    @GetMapping("/querySchool/all")
+    HttpResult querySchool() {
+        return studentService.querySchool();
+    }
+
     @PatchMapping("/setPassword")
     @PreAuthorize("hasAuthority('student')")
     HttpResult studentSetPassword(@RequestParam(value = "account") String account, @RequestParam(value = "oldPassword") String oldPassword, @RequestParam(value = "password") String password) {

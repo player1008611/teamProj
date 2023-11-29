@@ -135,6 +135,13 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
+    public HttpResult querySchool() {
+        QueryWrapper<School> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("school_name");
+        return HttpResult.success(schoolDao.selectList(queryWrapper), "查询成功");
+    }
+
+    @Override
     public HttpResult verification(String email) {
         EmailVerification emailVerification = new EmailVerification();
         String captcha = emailVerification.verificationService(email);

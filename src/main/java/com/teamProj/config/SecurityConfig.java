@@ -40,6 +40,7 @@ public class SecurityConfig {
                 .antMatchers("/**/login",
                         "/student/register",
                         "/student/verification",
+                        "/student/querySchool/all",
                         "/swagger-ui.html",
                         "/webjars/**",
                         "/swagger-resources/**",
