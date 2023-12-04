@@ -11,6 +11,10 @@ public interface EnterpriseService {
 
     HttpResult cityList();
 
+    HttpResult hostList();
+
+    HttpResult locationList();
+
     HttpResult enterpriseLogin(String account, String password);
 
     HttpResult enterpriseLogout();

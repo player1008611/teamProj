@@ -36,6 +36,18 @@ public class EnterpriseController {
         return enterpriseService.cityList();
     }
 
+    @GetMapping("/hostList")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult hostList() {
+        return enterpriseService.hostList();
+    }
+
+    @GetMapping("/locationList")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult locationList() {
+        return enterpriseService.locationList();
+    }
+
     @PostMapping("/login")
     HttpResult enterpriseLogin(@RequestParam String account, @RequestParam String password) {
         return enterpriseService.enterpriseLogin(account, password);

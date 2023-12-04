@@ -117,6 +117,20 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
+    public HttpResult hostList() {
+        QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
+        careerFairQueryWrapper.select("DISTINCT host");
+        return HttpResult.success(careerFairDao.selectList(careerFairQueryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult locationList() {
+        QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
+        careerFairQueryWrapper.select("DISTINCT location");
+        return HttpResult.success(careerFairDao.selectList(careerFairQueryWrapper), "查询成功");
+    }
+
+    @Override
     public HttpResult enterpriseLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
