@@ -610,7 +610,7 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult queryFair(String host, String location, String schoolName, String title, Integer current) {
+    public HttpResult queryFair(String host, String location, String schoolName, Timestamp date, Integer code, Integer current) {
         Page<EnterpriseFairVo> page = new Page<>(current, 7);
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
@@ -618,7 +618,7 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         int userId = loginUser.getUser().getUserId();
-        return HttpResult.success(enterpriseUserDao.queryFair(page, host, location, schoolName, title, userId), "查询成功");
+        return HttpResult.success(enterpriseUserDao.queryFair(page, host, location, schoolName, date, code, userId), "查询成功");
     }
 
     @Override

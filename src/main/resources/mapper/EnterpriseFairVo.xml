@@ -21,16 +21,43 @@
         AND enterprise_user.user_id = #{userId}
         AND enterprise_user.enterprise_id=career_fair.enterprise_id
         <if test="host!=null and host!=''">
-            AND career_fair.`host` like concat('%',#{host},'%')
+            AND career_fair.`host` = #{host}
         </if>
         <if test="location!=null and location!=''">
-            AND career_fair.location like concat('%',#{location},'%')
+            AND career_fair.location = #{location}
         </if>
         <if test="schoolName!=null and schoolName!=''">
-            AND school_name like concat('%',#{schoolName},'%')
+            AND school_name = #{schoolName}
         </if>
-        <if test="title!=null and title!=''">
-            AND career_fair.title like concat('%',#{title},'%')
+        <if test="date!=null">
+            AND NOT(career_fair.end_time <![CDATA[<]]> #{date}
+            OR career_fair.start_time <![CDATA[>]]> timestampadd(DAY,1,#{date}))
+        </if>
+        <if test="code==1">
+            AND career_fair.status = 1
+        </if>
+        <if test="code==2">
+            AND career_fair.status = 2
+        </if>
+        <if test="code==3">
+            AND (career_fair.status = 1
+            OR career_fair.status = 2)
+        </if>
+        <if test="code==4">
+            AND career_fair.status = 0
+        </if>
+        <if test="code==5">
+            AND (career_fair.status = 0
+            OR career_fair.status = 1)
+        </if>
+        <if test="code==6">
+            AND (career_fair.status = 0
+            OR career_fair.status = 2)
+        </if>
+        <if test="code==7">
+            AND (career_fair.status = 0
+            OR career_fair.status = 1
+            OR career_fair.status = 2)
         </if>
     </select>
 </mapper>

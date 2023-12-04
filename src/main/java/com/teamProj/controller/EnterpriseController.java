@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/enterprise")
@@ -209,7 +210,7 @@ public class EnterpriseController {
             , @RequestParam String location
             , @RequestParam String host
             , @RequestParam String schoolName) {
-        return enterpriseService.createFair(title, content, Timestamp.valueOf(startTime+":00"), Timestamp.valueOf(endTime+":00"), location, host, schoolName);
+        return enterpriseService.createFair(title, content, Timestamp.valueOf(startTime + ":00"), Timestamp.valueOf(endTime + ":00"), location, host, schoolName);
     }
 
     @GetMapping("/queryFair")
@@ -217,9 +218,16 @@ public class EnterpriseController {
     HttpResult queryFair(@RequestParam(required = false) String host
             , @RequestParam(required = false) String location
             , @RequestParam(required = false) String schoolName
-            , @RequestParam(required = false) String title
+            , @RequestParam(required = false) String date
+            , @RequestParam(required = false) Integer code
             , @RequestParam Integer current) {
-        return enterpriseService.queryFair(host, location, schoolName, title, current);
+        Timestamp timestamp = null;
+        if (Objects.isNull(date) || date.isEmpty()) {
+            timestamp = null;
+        } else {
+            timestamp = Timestamp.valueOf(date + " 00:00:00");
+        }
+        return enterpriseService.queryFair(host, location, schoolName, timestamp, code, current);
     }
 
     @PutMapping("/updateFair")
@@ -232,7 +240,7 @@ public class EnterpriseController {
             , @RequestParam String location
             , @RequestParam String host
             , @RequestParam String schoolName) {
-        return enterpriseService.updateFair(id, title, content, Timestamp.valueOf(startTime+":00"), Timestamp.valueOf(endTime+":00"), location, host, schoolName);
+        return enterpriseService.updateFair(id, title, content, Timestamp.valueOf(startTime + ":00"), Timestamp.valueOf(endTime + ":00"), location, host, schoolName);
     }
 
     @DeleteMapping("/deleteFair")

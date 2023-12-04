@@ -11,6 +11,7 @@ import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Mapper
@@ -34,6 +35,7 @@ public interface EnterpriseUserDao extends BaseMapper<EnterpriseUser> {
             , @Param("host") String host
             , @Param("location") String location
             , @Param("schoolName") String schoolName
-            , @Param("title") String title
+            , @Param("date") Timestamp date
+            , @Param("code") Integer code
             , @Param("userId") Integer userId);
 }

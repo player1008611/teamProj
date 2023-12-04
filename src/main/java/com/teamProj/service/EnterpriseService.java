@@ -47,7 +47,7 @@ public interface EnterpriseService {
 
     HttpResult createFair(String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName);
 
-    HttpResult queryFair(String host, String location, String schoolName, String title, Integer current);
+    HttpResult queryFair(String host, String location, String schoolName, Timestamp date, Integer code, Integer current);
 
     HttpResult updateFair(Integer id, String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName);
 

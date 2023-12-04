@@ -3,7 +3,7 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://1.94.100.52/team_proj?serverTimezone=UTC
+    url: jdbc:mysql://1.94.100.52/team_proj?serverTimezone=Asia/Shanghai
     username: root
     password: 0.123456a
   mvc:
