@@ -385,7 +385,7 @@ public class StudentImpl implements StudentService {
         queryWrapper2.eq("resume_id", jobApplication.getResumeId());
         Map<String, String> map = new HashMap<>();
         map.put("投报职位", recruitmentInfo.getJobTitle());
-        map.put("投报日期", new SimpleDateFormat("yyyy-MM-dd").format(jobApplication.getApplicationTime()));
+        map.put("投报日期", jobApplication.getApplicationTime());
         map.put("投报公司名", recruitmentInfo.getCompanyName());
         String status = "" + jobApplication.getStatus();
         status = switch (status) {

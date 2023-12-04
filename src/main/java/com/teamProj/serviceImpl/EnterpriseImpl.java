@@ -526,7 +526,7 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "学生信息不存在");
         }
         EmailVerification emailVerification = new EmailVerification();
-        String content = "您于" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobApplication.getApplicationTime())
+        String content = "您于" + jobApplication.getApplicationTime()
                 + "向" + recruitmentInfo.getCompanyName()
                 + "的" + department.getName()
                 + "申请" + recruitmentInfo.getJobTitle()
