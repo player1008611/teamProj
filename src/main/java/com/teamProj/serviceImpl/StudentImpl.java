@@ -5,8 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
 import com.teamProj.entity.vo.StudentInterviewVo;
+import com.teamProj.dao.*;
+import com.teamProj.entity.*;
 import com.teamProj.service.StudentService;
-import com.teamProj.utils.*;
+import com.teamProj.utils.EmailVerification;
+import com.teamProj.utils.HttpResult;
+import com.teamProj.utils.JwtUtil;
+import com.teamProj.utils.RedisCache;
+import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -109,7 +115,7 @@ public class StudentImpl implements StudentService {
         QueryWrapper<School> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("school_name", schoolName);
         School school = schoolDao.selectOne(queryWrapper1);
-        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null, null, null);
+        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null,null,null);
         if (studentDao.insert(student) > 0) {
             return HttpResult.success(student, "注册成功");
         } else {
