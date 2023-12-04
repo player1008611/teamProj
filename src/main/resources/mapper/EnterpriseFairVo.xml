@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.EnterpriseUserDao">
+    <select id="queryFair" resultType="com.teamProj.entity.vo.EnterpriseFairVo">
+        SELECT career_fair.fair_id as fairId,
+        career_fair.title,
+        career_fair.content,
+        career_fair.start_time as startTime,
+        career_fair.end_time as endTime,
+        career_fair.location,
+        career_fair.`host`,
+        career_fair.`status`,
+        school.school_name as schoolName
+        FROM career_fair,
+        school,
+        enterprise_user
+        WHERE career_fair.school_id = school.school_id
+        AND user_id=#{userId}
+        AND enterprise_user.enterprise_id=career_fair.enterprise_id
+        <if test="host!=null and host!=''">
+            AND career_fair.`host` like concat('%',#{host},'%')
+        </if>
+        <if test="location!=null and location!=''">
+            AND career_fair.location like concat('%',#{location},'%')
+        </if>
+        <if test="schoolName!=null and schoolName!=''">
+            AND school_name like concat('%',#{schoolName},'%')
+        </if>
+        <if test="title!=null and title!=''">
+            AND career_fair.title like concat('%',#{title},'%')
+        </if>
+    </select>
+</mapper>

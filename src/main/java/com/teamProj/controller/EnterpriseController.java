@@ -23,6 +23,18 @@ public class EnterpriseController {
     @Resource
     EnterpriseService enterpriseService;
 
+    @GetMapping("/schoolList")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult schoolList() {
+        return enterpriseService.schoolList();
+    }
+
+    @GetMapping("/cityList")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult cityList() {
+        return enterpriseService.cityList();
+    }
+
     @PostMapping("/login")
     HttpResult enterpriseLogin(@RequestParam String account, @RequestParam String password) {
         return enterpriseService.enterpriseLogin(account, password);
@@ -184,7 +196,48 @@ public class EnterpriseController {
 
     @GetMapping("/queryResume")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult queryResume(@RequestParam(value = "jobApplicationId") Integer jobApplicationId) {
+    HttpResult queryResume(@RequestParam Integer jobApplicationId) {
         return enterpriseService.queryResume(jobApplicationId);
+    }
+
+    @PostMapping("/createFair")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult createFair(@RequestParam String title
+            , @RequestParam String content
+            , @RequestParam String startTime
+            , @RequestParam String endTime
+            , @RequestParam String location
+            , @RequestParam String host
+            , @RequestParam String schoolName) {
+        return enterpriseService.createFair(title, content, Timestamp.valueOf(startTime+":00"), Timestamp.valueOf(endTime+":00"), location, host, schoolName);
+    }
+
+    @GetMapping("/queryFair")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult queryFair(@RequestParam(required = false) String host
+            , @RequestParam(required = false) String location
+            , @RequestParam(required = false) String schoolName
+            , @RequestParam(required = false) String title
+            , @RequestParam Integer current) {
+        return enterpriseService.queryFair(host, location, schoolName, title, current);
+    }
+
+    @PutMapping("/updateFair")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult updateFair(@RequestParam Integer id
+            , @RequestParam String title
+            , @RequestParam String content
+            , @RequestParam String startTime
+            , @RequestParam String endTime
+            , @RequestParam String location
+            , @RequestParam String host
+            , @RequestParam String schoolName) {
+        return enterpriseService.updateFair(id, title, content, Timestamp.valueOf(startTime+":00"), Timestamp.valueOf(endTime+":00"), location, host, schoolName);
+    }
+
+    @DeleteMapping("/deleteFair")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult deleteFair(@RequestParam Integer id) {
+        return enterpriseService.deleteFair(id);
     }
 }

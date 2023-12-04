@@ -7,6 +7,10 @@ import java.sql.Timestamp;
 
 public interface EnterpriseService {
 
+    HttpResult schoolList();
+
+    HttpResult cityList();
+
     HttpResult enterpriseLogin(String account, String password);
 
     HttpResult enterpriseLogout();
@@ -40,4 +44,12 @@ public interface EnterpriseService {
     HttpResult disagreeJobApplication(Integer id, String rejectReason);
 
     HttpResult agreeJobApplication(Integer id, String date, String position);
+
+    HttpResult createFair(String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName);
+
+    HttpResult queryFair(String host, String location, String schoolName, String title, Integer current);
+
+    HttpResult updateFair(Integer id, String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName);
+
+    HttpResult deleteFair(Integer id);
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.vo.EnterpriseDraftVo;
+import com.teamProj.entity.vo.EnterpriseFairVo;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,4 +29,11 @@ public interface EnterpriseUserDao extends BaseMapper<EnterpriseUser> {
             , @Param("departmentName") String departmentName
             , @Param("statusNum") Integer statusNum
     );
+
+    IPage<EnterpriseFairVo> queryFair(Page<EnterpriseFairVo> page
+            , @Param("host") String host
+            , @Param("location") String location
+            , @Param("schoolName") String schoolName
+            , @Param("title") String title
+            , @Param("userId") Integer userId);
 }

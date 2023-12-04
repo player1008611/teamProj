@@ -3,8 +3,32 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.teamProj.dao.*;
-import com.teamProj.entity.*;
+import com.teamProj.dao.CareerFairDao;
+import com.teamProj.dao.DepartmentDao;
+import com.teamProj.dao.DraftDao;
+import com.teamProj.dao.EnterpriseDao;
+import com.teamProj.dao.EnterpriseUserDao;
+import com.teamProj.dao.InterviewInfoDao;
+import com.teamProj.dao.JobApplicationDao;
+import com.teamProj.dao.RecruitmentInfoDao;
+import com.teamProj.dao.ResumeDao;
+import com.teamProj.dao.SchoolDao;
+import com.teamProj.dao.StudentDao;
+import com.teamProj.dao.UserDao;
+import com.teamProj.entity.CareerFair;
+import com.teamProj.entity.Department;
+import com.teamProj.entity.Draft;
+import com.teamProj.entity.Enterprise;
+import com.teamProj.entity.EnterpriseUser;
+import com.teamProj.entity.InterviewInfo;
+import com.teamProj.entity.JobApplication;
+import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.RecruitmentInfo;
+import com.teamProj.entity.Resume;
+import com.teamProj.entity.School;
+import com.teamProj.entity.Student;
+import com.teamProj.entity.User;
+import com.teamProj.entity.vo.EnterpriseFairVo;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import com.teamProj.entity.vo.StudentResumeAllVo;
@@ -71,6 +95,26 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
     private StudentDao studentDao;
+
+    @Resource
+    private SchoolDao schoolDao;
+
+    @Resource
+    private CareerFairDao careerFairDao;
+
+    @Override
+    public HttpResult schoolList() {
+        QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
+        schoolQueryWrapper.select("DISTINCT school_name");
+        return HttpResult.success(schoolDao.selectList(schoolQueryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult cityList() {
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.select("DISTINCT city");
+        return HttpResult.success(recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper), "查询成功");
+    }
 
     @Override
     public HttpResult enterpriseLogin(String account, String password) {
@@ -430,12 +474,12 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<Resume> resumeQueryWrapper = new QueryWrapper<>();
         resumeQueryWrapper.eq("resume_id", jobApplication.getResumeId());
         Resume resume = resumeDao.selectOne(resumeQueryWrapper);
-        if(Objects.isNull(resume)){
+        if (Objects.isNull(resume)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         QueryWrapper<Student> studentQueryWrapper = new QueryWrapper<>();
         studentQueryWrapper.eq("student_id", resume.getStudentId());
-        Student student=studentDao.selectOne(studentQueryWrapper);
+        Student student = studentDao.selectOne(studentQueryWrapper);
         StudentResumeAllVo data = new StudentResumeAllVo(resume, student.getName(), student.getGender(), student.getPhoneNumber());
         return HttpResult.success(data, "查询成功");
     }
@@ -537,5 +581,81 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "邮件发送失败");
         }
         return HttpResult.success();
+    }
+
+    @Override
+    public HttpResult createFair(String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName) {
+        QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
+        schoolQueryWrapper.eq("school_name", schoolName);
+        School school = schoolDao.selectOne(schoolQueryWrapper);
+        if (Objects.isNull(school)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "学校不存在");
+        }
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+        EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
+        CareerFair careerFair = new CareerFair(null, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content);
+        try {
+            careerFairDao.insert(careerFair);
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "创建失败");
+        }
+        return HttpResult.success(title, "创建成功");
+    }
+
+    @Override
+    public HttpResult queryFair(String host, String location, String schoolName, String title, Integer current) {
+        Page<EnterpriseFairVo> page = new Page<>(current, 7);
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        return HttpResult.success(enterpriseUserDao.queryFair(page, host, location, schoolName, title, userId), "查询成功");
+    }
+
+    @Override
+    public HttpResult updateFair(Integer id, String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName) {
+        UpdateWrapper<CareerFair> careerFairUpdateWrapper = new UpdateWrapper<>();
+        careerFairUpdateWrapper.eq("fair_id", id);
+        CareerFair careerFair = careerFairDao.selectOne(careerFairUpdateWrapper);
+        if (!careerFair.getStatus().equals("0")) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "稿件已通过，请联系管理员修改");
+        }
+        QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
+        schoolQueryWrapper.eq("school_name", schoolName);
+        School school = schoolDao.selectOne(schoolQueryWrapper);
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+        EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
+        try {
+            careerFairDao.update(new CareerFair(null, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content), careerFairUpdateWrapper);
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
+        }
+        return HttpResult.success(null, "修改成功");
+    }
+
+    @Override
+    public HttpResult deleteFair(Integer id) {
+        QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
+        careerFairQueryWrapper.eq("fair_id", id);
+        if (careerFairDao.delete(careerFairQueryWrapper) > 0) {
+            return HttpResult.success(id, "删除成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "对象不存在");
     }
 }
