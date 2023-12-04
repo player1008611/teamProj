@@ -600,7 +600,7 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
         enterpriseUserQueryWrapper.eq("user_id", userId);
         EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
-        CareerFair careerFair = new CareerFair(null, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content);
+        CareerFair careerFair = new CareerFair(null, userId, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content);
         try {
             careerFairDao.insert(careerFair);
         } catch (Exception e) {
@@ -623,26 +623,29 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Override
     public HttpResult updateFair(Integer id, String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName) {
-        UpdateWrapper<CareerFair> careerFairUpdateWrapper = new UpdateWrapper<>();
-        careerFairUpdateWrapper.eq("fair_id", id);
-        CareerFair careerFair = careerFairDao.selectOne(careerFairUpdateWrapper);
-        if (!careerFair.getStatus().equals("0")) {
-            return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "稿件已通过，请联系管理员修改");
-        }
-        QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
-        schoolQueryWrapper.eq("school_name", schoolName);
-        School school = schoolDao.selectOne(schoolQueryWrapper);
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         int userId = loginUser.getUser().getUserId();
+        UpdateWrapper<CareerFair> careerFairUpdateWrapper = new UpdateWrapper<>();
+        careerFairUpdateWrapper.eq("fair_id", id);
+        CareerFair careerFair = careerFairDao.selectOne(careerFairUpdateWrapper);
+        if (careerFair.getUserId() != userId) {
+            return HttpResult.failure(ResultCodeEnum.REDIRECT, "无权修改");
+        }
+        if (!careerFair.getStatus().equals("0")) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "稿件已通过，请联系管理员修改");
+        }
+        QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
+        schoolQueryWrapper.eq("school_name", schoolName);
+        School school = schoolDao.selectOne(schoolQueryWrapper);
         QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
         enterpriseUserQueryWrapper.eq("user_id", userId);
         EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
         try {
-            careerFairDao.update(new CareerFair(null, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content), careerFairUpdateWrapper);
+            careerFairDao.update(new CareerFair(null, null, school.getSchoolId(), null, startTime, endTime, location, host, null, title, content), careerFairUpdateWrapper);
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
         }

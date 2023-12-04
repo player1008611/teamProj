@@ -13,6 +13,8 @@ import java.sql.Timestamp;
 public class EnterpriseFairVo {
     Integer fairId;
 
+    String userName;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
     Timestamp startTime;
 

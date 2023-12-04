@@ -16,6 +16,8 @@ public class CareerFair {
     @TableId(type = IdType.AUTO)
     Integer fairId;
 
+    Integer userId;
+
     Integer schoolId;
 
     Integer enterpriseId;

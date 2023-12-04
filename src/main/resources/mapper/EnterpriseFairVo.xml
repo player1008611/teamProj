@@ -12,12 +12,13 @@
         career_fair.location,
         career_fair.`host`,
         career_fair.`status`,
-        school.school_name as schoolName
+        school.school_name as schoolName,
+        enterprise_user.name as userName
         FROM career_fair,
         school,
         enterprise_user
         WHERE career_fair.school_id = school.school_id
-        AND user_id=#{userId}
+        AND enterprise_user.user_id = #{userId}
         AND enterprise_user.enterprise_id=career_fair.enterprise_id
         <if test="host!=null and host!=''">
             AND career_fair.`host` like concat('%',#{host},'%')
