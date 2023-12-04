@@ -2,21 +2,8 @@ package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.teamProj.dao.JobApplicationDao;
-import com.teamProj.dao.MarkedRecruitmentInfoDao;
-import com.teamProj.dao.RecruitmentInfoDao;
-import com.teamProj.dao.ResumeDao;
-import com.teamProj.dao.SchoolDao;
-import com.teamProj.dao.StudentDao;
-import com.teamProj.dao.UserDao;
-import com.teamProj.entity.JobApplication;
-import com.teamProj.entity.LoginUser;
-import com.teamProj.entity.MarkedRecruitmentInfo;
-import com.teamProj.entity.RecruitmentInfo;
-import com.teamProj.entity.Resume;
-import com.teamProj.entity.School;
-import com.teamProj.entity.Student;
-import com.teamProj.entity.User;
+import com.teamProj.dao.*;
+import com.teamProj.entity.*;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.EmailVerification;
 import com.teamProj.utils.HttpResult;
@@ -36,6 +23,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -62,6 +50,8 @@ public class StudentImpl implements StudentService {
     private MarkedRecruitmentInfoDao markedRecruitmentInfoDao;
     @Resource
     private JobApplicationDao jobApplicationDao;
+    @Resource
+    private InterviewInfoDao interviewInfoDao;
 
     @Override
     public HttpResult studentLogin(String account, String password) {
@@ -290,7 +280,7 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult setStudentInfo(String account, String name, String phoneNumber, String gender, String wechat, String qq, Integer collegeId, Integer majorId, String address, Integer age) {
+    public HttpResult setStudentInfo(String account, String name,  String gender, String wechat, String qq, Integer collegeId, Integer majorId, String address, Integer age) {
         QueryWrapper<User> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("account", account);
         User user = userDao.selectOne(queryWrapper1);
@@ -299,7 +289,6 @@ public class StudentImpl implements StudentService {
         updateWrapper.eq("student_id", studentId);
         Student student = new Student();
         student.setName(name);
-        student.setPhoneNumber(phoneNumber);
         student.setGender(gender);
         student.setWechat(wechat);
         student.setQq(qq);
@@ -419,5 +408,31 @@ public class StudentImpl implements StudentService {
         } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
+    }
+    @Override
+    public HttpResult queryStudentInfo(){
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        QueryWrapper<Student> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("student_id", user.getUserId());
+        Student student = studentDao.selectOne(queryWrapper1);
+        Map<String, Object> map = new HashMap<>();
+        map.put("student",student);
+        QueryWrapper<School> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("school_id", student.getSchoolId());
+        map.put("schoolName",schoolDao.selectOne(queryWrapper2).getSchoolName());
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult queryInterviewInfo(String mark){
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        QueryWrapper<InterviewInfo> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("student_id", user.getUserId()).eq("mark", mark);
+        List<InterviewInfo> interviewInfo = interviewInfoDao.selectList(queryWrapper1);
+        return HttpResult.success(interviewInfo, "查询成功");
     }
 }

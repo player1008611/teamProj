@@ -23,7 +23,7 @@ public interface StudentService {
                           String certificates, String skills, String resumeName);
 
 
-    HttpResult setStudentInfo(String account, String name, String phoneNumber, String gender, String wechat, String qq, Integer collegeId, Integer majorId, String address, Integer age);
+    HttpResult setStudentInfo(String account, String name,  String gender, String wechat, String qq, Integer collegeId, Integer majorId, String address, Integer age);
 
 
 
@@ -46,4 +46,7 @@ public interface StudentService {
     HttpResult queryJobApplication(String account);
 
     HttpResult verification(String email);
+
+    HttpResult queryStudentInfo();
+    HttpResult queryInterviewInfo(String mark);
 }
