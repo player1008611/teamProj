@@ -125,7 +125,7 @@ public class StudentImpl implements StudentService {
         QueryWrapper<School> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("school_name", schoolName);
         School school = schoolDao.selectOne(queryWrapper1);
-        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null);
+        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null,null,null);
         if (studentDao.insert(student) > 0) {
             return HttpResult.success(student, "注册成功");
         } else {
@@ -290,7 +290,7 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult setStudentInfo(String account, Map<String, Object> map) {
+    public HttpResult setStudentInfo(String account, String name, String phoneNumber, String gender, String wechat, String qq, Integer collegeId, Integer majorId, String address, Integer age) {
         QueryWrapper<User> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("account", account);
         User user = userDao.selectOne(queryWrapper1);
@@ -298,13 +298,15 @@ public class StudentImpl implements StudentService {
         UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("student_id", studentId);
         Student student = new Student();
-        student.setName((String) map.get("name"));
-        student.setPhoneNumber((String) map.get("phoneNumber"));
-        student.setGender((String) map.get("gender"));
-        student.setWechat((String) map.get("wechat"));
-        student.setQq((String) map.get("qq"));
-        student.setCollegeId((Integer) map.get("college_id"));
-        student.setMajorId((Integer) map.get("major_id"));
+        student.setName(name);
+        student.setPhoneNumber(phoneNumber);
+        student.setGender(gender);
+        student.setWechat(wechat);
+        student.setQq(qq);
+        student.setCollegeId(collegeId);
+        student.setMajorId(majorId);
+        student.setAddress(address);
+        student.setAge(age);
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("name").eq("student_id", studentId);
         if (studentDao.update(student, updateWrapper) > 0) {

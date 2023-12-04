@@ -36,4 +36,8 @@ public class Student {
     Integer majorId;
 
     String byword;
+
+    Integer age;
+
+    String address;
 }

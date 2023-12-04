@@ -59,8 +59,12 @@ public class StudentController {
 
     @PatchMapping("/setStudentInfo")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult setStudentInfo(@RequestParam(value = "studentAccount") String account, @RequestBody Map<String, Object> map) {
-        return studentService.setStudentInfo(account, map);
+    HttpResult setStudentInfo(@RequestParam(value = "studentAccount") String account, @RequestParam(value = "name") String name,
+                              @RequestParam(value = "phoneNumber") String phoneNumber,@RequestParam(value = "gender")String gender,
+                              @RequestParam(value = "wechat") String wechat, @RequestParam(value = "qq") String qq,
+                              @RequestParam(value = "collegeId") Integer collegeId, @RequestParam(value = "majorId") Integer majorId,
+                              @RequestParam(value = "address") String address, @RequestParam(value = "age") Integer age) {
+        return studentService.setStudentInfo(account,  name, phoneNumber,gender, wechat,qq, collegeId,  majorId, address, age);
     }
 
     @PostMapping("/createResume")
