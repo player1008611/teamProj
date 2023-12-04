@@ -69,6 +69,9 @@ public class StudentImpl implements StudentService {
         Map<String, String> map = new HashMap<>();
         map.put("token", jwt);
         redisCache.setCacheObject(userId, loginUser, 24, TimeUnit.HOURS);
+        UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("student_id", loginUser.getUser().getUserId()).set("login_time", new Timestamp(System.currentTimeMillis()));
+        studentDao.update(null, updateWrapper);
         return HttpResult.success(map, "登录成功");
     }
 
@@ -91,6 +94,9 @@ public class StudentImpl implements StudentService {
                 user.setPassword(bCryptPasswordEncoder.encode(password));
                 userDao.update(user, queryWrapper);
                 queryWrapper.select("account");
+                UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("student_id", user.getUserId()).set("change_password_time", new Timestamp(System.currentTimeMillis()));
+                studentDao.update(null, updateWrapper);
                 return HttpResult.success(userDao.selectOne(queryWrapper), "修改成功");
             }
             return HttpResult.success(userDao.selectOne(queryWrapper), "密码错误");
@@ -115,7 +121,10 @@ public class StudentImpl implements StudentService {
         QueryWrapper<School> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("school_name", schoolName);
         School school = schoolDao.selectOne(queryWrapper1);
-        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null,null,null);
+        Date date = new java.sql.Date(new java.util.Date().getTime());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
+        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null,null,null,new Timestamp(System.currentTimeMillis()),new Timestamp(System.currentTimeMillis()));
         if (studentDao.insert(student) > 0) {
             return HttpResult.success(student, "注册成功");
         } else {
@@ -446,4 +455,31 @@ public class StudentImpl implements StudentService {
         }
         return HttpResult.success(studentInterviewVo, "查询成功");
     }
+
+    @Override
+    public HttpResult homepage(){
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        QueryWrapper<JobApplication> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("student_id", user.getUserId());
+        Integer i=jobApplicationDao.selectCount(queryWrapper1);
+        QueryWrapper<InterviewInfo> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("student_id", user.getUserId());
+        Integer j=interviewInfoDao.selectCount(queryWrapper2);
+        QueryWrapper<MarkedRecruitmentInfo> queryWrapper3 = new QueryWrapper<>();
+        queryWrapper3.eq("student_id", user.getUserId());
+        Integer k=markedRecruitmentInfoDao.selectCount(queryWrapper3);
+        QueryWrapper<Student> queryWrapper4 = new QueryWrapper<>();
+        queryWrapper4.eq("student_id", user.getUserId());
+        Student student = studentDao.selectOne(queryWrapper4);
+        Map<String, Object> map = new HashMap<>();
+        map.put("投递简历数", i);
+        map.put("面试数", j);
+        map.put("收藏数", k);
+        map.put("上次登录",student.getLoginTime());
+        map.put("上次修改密码",student.getChangePasswordTime());
+        return HttpResult.success(map, "查询成功");
+    }
+
 }

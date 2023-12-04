@@ -49,4 +49,5 @@ public interface StudentService {
 
     HttpResult queryStudentInfo();
     HttpResult queryInterviewInfo(String mark);
+    HttpResult homepage();
 }

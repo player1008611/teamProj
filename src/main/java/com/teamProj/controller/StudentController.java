@@ -179,5 +179,9 @@ public class StudentController {
         return studentService.verification(email);
     }
 
-
+    @GetMapping("/homepage")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult homepage() {
+        return studentService.homepage();
+    }
 }
