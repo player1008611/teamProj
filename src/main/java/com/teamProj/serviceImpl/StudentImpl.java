@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+import static com.teamProj.utils.EditByword.editByword;
+
 @Service
 public class StudentImpl implements StudentService {
     @Resource
@@ -369,6 +371,15 @@ public class StudentImpl implements StudentService {
         jobApplication.setApplicationTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()));
         jobApplication.setStatus('0');
         if (jobApplicationDao.insert(jobApplication) > 0) {
+            QueryWrapper<RecruitmentInfo> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("recruitment_id", recruitmentInfoId);
+            RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(queryWrapper1);
+            QueryWrapper<Student> queryWrapper2 = new QueryWrapper<>();
+            queryWrapper2.eq("student_id", jobApplication.getStudentId());
+            Student student = studentDao.selectOne(queryWrapper2);
+            UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("student_id",student.getStudentId()).set("byword",editByword(student.getByword(),recruitmentInfo.getByword()));
+            studentDao.update(null,updateWrapper);
             return HttpResult.success(jobApplication, "创建成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
