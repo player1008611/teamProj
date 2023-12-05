@@ -55,6 +55,8 @@ public class StudentImpl implements StudentService {
     private JobApplicationDao jobApplicationDao;
     @Resource
     private InterviewInfoDao interviewInfoDao;
+    @Resource
+    private CareerFairDao careerFairDao;
 
     @Override
     public HttpResult studentLogin(String account, String password) {
@@ -456,24 +458,25 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult queryInterviewInfo(String mark) {
+    public HttpResult queryInterviewInfo(String queryInfo) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
-        QueryWrapper<InterviewInfo> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("student_id", user.getUserId()).ge("mark", mark);
-        List<InterviewInfo> interviewInfo = interviewInfoDao.selectList(queryWrapper1);
-        List<StudentInterviewVo> studentInterviewVo = new ArrayList<>();
-        for (InterviewInfo tempInfo : interviewInfo) {
-            QueryWrapper<JobApplication> queryWrapper2 = new QueryWrapper<>();
-            queryWrapper2.eq("application_id", tempInfo.getApplicationId());
-            JobApplication jobApplication = jobApplicationDao.selectOne(queryWrapper2);
-            QueryWrapper<RecruitmentInfo> queryWrapper3 = new QueryWrapper<>();
-            queryWrapper3.eq("recruitment_id", jobApplication.getRecruitmentId());
-            StudentInterviewVo tempVo = new StudentInterviewVo(tempInfo.getDateTime(), tempInfo.getPosition(), tempInfo.getMark(), tempInfo.getState(), recruitmentInfoDao.selectOne(queryWrapper3).getCompanyName());
-            studentInterviewVo.add(tempVo);
-        }
-        return HttpResult.success(studentInterviewVo, "查询成功");
+//        QueryWrapper<InterviewInfo> queryWrapper1 = new QueryWrapper<>();
+//        queryWrapper1.eq("student_id", user.getUserId()).eq("mark", mark);
+//        List<InterviewInfo> interviewInfo = interviewInfoDao.selectList(queryWrapper1);
+//        List<StudentInterviewVo> studentInterviewVo = new ArrayList<>();
+//        for (InterviewInfo tempInfo : interviewInfo) {
+//            QueryWrapper<JobApplication> queryWrapper2 = new QueryWrapper<>();
+//            queryWrapper2.eq("application_id", tempInfo.getApplicationId());
+//            JobApplication jobApplication = jobApplicationDao.selectOne(queryWrapper2);
+//            QueryWrapper<RecruitmentInfo> queryWrapper3 = new QueryWrapper<>();
+//            queryWrapper3.eq("recruitment_id", jobApplication.getRecruitmentId());
+//            StudentInterviewVo tempVo = new StudentInterviewVo(tempInfo.getDateTime(), tempInfo.getPosition(), tempInfo.getMark(), tempInfo.getState(), recruitmentInfoDao.selectOne(queryWrapper3).getCompanyName());
+//            studentInterviewVo.add(tempVo);
+//        }
+//        return HttpResult.success(studentInterviewVo, "查询成功");
+        return HttpResult.success(interviewInfoDao.queryInterviewInfo(queryInfo,user.getUserId()), "查询成功");
     }
 
     @Override
@@ -522,10 +525,17 @@ public class StudentImpl implements StudentService {
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                 .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
         List<RecruitmentInfo> result=new ArrayList<>();
-        for(int i=0;i<6;i++){
+        for(int i=0;i<5;i++){
             result.add((RecruitmentInfo)sortedMap.keySet().toArray()[i]);
         }
         return HttpResult.success(result, "查询成功");
     }
+
+    @Override
+    public HttpResult queryFair(){
+        return HttpResult.success(careerFairDao.queryCareerFair(), "查询成功");
+    }
+
+
 
 }

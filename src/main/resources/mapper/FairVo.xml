@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.CareerFairDao">
+    <select id="queryCareerFair" resultType="com.teamProj.entity.vo.FairVo">
+        SELECT f.start_time as startTime, f.end_time as endTime, f.location, f.title, f.content, s.school_name as schoolName, e.enterprise_name as enterpriseName
+        FROM team_proj.career_fair AS f, team_proj.school AS s, team_proj.enterprise AS e
+        WHERE f.school_id = s.school_id
+        AND f.enterprise_id = e.enterprise_id;
+    </select>
+</mapper>

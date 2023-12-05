@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.InterviewInfoDao">
+    <select id="queryInterviewInfo" resultType="com.teamProj.entity.vo.StudentInterviewVo">
+        SELECT i.date_time as datetime, i.position, e.enterprise_name as companyName, i.mark, i.state
+        from team_proj.interview_info as i,team_proj.enterprise as e
+        where i.student_id = #{userId}
+            <if test="queryInfo!=null and queryInfo!=''">
+            AND (e.enterprise_name LIKE CONCAT('%', #{queryInfo}, '%')
+            OR position LIKE CONCAT('%', #{queryInfo}, '%'))
+            </if>
+        ;
+    </select>
+</mapper>

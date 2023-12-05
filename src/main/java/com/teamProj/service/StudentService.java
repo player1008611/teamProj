@@ -4,6 +4,7 @@ import com.teamProj.utils.HttpResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 public interface StudentService {
@@ -48,8 +49,10 @@ public interface StudentService {
     HttpResult verification(String email);
 
     HttpResult queryStudentInfo();
-    HttpResult queryInterviewInfo(String mark);
+    HttpResult queryInterviewInfo(String queryInfo);
     HttpResult homepage();
 
     HttpResult getRecommendation();
+
+    HttpResult queryFair();
 }

@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import static com.teamProj.utils.ResultCodeEnum.SERVER_ERROR;
@@ -75,8 +76,8 @@ public class StudentController {
 
     @GetMapping("/queryInterviewInfo")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryInterviewInfo(@RequestParam(value = "mark") String mark) {
-        return studentService.queryInterviewInfo(mark);
+    HttpResult queryInterviewInfo(@RequestParam(value = "queryInfo",required = false) String queryInfo) {
+        return studentService.queryInterviewInfo(queryInfo);
     }
 
     @PostMapping("/createResume")
@@ -189,5 +190,11 @@ public class StudentController {
     @PreAuthorize("hasAuthority('student')")
     HttpResult getRecommendation() {
         return studentService.getRecommendation();
+    }
+
+    @GetMapping("/queryFair")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult queryFair(){
+        return studentService.queryFair();
     }
 }
