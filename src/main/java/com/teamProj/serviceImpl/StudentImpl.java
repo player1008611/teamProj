@@ -354,6 +354,14 @@ public class StudentImpl implements StudentService {
             queryWrapper1.eq("account", account);
             mri.setStudentId(userDao.selectOne(queryWrapper1).getUserId());
             if (markedRecruitmentInfoDao.insert(mri) > 0) {
+                QueryWrapper<RecruitmentInfo> queryWrapper2 = new QueryWrapper<>();
+                queryWrapper2.eq("recruitment_id", RecruitmentInfoId);
+                RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(queryWrapper2);
+                QueryWrapper<Student> queryWrapper3 = new QueryWrapper<>();
+                queryWrapper3.eq("student_id", mri.getStudentId());
+                Student student = studentDao.selectOne(queryWrapper3);
+                UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("student_id",student.getStudentId()).set("byword",editByword(student.getByword(),recruitmentInfo.getByword()));
                 return HttpResult.success(mri, "收藏成功");
             } else {
                 return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
@@ -453,7 +461,7 @@ public class StudentImpl implements StudentService {
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
         QueryWrapper<InterviewInfo> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("student_id", user.getUserId()).eq("mark", mark);
+        queryWrapper1.eq("student_id", user.getUserId()).ge("mark", mark);
         List<InterviewInfo> interviewInfo = interviewInfoDao.selectList(queryWrapper1);
         List<StudentInterviewVo> studentInterviewVo = new ArrayList<>();
         for (InterviewInfo tempInfo : interviewInfo) {
@@ -514,7 +522,7 @@ public class StudentImpl implements StudentService {
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                 .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
         List<RecruitmentInfo> result=new ArrayList<>();
-        for(int i=0;i<5;i++){
+        for(int i=0;i<6;i++){
             result.add((RecruitmentInfo)sortedMap.keySet().toArray()[i]);
         }
         return HttpResult.success(result, "查询成功");
