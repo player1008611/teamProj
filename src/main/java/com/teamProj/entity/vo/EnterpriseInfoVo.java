@@ -1,4 +1,4 @@
-package com.teamProj.entity;
+package com.teamProj.entity.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,10 +9,10 @@ import java.sql.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EnterpriseUser {
-    Integer userId;
+public class EnterpriseInfoVo {
+    String account;
 
-    Integer enterpriseId;
+    String enterpriseName;
 
     String name;
 
@@ -26,7 +26,5 @@ public class EnterpriseUser {
 
     String tel;
 
-    String userStatus;
-
-    byte[] avatar;
+    byte avatar;
 }

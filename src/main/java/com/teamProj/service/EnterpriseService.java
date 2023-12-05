@@ -2,7 +2,9 @@ package com.teamProj.service;
 
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.utils.HttpResult;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public interface EnterpriseService {
@@ -18,6 +20,8 @@ public interface EnterpriseService {
     HttpResult enterpriseLogin(String account, String password);
 
     HttpResult enterpriseLogout();
+
+    HttpResult enterpriseChangePassword(String newPassword);
 
     HttpResult createNewDepartment(String departmentName);
 
@@ -56,4 +60,8 @@ public interface EnterpriseService {
     HttpResult updateFair(Integer id, String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName);
 
     HttpResult deleteFair(Integer id);
+
+    HttpResult queryInfo();
+
+    HttpResult updateInfo(MultipartFile avatar, String name, Date birthday, Integer age, String gender, String graduationSchool);
 }

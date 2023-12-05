@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.vo.EnterpriseDraftVo;
 import com.teamProj.entity.vo.EnterpriseFairVo;
+import com.teamProj.entity.vo.EnterpriseInfoVo;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -38,4 +39,6 @@ public interface EnterpriseUserDao extends BaseMapper<EnterpriseUser> {
             , @Param("date") Timestamp date
             , @Param("code") Integer code
             , @Param("userId") Integer userId);
+
+    EnterpriseInfoVo queryInfo(@Param("userId") Integer userId);
 }

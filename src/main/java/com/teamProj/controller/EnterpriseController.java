@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -57,6 +59,12 @@ public class EnterpriseController {
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult enterpriseLogout() {
         return enterpriseService.enterpriseLogout();
+    }
+
+    @PatchMapping("/enterpriseChangePassword")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult enterpriseChangePassword(@RequestParam String newPassword) {
+        return enterpriseService.enterpriseChangePassword(newPassword);
     }
 
     @PostMapping("/createNewDepartment")
@@ -259,5 +267,27 @@ public class EnterpriseController {
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult deleteFair(@RequestParam Integer id) {
         return enterpriseService.deleteFair(id);
+    }
+
+    @GetMapping("/queryInfo")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult queryInfo() {
+        return enterpriseService.queryInfo();
+    }
+
+    @PatchMapping("/updateInfo")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult updateInfo(@RequestParam(required = false) MultipartFile avatar
+            , @RequestParam(required = false) String name
+            , @RequestParam(required = false) String birthday
+            , @RequestParam(required = false) Integer age
+            , @RequestParam(required = false) String gender
+            , @RequestParam(required = false) String graduationSchool) {
+        return enterpriseService.updateInfo(avatar.isEmpty() ? null : avatar
+                , name.isEmpty() ? null : name
+                , birthday.isEmpty() ? null : Date.valueOf(birthday)
+                , age
+                , gender.isEmpty() ? null : gender
+                , graduationSchool.isEmpty() ? null : graduationSchool);
     }
 }

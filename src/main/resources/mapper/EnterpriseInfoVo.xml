@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.EnterpriseUserDao">
+    <select id="queryInfo" resultType="com.teamProj.entity.vo.EnterpriseInfoVo">
+        SELECT enterprise_user.name as name,
+               enterprise_user.age as age,
+               enterprise_user.gender as gender,
+               enterprise_user.birthday as birthday,
+               enterprise_user.graduation_school as graduationSchool,
+               enterprise_user.tel as tel,
+               enterprise_user.avatar as avatar,
+               user.account as account,
+               enterprise.enterprise_name as enterpriseName
+        FROM enterprise_user,
+             user,
+             enterprise
+        WHERE user.user_id = #{userId}
+          AND enterprise_user.user_id = #{userId}
+          AND enterprise.enterprise_id = enterprise_user.enterprise_id
+    </select>
+</mapper>

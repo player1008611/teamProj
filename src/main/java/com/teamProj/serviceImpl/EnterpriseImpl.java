@@ -42,9 +42,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
@@ -63,6 +65,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
     private AuthenticationManager authenticationManager;
+
+    @Resource
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Resource
     private RedisCache redisCache;
@@ -156,6 +161,21 @@ public class EnterpriseImpl implements EnterpriseService {
         int userId = loginUser.getUser().getUserId();
         redisCache.deleteObject(String.valueOf(userId));
         return HttpResult.success(null, "用户注销");
+    }
+
+    @Override
+    public HttpResult enterpriseChangePassword(String newPassword) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int userId = loginUser.getUser().getUserId();
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("user_id", userId).set("password", bCryptPasswordEncoder.encode(newPassword));
+        try {
+            userDao.update(null, updateWrapper);
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
+        }
+        return HttpResult.success(null, "修改成功");
     }
 
     @Override
@@ -674,5 +694,36 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.success(id, "删除成功");
         }
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "对象不存在");
+    }
+
+    @Override
+    public HttpResult queryInfo() {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        return HttpResult.success(enterpriseUserDao.queryInfo(userId), "查询成功");
+    }
+
+    @Override
+    public HttpResult updateInfo(MultipartFile avatar, String name, java.sql.Date birthday, Integer age, String gender, String graduationSchool) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        UpdateWrapper<EnterpriseUser> enterpriseUserUpdateWrapper = new UpdateWrapper<>();
+        enterpriseUserUpdateWrapper.eq("user_id", userId);
+        try {
+            if (enterpriseUserDao.update(new EnterpriseUser(null, null, name, age, birthday, gender, graduationSchool, null, null, avatar.getBytes()), enterpriseUserUpdateWrapper) > 0) {
+                return HttpResult.success();
+            }
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
     }
 }

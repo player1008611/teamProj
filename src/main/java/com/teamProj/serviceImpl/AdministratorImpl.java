@@ -207,7 +207,7 @@ public class AdministratorImpl implements AdministratorService {
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("account", account);
         user = userDao.selectOne(userQueryWrapper);
-        EnterpriseUser enterpriseUser = new EnterpriseUser(user.getUserId(), enterprise.getEnterpriseId(), name, null, null, null, null, tel, "1");
+        EnterpriseUser enterpriseUser = new EnterpriseUser(user.getUserId(), enterprise.getEnterpriseId(), name, null, null, null, null, tel, "1", null);
         if (enterpriseUserDao.insert(enterpriseUser) > 0) {
             return HttpResult.success(name, "添加成功");
         }
