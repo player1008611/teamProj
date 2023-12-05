@@ -15,7 +15,7 @@ public class Announcement {
 
     String adminId;
 
-    String name;
+    String title;
 
     String cover;
 

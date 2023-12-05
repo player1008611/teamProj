@@ -61,10 +61,10 @@ public class StudentController {
     @PatchMapping("/setStudentInfo")
     @PreAuthorize("hasAuthority('student')")
     HttpResult setStudentInfo(@RequestParam(value = "studentAccount") String account, @RequestParam(value = "name") String name,
-                              @RequestParam(value = "gender")String gender,
-                              @RequestParam(value = "wechat") String wechat, @RequestParam(value = "qq") String qq,
-                              @RequestParam(value = "collegeId") Integer collegeId, @RequestParam(value = "majorId") Integer majorId,
-                              @RequestParam(value = "address") String address, @RequestParam(value = "age") Integer age) {
+                              @RequestParam(value = "gender" , required = false)String gender,
+                              @RequestParam(value = "wechat" , required = false) String wechat, @RequestParam(value = "qq", required = false) String qq,
+                              @RequestParam(value = "collegeId", required = false) Integer collegeId, @RequestParam(value = "majorId", required = false) Integer majorId,
+                              @RequestParam(value = "address", required = false) String address, @RequestParam(value = "age", required = false) Integer age) {
         return studentService.setStudentInfo(account,  name,gender, wechat,qq, collegeId,  majorId, address, age);
     }
 

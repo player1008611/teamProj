@@ -4,15 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
-import com.teamProj.entity.vo.StudentInterviewVo;
-import com.teamProj.dao.*;
-import com.teamProj.entity.*;
 import com.teamProj.service.StudentService;
-import com.teamProj.utils.EmailVerification;
-import com.teamProj.utils.HttpResult;
-import com.teamProj.utils.JwtUtil;
-import com.teamProj.utils.RedisCache;
-import com.teamProj.utils.ResultCodeEnum;
+import com.teamProj.utils.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -129,7 +122,7 @@ public class StudentImpl implements StudentService {
         Date date = new java.sql.Date(new java.util.Date().getTime());
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null,null,null,new Timestamp(System.currentTimeMillis()),new Timestamp(System.currentTimeMillis()));
+        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null, null, null, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
         if (studentDao.insert(student) > 0) {
             return HttpResult.success(student, "注册成功");
         } else {
@@ -303,13 +296,27 @@ public class StudentImpl implements StudentService {
         updateWrapper.eq("student_id", studentId);
         Student student = new Student();
         student.setName(name);
-        student.setGender(gender);
-        student.setWechat(wechat);
-        student.setQq(qq);
-        student.setCollegeId(collegeId);
-        student.setMajorId(majorId);
-        student.setAddress(address);
-        student.setAge(age);
+        if (gender != null&& !gender.isEmpty()) {
+            student.setGender(gender);
+        }
+        if (wechat != null&& !wechat.isEmpty()) {
+            student.setWechat(wechat);
+        }
+        if (qq != null&& !qq.isEmpty()) {
+            student.setQq(qq);
+        }
+        if (collegeId != null) {
+            student.setCollegeId(collegeId);
+        }
+        if (majorId != null) {
+            student.setMajorId(majorId);
+        }
+        if (address != null&& !address.isEmpty()) {
+            student.setAddress(address);
+        }
+        if (age != null) {
+            student.setAge(age);
+        }
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("name").eq("student_id", studentId);
         if (studentDao.update(student, updateWrapper) > 0) {
@@ -363,7 +370,7 @@ public class StudentImpl implements StudentService {
                 queryWrapper3.eq("student_id", mri.getStudentId());
                 Student student = studentDao.selectOne(queryWrapper3);
                 UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.eq("student_id",student.getStudentId()).set("byword",editByword(student.getByword(),recruitmentInfo.getByword()));
+                updateWrapper.eq("student_id", student.getStudentId()).set("byword", editByword(student.getByword(), recruitmentInfo.getByword()));
                 return HttpResult.success(mri, "收藏成功");
             } else {
                 return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
@@ -389,8 +396,8 @@ public class StudentImpl implements StudentService {
             queryWrapper2.eq("student_id", jobApplication.getStudentId());
             Student student = studentDao.selectOne(queryWrapper2);
             UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("student_id",student.getStudentId()).set("byword",editByword(student.getByword(),recruitmentInfo.getByword()));
-            studentDao.update(null,updateWrapper);
+            updateWrapper.eq("student_id", student.getStudentId()).set("byword", editByword(student.getByword(), recruitmentInfo.getByword()));
+            studentDao.update(null, updateWrapper);
             return HttpResult.success(jobApplication, "创建成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
@@ -476,23 +483,23 @@ public class StudentImpl implements StudentService {
 //            studentInterviewVo.add(tempVo);
 //        }
 //        return HttpResult.success(studentInterviewVo, "查询成功");
-        return HttpResult.success(interviewInfoDao.queryInterviewInfo(queryInfo,user.getUserId()), "查询成功");
+        return HttpResult.success(interviewInfoDao.queryInterviewInfo(queryInfo, user.getUserId()), "查询成功");
     }
 
     @Override
-    public HttpResult homepage(){
+    public HttpResult homepage() {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
         QueryWrapper<JobApplication> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("student_id", user.getUserId());
-        Integer i=jobApplicationDao.selectCount(queryWrapper1);
+        Integer i = jobApplicationDao.selectCount(queryWrapper1);
         QueryWrapper<InterviewInfo> queryWrapper2 = new QueryWrapper<>();
         queryWrapper2.eq("student_id", user.getUserId());
-        Integer j=interviewInfoDao.selectCount(queryWrapper2);
+        Integer j = interviewInfoDao.selectCount(queryWrapper2);
         QueryWrapper<MarkedRecruitmentInfo> queryWrapper3 = new QueryWrapper<>();
         queryWrapper3.eq("student_id", user.getUserId());
-        Integer k=markedRecruitmentInfoDao.selectCount(queryWrapper3);
+        Integer k = markedRecruitmentInfoDao.selectCount(queryWrapper3);
         QueryWrapper<Student> queryWrapper4 = new QueryWrapper<>();
         queryWrapper4.eq("student_id", user.getUserId());
         Student student = studentDao.selectOne(queryWrapper4);
@@ -500,42 +507,41 @@ public class StudentImpl implements StudentService {
         map.put("投递简历数", i);
         map.put("面试数", j);
         map.put("收藏数", k);
-        map.put("上次登录",student.getLoginTime());
-        map.put("上次修改密码",student.getChangePasswordTime());
-        map.put("手机号",student.getPhoneNumber());
+        map.put("上次登录", student.getLoginTime());
+        map.put("上次修改密码", student.getChangePasswordTime());
+        map.put("手机号", student.getPhoneNumber());
         return HttpResult.success(map, "查询成功");
     }
 
     @Override
-    public HttpResult getRecommendation(){
+    public HttpResult getRecommendation() {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
         QueryWrapper<Student> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("student_id", user.getUserId());
         Student student = studentDao.selectOne(queryWrapper1);
-        String byword=student.getByword();
+        String byword = student.getByword();
         List<RecruitmentInfo> list = recruitmentInfoDao.selectList(null);
-        Map<RecruitmentInfo,Integer> map = new HashMap<>();
-        for(RecruitmentInfo temp:list){
-            map.put(temp,getScore(byword,temp.getByword()));
+        Map<RecruitmentInfo, Integer> map = new HashMap<>();
+        for (RecruitmentInfo temp : list) {
+            map.put(temp, getScore(byword, temp.getByword()));
         }
         LinkedHashMap<RecruitmentInfo, Integer> sortedMap = new LinkedHashMap<>();
         map.entrySet().stream()
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                 .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
-        List<RecruitmentInfo> result=new ArrayList<>();
-        for(int i=0;i<5;i++){
-            result.add((RecruitmentInfo)sortedMap.keySet().toArray()[i]);
+        List<RecruitmentInfo> result = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            result.add((RecruitmentInfo) sortedMap.keySet().toArray()[i]);
         }
         return HttpResult.success(result, "查询成功");
     }
 
     @Override
-    public HttpResult queryFair(){
+    public HttpResult queryFair() {
         return HttpResult.success(careerFairDao.queryCareerFair(), "查询成功");
     }
-
 
 
 }
