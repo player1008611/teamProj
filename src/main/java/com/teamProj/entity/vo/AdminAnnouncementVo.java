@@ -1,7 +1,5 @@
-package com.teamProj.entity;
+package com.teamProj.entity.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,11 +10,8 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Announcement {
-    @TableId(type = IdType.AUTO)
-    Integer announcementId;
-
-    Integer adminId;
+public class AdminAnnouncementVo {
+    String publisher;
 
     String title;
 

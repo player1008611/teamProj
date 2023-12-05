@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.AdministratorDao;
+import com.teamProj.dao.AnnouncementDao;
 import com.teamProj.dao.DepartmentDao;
 import com.teamProj.dao.EnterpriseDao;
 import com.teamProj.dao.EnterpriseUserDao;
@@ -11,6 +12,7 @@ import com.teamProj.dao.RecruitmentInfoDao;
 import com.teamProj.dao.SchoolDao;
 import com.teamProj.dao.StudentDao;
 import com.teamProj.dao.UserDao;
+import com.teamProj.entity.Announcement;
 import com.teamProj.entity.Department;
 import com.teamProj.entity.Enterprise;
 import com.teamProj.entity.EnterpriseUser;
@@ -19,6 +21,7 @@ import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
+import com.teamProj.entity.vo.AdminAnnouncementVo;
 import com.teamProj.entity.vo.AdminEnterpriseUserVo;
 import com.teamProj.entity.vo.AdminRecruitmentVo;
 import com.teamProj.entity.vo.AdminSchoolUserVo;
@@ -35,8 +38,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -76,6 +83,9 @@ public class AdministratorImpl implements AdministratorService {
 
     @Resource
     private RecruitmentInfoDao recruitmentInfoDao;
+
+    @Resource
+    private AnnouncementDao announcementDao;
 
     public HttpResult administratorLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
@@ -378,6 +388,37 @@ public class AdministratorImpl implements AdministratorService {
             return HttpResult.success(jobTitle, "审批成功");
         }
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "审批失败");
+    }
+
+    @Override
+    public HttpResult createAnnouncement(String title, MultipartFile cover, String category, String content, MultipartFile data) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int adminId = loginUser.getUser().getUserId();
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            announcementDao.insert(new Announcement(null, adminId, title, cover.isEmpty() ? null : cover.getBytes(), category, content, data.isEmpty() ? null : data.getBytes(), Timestamp.valueOf(format.format(date))));
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "发布失败");
+        }
+        return HttpResult.success(title, "发布成功");
+    }
+
+    @Override
+    public HttpResult deleteAnnouncement(Integer id) {
+        QueryWrapper<Announcement> announcementQueryWrapper = new QueryWrapper<>();
+        announcementQueryWrapper.eq("announcement_id", id);
+        if (announcementDao.delete(announcementQueryWrapper) > 0) {
+            return HttpResult.success(id, "删除成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "对象已删除或不存在");
+    }
+
+    @Override
+    public HttpResult queryAnnouncement(String title, String category, Integer current) {
+        Page<AdminAnnouncementVo> page = new Page<>(current, 4);
+        return HttpResult.success(administratorDao.queryAnnouncement(page, title, category), "查询成功");
     }
 }
 

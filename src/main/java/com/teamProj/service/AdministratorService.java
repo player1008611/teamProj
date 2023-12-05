@@ -1,6 +1,7 @@
 package com.teamProj.service;
 
 import com.teamProj.utils.HttpResult;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface AdministratorService {
     HttpResult administratorLogin(String account, String password);
@@ -48,4 +49,10 @@ public interface AdministratorService {
     HttpResult queryRecruitmentInfo(String companyName, String departmentName, String jobTitle, Integer current, Integer size);
 
     HttpResult auditRecruitmentInfo(String enterpriseName, String departmentName, String jobTitle, String status, String rejectReason);
+
+    HttpResult createAnnouncement(String title, MultipartFile cover,String category,String content,MultipartFile data);
+
+    HttpResult deleteAnnouncement(Integer id);
+
+    HttpResult queryAnnouncement(String title,String category,Integer current);
 }

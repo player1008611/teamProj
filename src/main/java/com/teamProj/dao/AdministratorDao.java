@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.entity.Administrator;
+import com.teamProj.entity.vo.AdminAnnouncementVo;
 import com.teamProj.entity.vo.AdminEnterpriseUserVo;
 import com.teamProj.entity.vo.AdminRecruitmentVo;
 import com.teamProj.entity.vo.AdminSchoolUserVo;
@@ -31,4 +32,8 @@ public interface AdministratorDao extends BaseMapper<Administrator> {
             , @Param("companyName") String companyName
             , @Param("departmentName") String departmentName
             , @Param("jobTitle") String jobTitle);
+
+    IPage<AdminAnnouncementVo> queryAnnouncement(Page<AdminAnnouncementVo> page
+            , @Param("title") String title
+            , @Param("category") String category);
 }

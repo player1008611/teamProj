@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.AdministratorDao">
+    <select id="queryAnnouncement" resultType="com.teamProj.entity.vo.AdminAnnouncementVo">
+        SELECT administrator.name as publisher,
+        announcement.title,
+        announcement.cover,
+        announcement.category,
+        announcement.content,
+        announcement.data,
+        announcement.creation_time as creationTime
+        FROM announcement,administrator
+        WHERE announcement.admin_id = administrator.admin_id
+        <if test="title!=null and title!=''">
+            AND announcement.title like concat('%',#{title},'%')
+        </if>
+        <if test="category!=null and category!=''">
+            AND announcement.category = #{category}
+        </if>
+    </select>
+</mapper>

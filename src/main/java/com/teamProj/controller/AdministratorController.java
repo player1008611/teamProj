@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -185,5 +186,29 @@ public class AdministratorController {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "请填写拒绝理由");
         }
         return administratorService.auditRecruitmentInfo(enterpriseName, departmentName, jobTitle, status, rejectReason);
+    }
+
+    @PostMapping("createAnnouncement")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult createAnnouncement(@RequestParam String title
+            , @RequestParam(required = false) MultipartFile cover
+            , @RequestParam String category
+            , @RequestParam String content
+            , @RequestParam(required = false) MultipartFile data) {
+        return administratorService.createAnnouncement(title, cover, category, content, data);
+    }
+
+    @DeleteMapping("deleteAnnouncement")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult deleteAnnouncement(@RequestParam Integer id) {
+        return administratorService.deleteAnnouncement(id);
+    }
+
+    @GetMapping("queryAnnouncement")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult queryAnnouncement(@RequestParam(required = false) String title
+            , @RequestParam(required = false) String category
+            , @RequestParam Integer current) {
+        return administratorService.queryAnnouncement(title, category, current);
     }
 }
