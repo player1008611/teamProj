@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.teamProj.utils.EditByword.editByword;
+import static com.teamProj.utils.EditByword.getScore;
 
 @Service
 public class StudentImpl implements StudentService {
@@ -490,7 +491,33 @@ public class StudentImpl implements StudentService {
         map.put("收藏数", k);
         map.put("上次登录",student.getLoginTime());
         map.put("上次修改密码",student.getChangePasswordTime());
+        map.put("手机号",student.getPhoneNumber());
         return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult getRecommendation(){
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        QueryWrapper<Student> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("student_id", user.getUserId());
+        Student student = studentDao.selectOne(queryWrapper1);
+        String byword=student.getByword();
+        List<RecruitmentInfo> list = recruitmentInfoDao.selectList(null);
+        Map<RecruitmentInfo,Integer> map = new HashMap<>();
+        for(RecruitmentInfo temp:list){
+            map.put(temp,getScore(byword,temp.getByword()));
+        }
+        LinkedHashMap<RecruitmentInfo, Integer> sortedMap = new LinkedHashMap<>();
+        map.entrySet().stream()
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
+        List<RecruitmentInfo> result=new ArrayList<>();
+        for(int i=0;i<5;i++){
+            result.add((RecruitmentInfo)sortedMap.keySet().toArray()[i]);
+        }
+        return HttpResult.success(result, "查询成功");
     }
 
 }

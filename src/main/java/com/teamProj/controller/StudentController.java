@@ -184,4 +184,10 @@ public class StudentController {
     HttpResult homepage() {
         return studentService.homepage();
     }
+
+    @GetMapping("/getRecommendation")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult getRecommendation() {
+        return studentService.getRecommendation();
+    }
 }
