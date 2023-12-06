@@ -148,8 +148,24 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         String userId = String.valueOf(loginUser.getUser().getUserId());
         String jwt = JwtUtil.createJWT(userId);
+
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+        EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
+        if (enterpriseUser.getUserStatus().equals("2")) {
+            return HttpResult.failure(ResultCodeEnum.REDIRECT, "用户被禁用");
+        }
+        String infoIntegrity = "true";
+        if (Objects.isNull(enterpriseUser.getAge())
+                || Objects.isNull(enterpriseUser.getBirthday())
+                || Objects.isNull(enterpriseUser.getGender())
+                || Objects.isNull(enterpriseUser.getGraduationSchool())
+                || Objects.isNull(enterpriseUser.getTel())) {
+            infoIntegrity = "false";
+        }
         Map<String, String> map = new HashMap<>();
         map.put("token", jwt);
+        map.put("infoIntegrity", infoIntegrity);
         redisCache.setCacheObject(userId, loginUser, 24, TimeUnit.HOURS);
         return HttpResult.success(map, "登录成功");
     }
