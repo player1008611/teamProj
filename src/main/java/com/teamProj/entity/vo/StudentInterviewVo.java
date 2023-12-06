@@ -15,4 +15,5 @@ public class StudentInterviewVo {
     char state;
 
     String companyName;
+    String jobTitle;
 }

@@ -12,4 +12,6 @@ public class RecruitmentVo {
     String maxSalary;
     String byword;
     Integer state;
+    String jobDescription;
+    String jobDuties;
 }

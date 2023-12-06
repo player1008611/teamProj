@@ -11,6 +11,8 @@
         min_salary as minSalary,
         max_salary as maxSalary,
         byword as byword,
+        job_description as jobDescription,
+        job_duties as jobDuties,
         CASE WHEN r.recruitment_id = m.recruitment_id AND m.student_id=#{userId} THEN 1 ELSE 0 END AS state
         FROM recruitment_info AS r
         ,marked_recruitment_info AS m
