@@ -186,7 +186,7 @@ public class EnterpriseImpl implements EnterpriseService {
         int userId = loginUser.getUser().getUserId();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
-        if (!userDao.selectOne(queryWrapper).getPassword().equals(oldPassword)) {
+        if (!bCryptPasswordEncoder.matches(oldPassword, userDao.selectOne(queryWrapper).getPassword())) {
             return HttpResult.failure(ResultCodeEnum.REDIRECT, "密码错误");
         }
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
