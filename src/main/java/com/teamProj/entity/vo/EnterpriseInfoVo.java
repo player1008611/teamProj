@@ -26,5 +26,5 @@ public class EnterpriseInfoVo {
 
     String tel;
 
-    byte avatar;
+    byte[] avatar;
 }
