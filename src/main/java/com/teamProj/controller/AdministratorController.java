@@ -195,7 +195,7 @@ public class AdministratorController {
             , @RequestParam String category
             , @RequestParam String content
             , @RequestParam(required = false) MultipartFile data) {
-        return administratorService.createAnnouncement(title, cover, category, content, data);
+        return administratorService.createAnnouncement(title, cover.isEmpty() ? null : cover, category, content, data.isEmpty() ? null : data);
     }
 
     @DeleteMapping("deleteAnnouncement")
