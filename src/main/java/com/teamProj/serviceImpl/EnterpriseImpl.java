@@ -180,10 +180,15 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult enterpriseChangePassword(String newPassword) {
+    public HttpResult enterpriseChangePassword(String newPassword, String oldPassword) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int userId = loginUser.getUser().getUserId();
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        if (!userDao.selectOne(queryWrapper).getPassword().equals(oldPassword)) {
+            return HttpResult.failure(ResultCodeEnum.REDIRECT, "密码错误");
+        }
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("user_id", userId).set("password", bCryptPasswordEncoder.encode(newPassword));
         try {

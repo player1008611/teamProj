@@ -63,8 +63,8 @@ public class EnterpriseController {
 
     @PatchMapping("/enterpriseChangePassword")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult enterpriseChangePassword(@RequestParam String newPassword) {
-        return enterpriseService.enterpriseChangePassword(newPassword);
+    HttpResult enterpriseChangePassword(@RequestParam String newPassword, @RequestParam String oldPassword) {
+        return enterpriseService.enterpriseChangePassword(newPassword, oldPassword);
     }
 
     @PostMapping("/createNewDepartment")

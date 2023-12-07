@@ -11,6 +11,8 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminAnnouncementVo {
+    Integer id;
+
     String publisher;
 
     String title;

@@ -4,7 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.AdministratorDao">
     <select id="queryAnnouncement" resultType="com.teamProj.entity.vo.AdminAnnouncementVo">
-        SELECT administrator.name as publisher,
+        SELECT announcement.announcement_id as id,
+        administrator.name as publisher,
         announcement.title,
         announcement.cover,
         announcement.category,

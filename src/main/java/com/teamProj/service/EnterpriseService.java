@@ -21,7 +21,7 @@ public interface EnterpriseService {
 
     HttpResult enterpriseLogout();
 
-    HttpResult enterpriseChangePassword(String newPassword);
+    HttpResult enterpriseChangePassword(String newPassword, String oldPassword);
 
     HttpResult createNewDepartment(String departmentName);
 
