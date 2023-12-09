@@ -197,4 +197,40 @@ public class StudentController {
     HttpResult queryFair(){
         return studentService.queryFair();
     }
+
+    @GetMapping("/message/queryList")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult queryMessageList(){
+        return studentService.queryMessageList();
+    }
+
+    @GetMapping("/message/query")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult queryMessage(@RequestParam(value = "messageId") Integer messageId){
+        return studentService.queryMessage(messageId);
+    }
+
+    @DeleteMapping("/message/deleteAll")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult deleteAllMessage(){
+        return studentService.deleteAllMessage();
+    }
+
+    @DeleteMapping("/message/delete")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult deleteMessage(@RequestParam(value = "messageId") Integer messageId){
+        return studentService.deleteMessage(messageId);
+    }
+
+    @PatchMapping("/message/readAll")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult readAllMessage(){
+        return studentService.hasReadAllMessage();
+    }
+
+    @PatchMapping("/message/read")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult readMessage(@RequestParam(value = "messageId") Integer messageId){
+        return studentService.hasReadMessage(messageId);
+    }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.MessageDao">
+    <select id="queryMessageList" resultType="com.teamProj.entity.vo.StudentMessageVo">
+        SELECT  message.message_id as messageId,
+                message.content    as content,
+                message.time       as time,
+                student.name       as `to`,
+                enterprise_user.name   as `from`,
+                message.state     as state,
+                message.title       as title
+        FROM message,student,enterprise_user
+        WHERE message.to = student.student_id
+          AND message.`from` = enterprise_user.user_id
+          AND message.to = #{userId}
+        <if test = "messageId != null">
+            AND message.message_id = #{messageId}
+        </if>
+    </select>
+</mapper>

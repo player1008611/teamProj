@@ -55,4 +55,16 @@ public interface StudentService {
     HttpResult getRecommendation();
 
     HttpResult queryFair();
+
+    HttpResult queryMessageList();
+
+    HttpResult queryMessage(Integer messageId);
+
+    HttpResult deleteAllMessage();
+
+    HttpResult deleteMessage(Integer messageId);
+
+    HttpResult hasReadAllMessage();
+
+    HttpResult hasReadMessage(Integer messageId);
 }

@@ -50,6 +50,8 @@ public class StudentImpl implements StudentService {
     private InterviewInfoDao interviewInfoDao;
     @Resource
     private CareerFairDao careerFairDao;
+    @Resource
+    private MessageDao messageDao;
 
     @Override
     public HttpResult studentLogin(String account, String password) {
@@ -543,5 +545,66 @@ public class StudentImpl implements StudentService {
         return HttpResult.success(careerFairDao.queryCareerFair(), "查询成功");
     }
 
+    @Override
+    public HttpResult queryMessageList() {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+
+        return HttpResult.success(messageDao.queryMessageList(user.getUserId(),null), "查询成功");
+    }
+
+    @Override
+    public HttpResult queryMessage(Integer messageId) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        return HttpResult.success(messageDao.queryMessageList(user.getUserId(),messageId), "查询成功");
+    }
+
+    @Override
+    public HttpResult deleteAllMessage() {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("`to`", user.getUserId());
+        if (messageDao.delete(queryWrapper) > 0) {
+            return HttpResult.success(null, "删除成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public HttpResult deleteMessage(Integer messageId) {
+        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("message_id", messageId);
+        if (messageDao.delete(queryWrapper) > 0) {
+            return HttpResult.success(null, "删除成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public HttpResult hasReadAllMessage(){
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        UpdateWrapper<Message> updateWrapper = new UpdateWrapper<>();
+        User user = loginUser.getUser();
+        System.out.println(user.getUserId());
+        updateWrapper.eq("`to`", user.getUserId()).set("state", "1");
+        messageDao.update(null, updateWrapper);
+        return HttpResult.success(null, "修改成功");
+    }
+
+    @Override
+    public HttpResult hasReadMessage(Integer messageId){
+        UpdateWrapper<Message> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("message_id", messageId).set("state", "1");
+        messageDao.update(null, updateWrapper);
+        return HttpResult.success(null, "修改成功");
+    }
 
 }
