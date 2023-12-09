@@ -551,15 +551,15 @@ public class StudentImpl implements StudentService {
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
 
-        return HttpResult.success(messageDao.queryMessageList(user.getUserId(),null), "查询成功");
+        return HttpResult.success(messageDao.queryMessageList(user.getUserId(),null,null), "查询成功");
     }
 
     @Override
-    public HttpResult queryMessage(Integer messageId) {
+    public HttpResult queryMessage(Integer messageId,String queryInfo) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
-        return HttpResult.success(messageDao.queryMessageList(user.getUserId(),messageId), "查询成功");
+        return HttpResult.success(messageDao.queryMessageList(user.getUserId(),messageId,queryInfo), "查询成功");
     }
 
     @Override

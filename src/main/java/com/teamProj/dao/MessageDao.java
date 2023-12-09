@@ -9,5 +9,5 @@ import java.util.List;
 
 @Mapper
 public interface MessageDao extends BaseMapper<Message> {
-    List<Message> queryMessageList(Integer userId, Integer messageId);
+    List<Message> queryMessageList(Integer userId, Integer messageId,String queryInfo);
 }

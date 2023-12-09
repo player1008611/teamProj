@@ -58,7 +58,7 @@ public interface StudentService {
 
     HttpResult queryMessageList();
 
-    HttpResult queryMessage(Integer messageId);
+    HttpResult queryMessage(Integer messageId,String queryInfo);
 
     HttpResult deleteAllMessage();
 

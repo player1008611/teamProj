@@ -206,8 +206,9 @@ public class StudentController {
 
     @GetMapping("/message/query")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult queryMessage(@RequestParam(value = "messageId") Integer messageId){
-        return studentService.queryMessage(messageId);
+    HttpResult queryMessage(@RequestParam(value = "messageId",required = false) Integer messageId
+            ,@RequestParam(value = "queryInfo",required = false) String queryInfo){
+        return studentService.queryMessage(messageId,queryInfo);
     }
 
     @DeleteMapping("/message/deleteAll")
