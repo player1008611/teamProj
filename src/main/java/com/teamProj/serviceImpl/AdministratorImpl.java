@@ -410,7 +410,14 @@ public class AdministratorImpl implements AdministratorService {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            announcementDao.insert(new Announcement(null, adminId, title, cover.getBytes(), category, content, data.getBytes(), Timestamp.valueOf(format.format(date))));
+            announcementDao.insert(new Announcement(null
+                    , adminId
+                    , title
+                    , cover == null ? null : cover.getBytes()
+                    , category
+                    , content
+                    , data == null ? null : data.getBytes()
+                    , Timestamp.valueOf(format.format(date))));
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "发布失败");
         }
