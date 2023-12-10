@@ -33,6 +33,12 @@ public class AdministratorController {
         return administratorService.administratorLogout();
     }
 
+    @GetMapping("/queryHome")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult queryHome() {
+        return administratorService.queryHome();
+    }
+
     @GetMapping("/queryStudent")
     @PreAuthorize("hasAuthority('admin')")
     HttpResult queryStudent(@RequestParam(value = "name", required = false) String name

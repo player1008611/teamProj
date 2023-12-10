@@ -114,6 +114,18 @@ public class AdministratorImpl implements AdministratorService {
     }
 
     @Override
+    public HttpResult queryHome() {
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.eq("status", "1");
+        Map<String, Integer> count = new HashMap<>();
+        count.put("student", studentDao.selectCount(null));
+        count.put("school", schoolDao.selectCount(null));
+        count.put("enterpriseUser", enterpriseUserDao.selectCount(null));
+        count.put("uncheckedRecruitmentInfo", recruitmentInfoDao.selectCount(recruitmentInfoQueryWrapper));
+        return HttpResult.success(count, "查询成功");
+    }
+
+    @Override
     public HttpResult queryStudent(String name, String schoolName, Character status, Integer current, Integer size) {
         Page<AdminStudentVo> page = new Page<>(current, size);
         return HttpResult.success(administratorDao.queryStudent(page, name, schoolName, status), "查询成功");
@@ -417,7 +429,7 @@ public class AdministratorImpl implements AdministratorService {
 
     @Override
     public HttpResult queryAnnouncement(String title, String category, Integer current) {
-        Page<AdminAnnouncementVo> page = new Page<>(current, 4);
+        Page<AdminAnnouncementVo> page = new Page<>(current, 10);
         return HttpResult.success(administratorDao.queryAnnouncement(page, title, category), "查询成功");
     }
 }

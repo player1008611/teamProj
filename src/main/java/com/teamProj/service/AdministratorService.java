@@ -8,6 +8,8 @@ public interface AdministratorService {
 
     HttpResult administratorLogout();
 
+    HttpResult queryHome();
+
     HttpResult queryStudent(String name, String schoolName, Character status, Integer current, Integer size);
 
     HttpResult resetStudentPassword(String account);
