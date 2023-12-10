@@ -217,4 +217,16 @@ public class AdministratorController {
             , @RequestParam Integer current) {
         return administratorService.queryAnnouncement(title, category, current);
     }
+
+    @GetMapping("/queryAnnouncementCover")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult queryAnnouncementCover(@RequestParam Integer id) {
+        return administratorService.queryAnnouncementCover(id);
+    }
+
+    @GetMapping("/queryAnnouncementData")
+    @PreAuthorize("hasAuthority('admin')")
+    HttpResult queryAnnouncementData(@RequestParam Integer id) {
+        return administratorService.queryAnnouncementData(id);
+    }
 }

@@ -7,10 +7,8 @@
         SELECT announcement.announcement_id as id,
         administrator.name as publisher,
         announcement.title,
-        announcement.cover,
         announcement.category,
         announcement.content,
-        announcement.data,
         announcement.creation_time as creationTime
         FROM announcement,administrator
         WHERE announcement.admin_id = administrator.admin_id

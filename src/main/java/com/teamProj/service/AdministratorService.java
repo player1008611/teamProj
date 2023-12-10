@@ -52,9 +52,13 @@ public interface AdministratorService {
 
     HttpResult auditRecruitmentInfo(String enterpriseName, String departmentName, String jobTitle, String status, String rejectReason);
 
-    HttpResult createAnnouncement(String title, MultipartFile cover,String category,String content,MultipartFile data);
+    HttpResult createAnnouncement(String title, MultipartFile cover, String category, String content, MultipartFile data);
 
     HttpResult deleteAnnouncement(Integer id);
 
-    HttpResult queryAnnouncement(String title,String category,Integer current);
+    HttpResult queryAnnouncement(String title, String category, Integer current);
+
+    HttpResult queryAnnouncementCover(Integer id);
+
+    HttpResult queryAnnouncementData(Integer id);
 }

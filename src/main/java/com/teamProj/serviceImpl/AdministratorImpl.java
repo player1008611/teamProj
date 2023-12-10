@@ -432,5 +432,19 @@ public class AdministratorImpl implements AdministratorService {
         Page<AdminAnnouncementVo> page = new Page<>(current, 10);
         return HttpResult.success(administratorDao.queryAnnouncement(page, title, category), "查询成功");
     }
+
+    @Override
+    public HttpResult queryAnnouncementCover(Integer id) {
+        QueryWrapper<Announcement> announcementQueryWrapper = new QueryWrapper<>();
+        announcementQueryWrapper.eq("announcement_id", id).select("cover");
+        return HttpResult.success(announcementDao.selectOne(announcementQueryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult queryAnnouncementData(Integer id) {
+        QueryWrapper<Announcement> announcementQueryWrapper = new QueryWrapper<>();
+        announcementQueryWrapper.eq("announcement_id", id).select("data");
+        return HttpResult.success(announcementDao.selectOne(announcementQueryWrapper), "查询成功");
+    }
 }
 
