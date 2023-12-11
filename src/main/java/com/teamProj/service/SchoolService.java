@@ -17,4 +17,13 @@ public interface SchoolService {
 
     HttpResult deleteStudentAccount(String account);
 
+    HttpResult queryCollege(String name, Integer current, Integer size);
+    HttpResult createCollege(String name);
+    HttpResult deleteCollege(Integer collegeId);
+    HttpResult editCollege(Integer collegeId, String name);
+    HttpResult queryMajor(String name, Integer current, Integer size);
+    HttpResult createMajor(String name, Integer collegeId);
+    HttpResult deleteMajor(Integer majorId);
+    HttpResult editMajor(Integer majorId, String name);
+
 }

@@ -3,13 +3,8 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.teamProj.dao.SchoolDao;
-import com.teamProj.dao.StudentDao;
-import com.teamProj.dao.UserDao;
-import com.teamProj.entity.LoginUser;
-import com.teamProj.entity.School;
-import com.teamProj.entity.Student;
-import com.teamProj.entity.User;
+import com.teamProj.dao.*;
+import com.teamProj.entity.*;
 import com.teamProj.entity.vo.AdminStudentVo;
 import com.teamProj.service.SchoolService;
 import com.teamProj.utils.HttpResult;
@@ -33,11 +28,9 @@ import java.util.concurrent.TimeUnit;
 public class SchoolImpl implements SchoolService {
 
     @Resource
-    private AuthenticationManager authenticationManager;
-
-    @Resource
     BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    @Resource
+    private AuthenticationManager authenticationManager;
     @Resource
     private RedisCache redisCache;
 
@@ -49,6 +42,12 @@ public class SchoolImpl implements SchoolService {
 
     @Resource
     private SchoolDao schoolDao;
+
+    @Resource
+    private CollegeDao collegeDao;
+    @Resource
+    private MajorDao majorDao;
+
     public HttpResult schoolLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
@@ -82,7 +81,7 @@ public class SchoolImpl implements SchoolService {
         int schoolId = loginUser.getUser().getUserId();
         QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
         schoolQueryWrapper.eq("school_id", schoolId);
-        String schoolName= schoolDao.selectOne(schoolQueryWrapper).getSchoolName();
+        String schoolName = schoolDao.selectOne(schoolQueryWrapper).getSchoolName();
         Page<AdminStudentVo> page = new Page<>(current, size);
         return HttpResult.success(studentDao.queryStudent(page, name, schoolName, status), "查询成功");
     }
@@ -138,5 +137,79 @@ public class SchoolImpl implements SchoolService {
         }
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
     }
+
+    @Override
+    public HttpResult queryCollege(String name, Integer current, Integer size) {
+        Page<College> page = new Page<>(current, size);
+        QueryWrapper<College> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("college_name", name);
+        return HttpResult.success(collegeDao.selectPage(page, queryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult createCollege(String name) {
+        College college = new College();
+        college.setCollegeName(name);
+        if (collegeDao.insert(college) > 0) {
+            return HttpResult.success(college, "创建成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult deleteCollege(Integer collegeId) {
+        if (collegeDao.deleteById(collegeId) > 0) {
+            return HttpResult.success(collegeId, "删除成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult editCollege(Integer collegeId, String name) {
+        UpdateWrapper<College> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("college_id", collegeId).set("college_name", name);
+        if (collegeDao.update(null, updateWrapper) > 0) {
+            return HttpResult.success(collegeId, "修改成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult queryMajor(String name, Integer current, Integer size) {
+        Page<Major> page = new Page<>(current, size);
+        QueryWrapper<Major> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("major_name", name);
+        return HttpResult.success(majorDao.selectPage(page, queryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult createMajor(String name, Integer collegeId) {
+        Major major = new Major();
+        major.setMajorName(name);
+        major.setCollegeId(collegeId);
+        if (majorDao.insert(major) > 0) {
+            return HttpResult.success(major, "创建成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult deleteMajor(Integer majorId) {
+        if (majorDao.deleteById(majorId) > 0) {
+            return HttpResult.success(majorId, "删除成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult editMajor(Integer majorId, String name) {
+        UpdateWrapper<Major> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("major_id", majorId).set("major_name", name);
+        if (majorDao.update(null, updateWrapper) > 0) {
+            return HttpResult.success(majorId, "修改成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
 
 }
