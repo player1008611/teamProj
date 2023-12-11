@@ -23,6 +23,7 @@
         AND recruitment_info.recruitment_id = job_application.recruitment_id
         AND recruitment_info.department_id = department.department_id
         AND job_application.student_id = student.student_id
+        AND job_application.enterprise_visible = 1
         AND student.school_id = school.school_id
         AND student.student_id = user.user_id
         <if test="schoolName!=null and schoolName!=''">

@@ -2,11 +2,36 @@ package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.teamProj.dao.*;
-import com.teamProj.entity.*;
-import com.teamProj.entity.vo.JobApplicationRecruitmentVo;
+import com.teamProj.dao.CareerFairDao;
+import com.teamProj.dao.CollegeDao;
+import com.teamProj.dao.InterviewInfoDao;
+import com.teamProj.dao.JobApplicationDao;
+import com.teamProj.dao.MajorDao;
+import com.teamProj.dao.MarkedRecruitmentInfoDao;
+import com.teamProj.dao.MessageDao;
+import com.teamProj.dao.RecruitmentInfoDao;
+import com.teamProj.dao.ResumeDao;
+import com.teamProj.dao.SchoolDao;
+import com.teamProj.dao.StudentDao;
+import com.teamProj.dao.UserDao;
+import com.teamProj.entity.College;
+import com.teamProj.entity.InterviewInfo;
+import com.teamProj.entity.JobApplication;
+import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.Major;
+import com.teamProj.entity.MarkedRecruitmentInfo;
+import com.teamProj.entity.Message;
+import com.teamProj.entity.RecruitmentInfo;
+import com.teamProj.entity.Resume;
+import com.teamProj.entity.School;
+import com.teamProj.entity.Student;
+import com.teamProj.entity.User;
 import com.teamProj.service.StudentService;
-import com.teamProj.utils.*;
+import com.teamProj.utils.EmailVerification;
+import com.teamProj.utils.HttpResult;
+import com.teamProj.utils.JwtUtil;
+import com.teamProj.utils.RedisCache;
+import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,7 +44,14 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import static com.teamProj.utils.EditByword.editByword;
@@ -135,7 +167,7 @@ public class StudentImpl implements StudentService {
         //Date date = new java.sql.Date(new java.util.Date().getTime());
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(),college.getCollegeId(),major.getMajorId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
+        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), college.getCollegeId(), major.getMajorId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
         if (studentDao.insert(student) > 0) {
             return HttpResult.success(student, "注册成功");
         } else {
@@ -145,23 +177,20 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult querySchool(Integer depth,String queryInfo) {
-        if(depth==0) {
+    public HttpResult querySchool(Integer depth, String queryInfo) {
+        if (depth == 0) {
             QueryWrapper<School> queryWrapper = new QueryWrapper<>();
             queryWrapper.select("school_name").select("school_id");
             return HttpResult.success(schoolDao.selectList(queryWrapper), "查询成功");
-        }
-        else if (depth==1){
+        } else if (depth == 1) {
             QueryWrapper<College> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("school_id",Integer.parseInt(queryInfo)).select("college_name").select("college_id");
+            queryWrapper.eq("school_id", Integer.parseInt(queryInfo)).select("college_name").select("college_id");
             return HttpResult.success(collegeDao.selectList(queryWrapper), "查询成功");
-        }
-        else if (depth==2){
+        } else if (depth == 2) {
             QueryWrapper<Major> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("college_id",Integer.parseInt(queryInfo)).select("major_name").select("major_id");
+            queryWrapper.eq("college_id", Integer.parseInt(queryInfo)).select("major_name").select("major_id");
             return HttpResult.success(majorDao.selectList(queryWrapper), "查询成功");
-        }
-        else{
+        } else {
             return HttpResult.success(null, "参数非法");
         }
     }
@@ -417,6 +446,7 @@ public class StudentImpl implements StudentService {
         jobApplication.setResumeId(resumeId);
         jobApplication.setApplicationTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(System.currentTimeMillis()));
         jobApplication.setStatus('0');
+        jobApplication.setEnterpriseVisible("1");
         if (jobApplicationDao.insert(jobApplication) > 0) {
             QueryWrapper<RecruitmentInfo> queryWrapper1 = new QueryWrapper<>();
             queryWrapper1.eq("recruitment_id", recruitmentInfoId);
@@ -564,11 +594,11 @@ public class StudentImpl implements StudentService {
         QueryWrapper<JobApplication> queryWrapper2 = new QueryWrapper<>();
         queryWrapper2.eq("student_id", user.getUserId());
         List<JobApplication> applicationList = jobApplicationDao.selectList(queryWrapper2);
-        int size =6;
+        int size = 6;
         for (int i = 0; i < size; i++) {
             result.add((RecruitmentInfo) sortedMap.keySet().toArray()[i + (page % 4) * 6]);
-            for(JobApplication temp:applicationList){
-                if(temp.getRecruitmentId().equals(result.get(result.size()-1).getRecruitmentId())){
+            for (JobApplication temp : applicationList) {
+                if (temp.getRecruitmentId().equals(result.get(result.size() - 1).getRecruitmentId())) {
                     result.remove(i);
                     size++;
                     break;

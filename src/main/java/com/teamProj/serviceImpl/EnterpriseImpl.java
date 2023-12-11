@@ -575,9 +575,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
         UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>();
         jobApplicationUpdateWrapper.eq("recruitment_id", recruitmentInfo.getRecruitmentId())
-                .eq("student_id", user.getUserId());
+                .eq("student_id", user.getUserId()).set("enterpriseVisible", "0");
         try {
-            jobApplicationDao.delete(jobApplicationUpdateWrapper);
+            jobApplicationDao.update(null, jobApplicationUpdateWrapper);
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
         }

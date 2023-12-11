@@ -1,5 +1,6 @@
 package com.teamProj;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.teamProj.dao.AdministratorDao;
 import com.teamProj.dao.AnnouncementDao;
 import com.teamProj.dao.CareerFairDao;
@@ -166,5 +167,12 @@ class TeamProjApplicationTests {
     void TestBCryptPasswordEncoder() {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         System.out.println(passwordEncoder.encode("123456"));
+    }
+
+    @Test
+    void TestFile() {
+        QueryWrapper<Announcement> announcementQueryWrapper = new QueryWrapper<>();
+        announcementQueryWrapper.eq("announcement_id", 51);
+        byte[] bytes = announcementDao.selectOne(announcementQueryWrapper).getData();
     }
 }
