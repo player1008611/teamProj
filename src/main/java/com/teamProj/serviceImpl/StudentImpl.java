@@ -596,12 +596,30 @@ public class StudentImpl implements StudentService {
         List<JobApplication> applicationList = jobApplicationDao.selectList(queryWrapper2);
         int size = 6;
         for (int i = 0; i < size; i++) {
-            result.add((RecruitmentInfo) sortedMap.keySet().toArray()[i + (page % 4) * 6]);
+            if(i + (page % 4) * 6<sortedMap.size()) {
+                result.add((RecruitmentInfo) sortedMap.keySet().toArray()[i + (page % 4) * 6]);
+            }else{
+                break;
+            }
             for (JobApplication temp : applicationList) {
                 if (temp.getRecruitmentId().equals(result.get(result.size() - 1).getRecruitmentId())) {
-                    result.remove(i);
+                    result.remove(result.size()-1);
                     size++;
                     break;
+                }
+            }
+        }
+        QueryWrapper<MarkedRecruitmentInfo> queryWrapper3 = new QueryWrapper<>();
+        queryWrapper3.eq("student_id", user.getUserId());
+        List<MarkedRecruitmentInfo> markedRecruitmentInfoList = markedRecruitmentInfoDao.selectList(queryWrapper3);
+        for(RecruitmentInfo temp:result){
+            for(MarkedRecruitmentInfo temp1:markedRecruitmentInfoList){
+                if(temp.getRecruitmentId().equals(temp1.getRecruitmentId())){
+                    temp.setStatus('1');
+                    break;
+                }
+                else {
+                    temp.setStatus('0');
                 }
             }
         }
