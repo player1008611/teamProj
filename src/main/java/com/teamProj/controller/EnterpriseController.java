@@ -290,4 +290,31 @@ public class EnterpriseController {
                 , gender.isEmpty() ? null : gender
                 , graduationSchool.isEmpty() ? null : graduationSchool);
     }
+
+    @GetMapping("/queryInterview")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult queryInterview(@RequestParam(required = false) String date
+            , @RequestParam(required = false) String school
+            , @RequestParam(required = false) Integer code
+            , @RequestParam Integer current) {
+        return enterpriseService.queryInterview(date, school, code, current);
+    }
+
+    @DeleteMapping("/deleteInterview")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult deleteInterview(@RequestParam Integer id) {
+        return enterpriseService.deleteInterview(id);
+    }
+
+    @PatchMapping("/agreeInterview")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult agreeInterview(@RequestParam Integer id) {
+        return enterpriseService.agreeInterview(id);
+    }
+
+    @PatchMapping("/disagreeInterview")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult disagreeInterview(@RequestParam Integer id) {
+        return enterpriseService.disagreeInterview(id);
+    }
 }

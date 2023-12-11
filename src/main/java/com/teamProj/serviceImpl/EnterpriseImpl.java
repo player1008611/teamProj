@@ -767,6 +767,52 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         int userId = loginUser.getUser().getUserId();
         Page<EnterpriseInterviewVo> page = new Page<>(current, 7);
-        return HttpResult.success(enterpriseUserDao.queryInterview(page, userId, Timestamp.valueOf(date + ":00"), school, code), "查询成功");
+        return HttpResult.success(enterpriseUserDao.queryInterview(page, userId, date.isEmpty() ? null : Timestamp.valueOf(date + ":00"), school, code), "查询成功");
+    }
+
+    @Override
+    public HttpResult deleteInterview(Integer id) {
+        QueryWrapper<InterviewInfo> interviewInfoQueryWrapper = new QueryWrapper<>();
+        interviewInfoQueryWrapper.eq("interview_id", id);
+        if (interviewInfoDao.delete(interviewInfoQueryWrapper) > 0) {
+            return HttpResult.success(id, "删除成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "删除失败");
+    }
+
+    @Override
+    public HttpResult agreeInterview(Integer id) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        UpdateWrapper<InterviewInfo> interviewInfoUpdateWrapper = new UpdateWrapper<>();
+        interviewInfoUpdateWrapper.eq("interview_id", id).set("status", "1").set("principal_id", userId).set("time", Timestamp.valueOf(format.format(date)));
+        if (interviewInfoDao.update(null, interviewInfoUpdateWrapper) > 0) {
+            return HttpResult.success(id, "审核成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "审核失败");
+    }
+
+    @Override
+    public HttpResult disagreeInterview(Integer id) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        UpdateWrapper<InterviewInfo> interviewInfoUpdateWrapper = new UpdateWrapper<>();
+        interviewInfoUpdateWrapper.eq("interview_id", id).set("status", "2").set("principal_id", userId).set("time", Timestamp.valueOf(format.format(date)));
+        if (interviewInfoDao.update(null, interviewInfoUpdateWrapper) > 0) {
+            return HttpResult.success(id, "审核成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "审核失败");
     }
 }

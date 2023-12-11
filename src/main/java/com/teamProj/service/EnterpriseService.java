@@ -65,5 +65,11 @@ public interface EnterpriseService {
 
     HttpResult updateInfo(MultipartFile avatar, String name, Date birthday, Integer age, String gender, String graduationSchool);
 
-    HttpResult queryInterview(String date, String school, Integer status);
+    HttpResult queryInterview(String date, String school, Integer status, Integer current);
+
+    HttpResult deleteInterview(Integer id);
+
+    HttpResult agreeInterview(Integer id);
+
+    HttpResult disagreeInterview(Integer id);
 }

@@ -6,7 +6,7 @@
     <select id="queryInterview" resultType="com.teamProj.entity.vo.EnterpriseInterviewVo">
         SELECT student.name as studentName,
         resume.creation_time as creationTime,
-        resume.self_description as selfDiscription,
+        resume.self_description as selfDescription,
         resume.career_objective as careerObjective,
         resume.education_experience as educationExperience,
         resume.internship_experience as internshipExperience,
@@ -33,7 +33,7 @@
         AND job_application.application_id = interview_info.application_id
         AND job_application.resume_id = resume.resume_id
         AND interview_info.student_id = student.student_id
-        AND interview_info.principal_id = enterprise_user.enterprise_id
+        AND interview_info.principal_id = enterprise_user.user_id
         AND school.school_id = student.school_id
         <if test="date!=null">
             AND interview_info.date_time <![CDATA[>]]> #{date}
