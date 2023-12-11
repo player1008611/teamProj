@@ -1,6 +1,7 @@
 package com.teamProj.service;
 
 import com.teamProj.utils.HttpResult;
+import io.swagger.models.auth.In;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLException;
@@ -10,8 +11,8 @@ import java.util.Map;
 public interface StudentService {
     HttpResult studentLogin(String account, String password);
     HttpResult studentLogout();
-    HttpResult studentRegister(String account, String password, String schoolName, String name, String phoneNumber);
-    HttpResult querySchool();
+    HttpResult studentRegister(String account, String password, String schoolName,String collegeName,String majorName, String name, String phoneNumber);
+    HttpResult querySchool(Integer depth,String queryInfo);
 
     HttpResult setStudentPassword(String account, String oldPassword, String password);
 
@@ -52,7 +53,7 @@ public interface StudentService {
     HttpResult queryInterviewInfo(String queryInfo);
     HttpResult homepage();
 
-    HttpResult getRecommendation();
+    HttpResult getRecommendation(Integer page);
 
     HttpResult queryFair();
 

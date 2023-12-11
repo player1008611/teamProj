@@ -16,6 +16,10 @@ public class Student {
 
     Integer schoolId;
 
+    Integer collegeId;
+
+    Integer majorId;
+
     String name;
 
     String phoneNumber;
@@ -30,10 +34,6 @@ public class Student {
     String wechat;
 
     String qq;
-
-    Integer collegeId;
-
-    Integer majorId;
 
     String byword;
 

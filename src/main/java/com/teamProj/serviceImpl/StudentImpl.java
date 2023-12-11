@@ -52,6 +52,10 @@ public class StudentImpl implements StudentService {
     private CareerFairDao careerFairDao;
     @Resource
     private MessageDao messageDao;
+    @Resource
+    private CollegeDao collegeDao;
+    @Resource
+    private MajorDao majorDao;
 
     @Override
     public HttpResult studentLogin(String account, String password) {
@@ -106,7 +110,7 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult studentRegister(String account, String password, String schoolName, String name, String phoneNumber) {
+    public HttpResult studentRegister(String account, String password, String schoolName, String collegeName, String majorName, String name, String phoneNumber) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("account", account);
         User user = new User();
@@ -121,10 +125,16 @@ public class StudentImpl implements StudentService {
         QueryWrapper<School> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("school_name", schoolName);
         School school = schoolDao.selectOne(queryWrapper1);
-        Date date = new java.sql.Date(new java.util.Date().getTime());
+        QueryWrapper<College> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("college_name", collegeName).eq("school_id", school.getSchoolId());
+        College college = collegeDao.selectOne(queryWrapper2);
+        QueryWrapper<Major> queryWrapper3 = new QueryWrapper<>();
+        queryWrapper3.eq("major_name", majorName).eq("college_id", college.getCollegeId());
+        Major major = majorDao.selectOne(queryWrapper3);
+        //Date date = new java.sql.Date(new java.util.Date().getTime());
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
-        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null, null, null, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
+        Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(),college.getCollegeId(),major.getMajorId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
         if (studentDao.insert(student) > 0) {
             return HttpResult.success(student, "注册成功");
         } else {
@@ -134,11 +144,27 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult querySchool() {
-        QueryWrapper<School> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("school_name");
-        return HttpResult.success(schoolDao.selectList(queryWrapper), "查询成功");
+    public HttpResult querySchool(Integer depth,String queryInfo) {
+        if(depth==0) {
+            QueryWrapper<School> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("school_name").select("school_id");
+            return HttpResult.success(schoolDao.selectList(queryWrapper), "查询成功");
+        }
+        else if (depth==1){
+            QueryWrapper<College> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("school_id",Integer.parseInt(queryInfo)).select("college_name").select("college_id");
+            return HttpResult.success(collegeDao.selectList(queryWrapper), "查询成功");
+        }
+        else if (depth==2){
+            QueryWrapper<Major> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("college_id",Integer.parseInt(queryInfo)).select("major_name").select("major_id");
+            return HttpResult.success(majorDao.selectList(queryWrapper), "查询成功");
+        }
+        else{
+            return HttpResult.success(null, "参数非法");
+        }
     }
+
 
     @Override
     public HttpResult verification(String email) {
@@ -298,13 +324,13 @@ public class StudentImpl implements StudentService {
         updateWrapper.eq("student_id", studentId);
         Student student = new Student();
         student.setName(name);
-        if (gender != null&& !gender.isEmpty()) {
+        if (gender != null && !gender.isEmpty()) {
             student.setGender(gender);
         }
-        if (wechat != null&& !wechat.isEmpty()) {
+        if (wechat != null && !wechat.isEmpty()) {
             student.setWechat(wechat);
         }
-        if (qq != null&& !qq.isEmpty()) {
+        if (qq != null && !qq.isEmpty()) {
             student.setQq(qq);
         }
         if (collegeId != null) {
@@ -313,14 +339,14 @@ public class StudentImpl implements StudentService {
         if (majorId != null) {
             student.setMajorId(majorId);
         }
-        if (address != null&& !address.isEmpty()) {
+        if (address != null && !address.isEmpty()) {
             student.setAddress(address);
         }
         if (age != null) {
             student.setAge(age);
         }
         QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("student_id", studentId).select("name","gender","college_id","major_id","address","age","wechat","qq");
+        queryWrapper.eq("student_id", studentId).select("name", "gender", "college_id", "major_id", "address", "age", "wechat", "qq");
         if (studentDao.update(student, updateWrapper) > 0) {
             return HttpResult.success(studentDao.selectOne(queryWrapper), "修改成功");
         } else {
@@ -516,7 +542,7 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult getRecommendation() {
+    public HttpResult getRecommendation(Integer page) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
@@ -535,7 +561,7 @@ public class StudentImpl implements StudentService {
                 .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
         List<RecruitmentInfo> result = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            result.add((RecruitmentInfo) sortedMap.keySet().toArray()[i]);
+            result.add((RecruitmentInfo) sortedMap.keySet().toArray()[i + (page % 4) * 6]);
         }
         return HttpResult.success(result, "查询成功");
     }
@@ -551,15 +577,15 @@ public class StudentImpl implements StudentService {
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
 
-        return HttpResult.success(messageDao.queryMessageList(user.getUserId(),null,null), "查询成功");
+        return HttpResult.success(messageDao.queryMessageList(user.getUserId(), null, null), "查询成功");
     }
 
     @Override
-    public HttpResult queryMessage(Integer messageId,String queryInfo) {
+    public HttpResult queryMessage(Integer messageId, String queryInfo) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
-        return HttpResult.success(messageDao.queryMessageList(user.getUserId(),messageId,queryInfo), "查询成功");
+        return HttpResult.success(messageDao.queryMessageList(user.getUserId(), messageId, queryInfo), "查询成功");
     }
 
     @Override
@@ -588,7 +614,7 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult hasReadAllMessage(){
+    public HttpResult hasReadAllMessage() {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         UpdateWrapper<Message> updateWrapper = new UpdateWrapper<>();
@@ -600,7 +626,7 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult hasReadMessage(Integer messageId){
+    public HttpResult hasReadMessage(Integer messageId) {
         UpdateWrapper<Message> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("message_id", messageId).set("state", "1");
         messageDao.update(null, updateWrapper);

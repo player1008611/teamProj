@@ -42,14 +42,16 @@ public class StudentController {
                                @RequestParam(value = "password") String password,
                                @RequestParam(value = "schoolName") String schoolName,
                                @RequestParam(value = "name") String name,
-                               @RequestParam(value = "phoneNumber") String phoneNumber
+                               @RequestParam(value = "phoneNumber") String phoneNumber,
+                               @RequestParam(value = "collegeName") String collegeName,
+                               @RequestParam(value = "majorName") String majorName
     ) {
-        return studentService.studentRegister(account, password, schoolName, name, phoneNumber);
+        return studentService.studentRegister(account, password, schoolName,collegeName,majorName, name, phoneNumber);
     }
 
     @GetMapping("/querySchool/all")
-    HttpResult querySchool() {
-        return studentService.querySchool();
+    HttpResult querySchool(@RequestParam(value = "depth") Integer depth,@RequestParam(value = "queryInfo") String queryInfo) {
+        return studentService.querySchool(depth,queryInfo);
     }
 
     @PatchMapping("/setPassword")
@@ -188,8 +190,8 @@ public class StudentController {
 
     @GetMapping("/getRecommendation")
     @PreAuthorize("hasAuthority('student')")
-    HttpResult getRecommendation() {
-        return studentService.getRecommendation();
+    HttpResult getRecommendation(@RequestParam(value = "page",required = false) Integer page) {
+        return studentService.getRecommendation(page);
     }
 
     @GetMapping("/queryFair")
