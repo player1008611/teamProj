@@ -43,7 +43,7 @@ public interface EnterpriseService {
 
     HttpResult deleteDraft(String draftName);
 
-    HttpResult queryJobApplication(String schoolName, String departmentName, Integer current);
+    HttpResult queryJobApplication(String schoolName, String departmentName, Integer code, Integer current);
 
     HttpResult queryResume(Integer jobApplicationId);
 

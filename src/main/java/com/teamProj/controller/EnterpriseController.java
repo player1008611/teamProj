@@ -191,8 +191,9 @@ public class EnterpriseController {
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult queryJobApplication(@RequestParam(required = false) String schoolName
             , @RequestParam(required = false) String departmentName
+            , @RequestParam(required = false) Integer code
             , @RequestParam Integer current) {
-        return enterpriseService.queryJobApplication(schoolName, departmentName, current);
+        return enterpriseService.queryJobApplication(schoolName, departmentName, code, current);
     }
 
     @DeleteMapping("/deleteJobApplication")

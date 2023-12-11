@@ -23,6 +23,7 @@ public interface EnterpriseUserDao extends BaseMapper<EnterpriseUser> {
     IPage<EnterpriseJobApplicationVo> queryJobApplication(Page<EnterpriseJobApplicationVo> page
             , @Param("schoolName") String schoolName
             , @Param("departmentName") String departmentName
+            , @Param("code") Integer code
             , @Param("userId") Integer userId);
 
     IPage<EnterpriseRecruitmentVo> queryRecruitmentInfo(Page<EnterpriseRecruitmentVo> page

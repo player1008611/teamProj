@@ -32,5 +32,31 @@
         <if test="departmentName!=null and departmentName!=''">
             AND department.name = #{departmentName}
         </if>
+        <if test="code==1">
+            AND job_application.status = 2
+        </if>
+        <if test="code==2">
+            AND job_application.status = 1
+        </if>
+        <if test="code==3">
+            AND (job_application.status = 1
+            OR job_application.status = 2)
+        </if>
+        <if test="code==4">
+            AND job_application.status = 0
+        </if>
+        <if test="code==5">
+            AND (job_application.status = 0
+            OR job_application.status = 2)
+        </if>
+        <if test="code==6">
+            AND (job_application.status = 0
+            OR job_application.status = 1)
+        </if>
+        <if test="code==7">
+            AND (job_application.status = 0
+            OR job_application.status = 1
+            OR job_application.status = 2)
+        </if>
     </select>
 </mapper>
