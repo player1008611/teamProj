@@ -13,6 +13,8 @@ import java.sql.Timestamp;
 public class EnterpriseInterviewVo {
     String studentName;
 
+    String schoolName;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     Timestamp creationTime;
 

@@ -5,6 +5,7 @@
 <mapper namespace="com.teamProj.dao.EnterpriseUserDao">
     <select id="queryInterview" resultType="com.teamProj.entity.vo.EnterpriseInterviewVo">
         SELECT student.name as studentName,
+        school.school_name as schoolName,
         resume.creation_time as creationTime,
         resume.self_description as selfDescription,
         resume.career_objective as careerObjective,

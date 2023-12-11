@@ -172,7 +172,7 @@ class TeamProjApplicationTests {
     @Test
     void TestFile() {
         QueryWrapper<Announcement> announcementQueryWrapper = new QueryWrapper<>();
-        announcementQueryWrapper.eq("announcement_id", 51);
+        announcementQueryWrapper.eq("announcement_id", 54);
         byte[] bytes = announcementDao.selectOne(announcementQueryWrapper).getData();
     }
 }
