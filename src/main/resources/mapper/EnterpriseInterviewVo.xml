@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.EnterpriseUserDao">
+    <select id="queryInterview" resultType="com.teamProj.entity.vo.EnterpriseInterviewVo">
+        SELECT student.name as studentName,
+        resume.creation_time as creationTime,
+        resume.self_description as selfDiscription,
+        resume.career_objective as careerObjective,
+        resume.education_experience as educationExperience,
+        resume.internship_experience as internshipExperience,
+        resume.project_experience as projectExperience,
+        resume.certificates,
+        resume.skills,
+        resume.image_byte as imageByte,
+        interview_info.interview_id as interviewId,
+        interview_info.date_time as dateTime,
+        interview_info.position,
+        interview_info.status,
+        enterprise_user.name as principal,
+        interview_info.time
+        FROM interview_info,
+        resume,
+        job_application,
+        student,
+        enterprise_user,
+        recruitment_info,
+        school
+        WHERE enterprise_user.user_id = #{userId}
+        AND enterprise_user.enterprise_id = recruitment_info.enterprise_id
+        AND recruitment_info.recruitment_id = job_application.recruitment_id
+        AND job_application.application_id = interview_info.application_id
+        AND job_application.resume_id = resume.resume_id
+        AND interview_info.student_id = student.student_id
+        AND interview_info.principal_id = enterprise_user.enterprise_id
+        AND school.school_id = student.school_id
+        <if test="date!=null">
+            AND interview_info.date_time <![CDATA[>]]> #{date}
+            AND interview_info.date_time <![CDATA[<]]> timestampadd(DAY,1,#{date})
+        </if>
+        <if test="school!=null and school!=''">
+            AND school.school_name = #{school}
+        </if>
+        <if test="code==1">
+            AND interview_info.status = 1
+        </if>
+        <if test="code==2">
+            AND interview_info.status = 2
+        </if>
+        <if test="code==3">
+            AND (interview_info.status = 1
+            OR interview_info.status = 2)
+        </if>
+        <if test="code==4">
+            AND interview_info.status = 0
+        </if>
+        <if test="code==5">
+            AND (interview_info.status = 0
+            OR interview_info.status = 1)
+        </if>
+        <if test="code==6">
+            AND (interview_info.status = 0
+            OR interview_info.status = 2)
+        </if>
+        <if test="code==7">
+            AND (interview_info.status = 0
+            OR interview_info.status = 1
+            OR interview_info.status = 2)
+        </if>
+    </select>
+</mapper>

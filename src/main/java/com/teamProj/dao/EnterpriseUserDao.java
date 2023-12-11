@@ -7,6 +7,7 @@ import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.vo.EnterpriseDraftVo;
 import com.teamProj.entity.vo.EnterpriseFairVo;
 import com.teamProj.entity.vo.EnterpriseInfoVo;
+import com.teamProj.entity.vo.EnterpriseInterviewVo;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -41,4 +42,10 @@ public interface EnterpriseUserDao extends BaseMapper<EnterpriseUser> {
             , @Param("userId") Integer userId);
 
     EnterpriseInfoVo queryInfo(@Param("userId") Integer userId);
+
+    IPage<EnterpriseInterviewVo> queryInterview(Page<EnterpriseInterviewVo> page
+            , @Param("userId") Integer userId
+            , @Param("date") Timestamp date
+            , @Param("school") String school
+            , @Param("code") Integer code);
 }

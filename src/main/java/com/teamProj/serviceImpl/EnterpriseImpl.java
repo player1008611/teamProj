@@ -29,6 +29,7 @@ import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
 import com.teamProj.entity.vo.EnterpriseFairVo;
+import com.teamProj.entity.vo.EnterpriseInterviewVo;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
 import com.teamProj.entity.vo.StudentResumeAllVo;
@@ -597,13 +598,21 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Override
     public HttpResult agreeJobApplication(Integer id, String date, String position) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
         QueryWrapper<JobApplication> jobApplicationQueryWrapper = new QueryWrapper<>();
         jobApplicationQueryWrapper.eq("application_id", id).eq("status", "0");
         JobApplication jobApplication = jobApplicationDao.selectOne(jobApplicationQueryWrapper);
         if (Objects.isNull(jobApplication)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "信息不存在或已审核");
         }
-        InterviewInfo interviewInfo = new InterviewInfo(null, jobApplication.getStudentId(), jobApplication.getApplicationId(), date, position, '0', '0');
+        Date time = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        InterviewInfo interviewInfo = new InterviewInfo(null, jobApplication.getStudentId(), jobApplication.getApplicationId(), userId, Timestamp.valueOf(date + ":00"), position, '0', Timestamp.valueOf(simpleDateFormat.format(time)), '0');
         try {
             interviewInfoDao.insert(interviewInfo);
         } catch (Exception e) {
@@ -747,5 +756,17 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
         }
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
+    }
+
+    @Override
+    public HttpResult queryInterview(String date, String school, Integer code, Integer current) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        if (Objects.isNull(loginUser)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+        int userId = loginUser.getUser().getUserId();
+        Page<EnterpriseInterviewVo> page = new Page<>(current, 7);
+        return HttpResult.success(enterpriseUserDao.queryInterview(page, userId, Timestamp.valueOf(date + ":00"), school, code), "查询成功");
     }
 }
