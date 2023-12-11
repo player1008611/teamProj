@@ -9,7 +9,7 @@
                 message.time       as time,
                 student.name       as `to`,
                 enterprise.enterprise_name   as `from`,
-                message.state     as state,
+                message.status     as status,
                 message.title       as title
         FROM message,student,enterprise_user,enterprise
         WHERE message.to = student.student_id

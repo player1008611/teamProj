@@ -17,5 +17,5 @@ public class Message {
     String title;
     String content;
     String time;
-    String state;
+    String status;
 }

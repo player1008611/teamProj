@@ -17,7 +17,7 @@
         WHEN r.recruitment_id = m.recruitment_id AND m.student_id=#{userId}
         THEN 1
         ELSE 0
-        END AS state
+        END AS status
         FROM recruitment_info AS r
         LEFT JOIN
         marked_recruitment_info AS m ON r.recruitment_id = m.recruitment_id

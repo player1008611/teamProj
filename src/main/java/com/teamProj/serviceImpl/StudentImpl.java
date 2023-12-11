@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
+import com.teamProj.entity.vo.JobApplicationRecruitmentVo;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -507,7 +508,7 @@ public class StudentImpl implements StudentService {
 //            JobApplication jobApplication = jobApplicationDao.selectOne(queryWrapper2);
 //            QueryWrapper<RecruitmentInfo> queryWrapper3 = new QueryWrapper<>();
 //            queryWrapper3.eq("recruitment_id", jobApplication.getRecruitmentId());
-//            StudentInterviewVo tempVo = new StudentInterviewVo(tempInfo.getDateTime(), tempInfo.getPosition(), tempInfo.getMark(), tempInfo.getState(), recruitmentInfoDao.selectOne(queryWrapper3).getCompanyName());
+//            StudentInterviewVo tempVo = new StudentInterviewVo(tempInfo.getDateTime(), tempInfo.getPosition(), tempInfo.getMark(), tempInfo.getstatus(), recruitmentInfoDao.selectOne(queryWrapper3).getCompanyName());
 //            studentInterviewVo.add(tempVo);
 //        }
 //        return HttpResult.success(studentInterviewVo, "查询成功");
@@ -560,8 +561,19 @@ public class StudentImpl implements StudentService {
                 .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
                 .forEachOrdered(x -> sortedMap.put(x.getKey(), x.getValue()));
         List<RecruitmentInfo> result = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        QueryWrapper<JobApplication> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("student_id", user.getUserId());
+        List<JobApplication> applicationList = jobApplicationDao.selectList(queryWrapper2);
+        int size =6;
+        for (int i = 0; i < size; i++) {
             result.add((RecruitmentInfo) sortedMap.keySet().toArray()[i + (page % 4) * 6]);
+            for(JobApplication temp:applicationList){
+                if(temp.getRecruitmentId().equals(result.get(result.size()-1).getRecruitmentId())){
+                    result.remove(i);
+                    size++;
+                    break;
+                }
+            }
         }
         return HttpResult.success(result, "查询成功");
     }
@@ -620,7 +632,7 @@ public class StudentImpl implements StudentService {
         UpdateWrapper<Message> updateWrapper = new UpdateWrapper<>();
         User user = loginUser.getUser();
         System.out.println(user.getUserId());
-        updateWrapper.eq("`to`", user.getUserId()).set("state", "1");
+        updateWrapper.eq("`to`", user.getUserId()).set("status", "1");
         messageDao.update(null, updateWrapper);
         return HttpResult.success(null, "修改成功");
     }
@@ -628,7 +640,7 @@ public class StudentImpl implements StudentService {
     @Override
     public HttpResult hasReadMessage(Integer messageId) {
         UpdateWrapper<Message> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("message_id", messageId).set("state", "1");
+        updateWrapper.eq("message_id", messageId).set("status", "1");
         messageDao.update(null, updateWrapper);
         return HttpResult.success(null, "修改成功");
     }

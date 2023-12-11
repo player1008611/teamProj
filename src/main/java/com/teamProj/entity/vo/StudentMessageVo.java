@@ -13,5 +13,5 @@ public class StudentMessageVo {
     String title;
     String content;
     String time;
-    Integer state;
+    Integer status;
 }

@@ -55,7 +55,7 @@ public class SchoolImpl implements SchoolService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        if (!loginUser.getPermissions().get(0).equals("admin")) {
+        if (!loginUser.getPermissions().get(0).equals("school")) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         String userId = String.valueOf(loginUser.getUser().getUserId());
@@ -148,8 +148,12 @@ public class SchoolImpl implements SchoolService {
 
     @Override
     public HttpResult createCollege(String name) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int schoolId = loginUser.getUser().getUserId();
         College college = new College();
         college.setCollegeName(name);
+        college.setSchoolId(schoolId);
         if (collegeDao.insert(college) > 0) {
             return HttpResult.success(college, "创建成功");
         }
@@ -184,9 +188,13 @@ public class SchoolImpl implements SchoolService {
 
     @Override
     public HttpResult createMajor(String name, Integer collegeId) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int schoolId = loginUser.getUser().getUserId();
         Major major = new Major();
         major.setMajorName(name);
         major.setCollegeId(collegeId);
+        major.setSchoolId(schoolId);
         if (majorDao.insert(major) > 0) {
             return HttpResult.success(major, "创建成功");
         }

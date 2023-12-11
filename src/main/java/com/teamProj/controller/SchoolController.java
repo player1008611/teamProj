@@ -56,4 +56,55 @@ public class SchoolController {
         return schoolService.deleteStudentAccount(account);
     }
 
+    @GetMapping("/College/query")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult queryCollege(@RequestParam(value = "name", required = false) String name
+            , @RequestParam(value = "current") Integer current
+            , @RequestParam(value = "size") Integer size) {
+        return schoolService.queryCollege(name, current, size);
+    }
+
+    @PostMapping("/College/create")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult createCollege(@RequestParam String name) {
+        return schoolService.createCollege(name);
+    }
+
+    @DeleteMapping("/College/delete")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult deleteCollege(@RequestParam Integer collegeId) {
+        return schoolService.deleteCollege(collegeId);
+    }
+
+    @PatchMapping("/College/edit")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult editCollege(@RequestParam Integer collegeId, @RequestParam String name) {
+        return schoolService.editCollege(collegeId, name);
+    }
+
+    @GetMapping("/Major/query")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult queryMajor(@RequestParam(value = "name", required = false) String name
+            , @RequestParam(value = "current") Integer current
+            , @RequestParam(value = "size") Integer size) {
+        return schoolService.queryMajor(name, current, size);
+    }
+
+    @PostMapping("/Major/create")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult createMajor(@RequestParam String name, @RequestParam Integer collegeId) {
+        return schoolService.createMajor(name, collegeId);
+    }
+
+    @DeleteMapping("/Major/delete")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult deleteMajor(@RequestParam Integer majorId) {
+        return schoolService.deleteMajor(majorId);
+    }
+
+    @PatchMapping("/Major/edit")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult editMajor(@RequestParam Integer majorId, @RequestParam String name) {
+        return schoolService.editMajor(majorId, name);
+    }
 }

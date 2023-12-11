@@ -12,7 +12,7 @@ public class StudentInterviewVo {
 
     char mark;
 
-    char state;
+    char status;
 
     String companyName;
     String jobTitle;

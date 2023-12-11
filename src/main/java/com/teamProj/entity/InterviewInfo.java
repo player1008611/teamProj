@@ -26,5 +26,5 @@ public class InterviewInfo {
 
     Character mark;
 
-    Character state;
+    Character status;
 }
