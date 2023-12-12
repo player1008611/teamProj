@@ -900,7 +900,7 @@ public class EnterpriseImpl implements EnterpriseService {
         List<CareerFair> careerFairList = careerFairDao.selectList(null);
         for (CareerFair careerFair : careerFairList) {
             QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
-            schoolQueryWrapper.eq("school_id", careerFair.getSchoolId());
+            schoolQueryWrapper.eq("school_id", careerFair.getSchoolId()).eq("status", "1");
             School school = schoolDao.selectOne(schoolQueryWrapper);
             if (map.containsKey(school.getSchoolName())) {
                 map.put(school.getSchoolName(), map.get(school.getSchoolName()) + 1);
