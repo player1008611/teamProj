@@ -26,10 +26,11 @@ public class SchoolController {
     @GetMapping("/queryStudent")
     @PreAuthorize("hasAuthority('school')")
     HttpResult queryStudent(@RequestParam(value = "name", required = false) String name
+                            ,@RequestParam(value = "majorId",required = false) Integer majorId
             , @RequestParam(value = "status", required = false) Character status
             , @RequestParam(value = "current") Integer current
             , @RequestParam(value = "size") Integer size) {
-        return schoolService.queryStudent(name, status, current, size);
+        return schoolService.queryStudent(name,majorId, status, current, size);
     }
 
     @PatchMapping("/resetStudentPassword")
@@ -86,8 +87,9 @@ public class SchoolController {
     @PreAuthorize("hasAuthority('school')")
     HttpResult queryMajor(@RequestParam(value = "name", required = false) String name
             , @RequestParam(value = "current") Integer current
-            , @RequestParam(value = "size") Integer size) {
-        return schoolService.queryMajor(name, current, size);
+            , @RequestParam(value = "size") Integer size
+            , @RequestParam(value = "collegeId") Integer collegeId) {
+        return schoolService.queryMajor(name, current, size, collegeId);
     }
 
     @PostMapping("/Major/create")

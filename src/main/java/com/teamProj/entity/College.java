@@ -11,4 +11,5 @@ public class College {
     Integer collegeId;
     String collegeName;
     Integer schoolId;
+    Integer studentNum;
 }

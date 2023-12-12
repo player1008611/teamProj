@@ -169,6 +169,8 @@ public class StudentImpl implements StudentService {
         formatter.setTimeZone(TimeZone.getTimeZone("Asia/Shanghai"));
         Student student = new Student(userDao.selectOne(queryWrapper).getUserId(), school.getSchoolId(), college.getCollegeId(), major.getMajorId(), name, phoneNumber, "1", new Timestamp(System.currentTimeMillis()), null, null, null, null, null, null, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
         if (studentDao.insert(student) > 0) {
+            collegeDao.update(null, new UpdateWrapper<College>().eq("college_id", college.getCollegeId()).set("student_num", college.getStudentNum() + 1));
+            majorDao.update(null, new UpdateWrapper<Major>().eq("major_id", major.getMajorId()).set("student_num", major.getStudentNum() + 1));
             return HttpResult.success(student, "注册成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR);
@@ -180,15 +182,15 @@ public class StudentImpl implements StudentService {
     public HttpResult querySchool(Integer depth, String queryInfo) {
         if (depth == 0) {
             QueryWrapper<School> queryWrapper = new QueryWrapper<>();
-            queryWrapper.select("school_name").select("school_id");
+            queryWrapper.select("school_id","school_name");
             return HttpResult.success(schoolDao.selectList(queryWrapper), "查询成功");
         } else if (depth == 1) {
             QueryWrapper<College> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("school_id", Integer.parseInt(queryInfo)).select("college_name").select("college_id");
+            queryWrapper.eq("school_id", Integer.parseInt(queryInfo)).select("college_name","college_id");
             return HttpResult.success(collegeDao.selectList(queryWrapper), "查询成功");
         } else if (depth == 2) {
             QueryWrapper<Major> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("college_id", Integer.parseInt(queryInfo)).select("major_name").select("major_id");
+            queryWrapper.eq("college_id", Integer.parseInt(queryInfo)).select("major_name","major_id");
             return HttpResult.success(majorDao.selectList(queryWrapper), "查询成功");
         } else {
             return HttpResult.success(null, "参数非法");

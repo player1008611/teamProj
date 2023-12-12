@@ -2,10 +2,12 @@ package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
 import com.teamProj.entity.vo.AdminStudentVo;
+import com.teamProj.entity.vo.SchoolStudentVo;
 import com.teamProj.service.SchoolService;
 import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.JwtUtil;
@@ -75,15 +77,15 @@ public class SchoolImpl implements SchoolService {
     }
 
     @Override
-    public HttpResult queryStudent(String name, Character status, Integer current, Integer size) {
+    public HttpResult queryStudent(String name,Integer majorId, Character status, Integer current, Integer size) {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int schoolId = loginUser.getUser().getUserId();
         QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
         schoolQueryWrapper.eq("school_id", schoolId);
         String schoolName = schoolDao.selectOne(schoolQueryWrapper).getSchoolName();
-        Page<AdminStudentVo> page = new Page<>(current, size);
-        return HttpResult.success(studentDao.queryStudent(page, name, schoolName, status), "查询成功");
+        Page<SchoolStudentVo> page = new Page<>(current, size);
+        return HttpResult.success(studentDao.queryStudentWithMajor(page, name, schoolName,majorId, status), "查询成功");
     }
 
     @Override
@@ -179,10 +181,10 @@ public class SchoolImpl implements SchoolService {
     }
 
     @Override
-    public HttpResult queryMajor(String name, Integer current, Integer size) {
+    public HttpResult queryMajor(String name, Integer current, Integer size, Integer collegeId) {
         Page<Major> page = new Page<>(current, size);
         QueryWrapper<Major> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("major_name", name);
+        queryWrapper.like("major_name", name).eq("college_id", collegeId);
         return HttpResult.success(majorDao.selectPage(page, queryWrapper), "查询成功");
     }
 

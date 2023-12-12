@@ -7,7 +7,7 @@ public interface SchoolService {
 
     HttpResult schoolLogout();
 
-    HttpResult queryStudent(String name, Character status, Integer current, Integer size);
+    HttpResult queryStudent(String name,Integer majorId, Character status, Integer current, Integer size);
 
     HttpResult resetStudentPassword(String account);
 
@@ -21,7 +21,7 @@ public interface SchoolService {
     HttpResult createCollege(String name);
     HttpResult deleteCollege(Integer collegeId);
     HttpResult editCollege(Integer collegeId, String name);
-    HttpResult queryMajor(String name, Integer current, Integer size);
+    HttpResult queryMajor(String name, Integer current, Integer size , Integer collegeId);
     HttpResult createMajor(String name, Integer collegeId);
     HttpResult deleteMajor(Integer majorId);
     HttpResult editMajor(Integer majorId, String name);

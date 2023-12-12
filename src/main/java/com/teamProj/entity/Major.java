@@ -12,4 +12,5 @@ public class Major {
     String majorName;
     Integer collegeId;
     Integer schoolId;
+    Integer studentNum;
 }
