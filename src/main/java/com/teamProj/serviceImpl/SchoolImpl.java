@@ -50,6 +50,9 @@ public class SchoolImpl implements SchoolService {
     @Resource
     private MajorDao majorDao;
 
+    @Resource
+    private CareerFairDao careerFairDao;
+
     public HttpResult schoolLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
@@ -222,4 +225,24 @@ public class SchoolImpl implements SchoolService {
     }
 
 
+    @Override
+    public HttpResult auditCareerFair(Integer careerFairId, String status, String reason) {
+        UpdateWrapper<CareerFair> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("fair_id", careerFairId).set("status", status).set("reason", reason);
+        if (careerFairDao.update(null, updateWrapper) > 0) {
+            return HttpResult.success(careerFairId, "审核成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+    }
+
+    @Override
+    public HttpResult queryCareerFair(String name, Integer current, Integer size) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int schoolId = loginUser.getUser().getUserId();
+        Page<CareerFair> page = new Page<>(current, size);
+        QueryWrapper<CareerFair> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("school_id", schoolId).like("title", name);
+        return HttpResult.success(careerFairDao.selectPage(page, queryWrapper), "查询成功");
+    }
 }

@@ -26,4 +26,7 @@ public interface SchoolService {
     HttpResult deleteMajor(Integer majorId);
     HttpResult editMajor(Integer majorId, String name);
 
+    HttpResult auditCareerFair(Integer careerFairId, String status, String reason);
+
+    HttpResult queryCareerFair(String name, Integer current, Integer size);
 }

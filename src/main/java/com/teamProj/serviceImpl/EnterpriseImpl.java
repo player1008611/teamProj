@@ -665,7 +665,7 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
         enterpriseUserQueryWrapper.eq("user_id", userId);
         EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
-        CareerFair careerFair = new CareerFair(null, userId, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content);
+        CareerFair careerFair = new CareerFair(null, userId, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content,null);
         try {
             careerFairDao.insert(careerFair);
         } catch (Exception e) {
@@ -710,7 +710,7 @@ public class EnterpriseImpl implements EnterpriseService {
         enterpriseUserQueryWrapper.eq("user_id", userId);
         EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
         try {
-            careerFairDao.update(new CareerFair(null, null, school.getSchoolId(), null, startTime, endTime, location, host, null, title, content), careerFairUpdateWrapper);
+            careerFairDao.update(new CareerFair(null, null, school.getSchoolId(), null, startTime, endTime, location, host, null, title, content,null), careerFairUpdateWrapper);
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
         }

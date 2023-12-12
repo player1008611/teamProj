@@ -2,6 +2,7 @@ package com.teamProj.controller;
 
 import com.teamProj.service.SchoolService;
 import com.teamProj.utils.HttpResult;
+import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -94,19 +95,38 @@ public class SchoolController {
 
     @PostMapping("/Major/create")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult createMajor(@RequestParam String name, @RequestParam Integer collegeId) {
+    HttpResult createMajor(@RequestParam(value = "name") String name, @RequestParam(value = "collegeId") Integer collegeId) {
         return schoolService.createMajor(name, collegeId);
     }
 
     @DeleteMapping("/Major/delete")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult deleteMajor(@RequestParam Integer majorId) {
+    HttpResult deleteMajor(@RequestParam(value = "majorId") Integer majorId) {
         return schoolService.deleteMajor(majorId);
     }
 
     @PatchMapping("/Major/edit")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult editMajor(@RequestParam Integer majorId, @RequestParam String name) {
+    HttpResult editMajor(@RequestParam(value = "majorId") Integer majorId, @RequestParam(value = "name") String name) {
         return schoolService.editMajor(majorId, name);
+    }
+
+    @PatchMapping("/auditCareerFair")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult auditCareerFair(@RequestParam(value = "careerFairId") Integer careerFairId
+            , @RequestParam(value = "status") String status
+            , @RequestParam(value ="reason",required = false) String reason) {
+        if(status.equals("2")&&reason==null){
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR,"请填写拒绝理由");
+        }
+        return schoolService.auditCareerFair(careerFairId, status, reason);
+    }
+
+    @GetMapping("/queryCareerFair")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult queryCareerFair(@RequestParam(value = "name", required = false) String name
+            , @RequestParam(value = "current") Integer current
+            , @RequestParam(value = "size") Integer size) {
+        return schoolService.queryCareerFair(name, current, size);
     }
 }

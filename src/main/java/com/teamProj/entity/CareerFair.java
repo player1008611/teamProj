@@ -37,4 +37,6 @@ public class CareerFair {
     String title;
 
     String content;
+
+    String reason;
 }
