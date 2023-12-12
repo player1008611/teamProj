@@ -815,4 +815,14 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "审核失败");
     }
+
+    @Override
+    public HttpResult applicationAnalysis1() {
+        return null;
+    }
+
+    @Override
+    public HttpResult applicationAnalysis2() {
+        return null;
+    }
 }

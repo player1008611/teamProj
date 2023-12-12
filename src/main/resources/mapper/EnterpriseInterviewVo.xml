@@ -4,17 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.EnterpriseUserDao">
     <select id="queryInterview" resultType="com.teamProj.entity.vo.EnterpriseInterviewVo">
-        SELECT student.name as studentName,
+        SELECT job_application.application_id as applicationId,
+        student.name as studentName,
         school.school_name as schoolName,
-        resume.creation_time as creationTime,
-        resume.self_description as selfDescription,
-        resume.career_objective as careerObjective,
-        resume.education_experience as educationExperience,
-        resume.internship_experience as internshipExperience,
-        resume.project_experience as projectExperience,
-        resume.certificates,
-        resume.skills,
-        resume.image_byte as imageByte,
         interview_info.interview_id as interviewId,
         interview_info.date_time as dateTime,
         interview_info.position,

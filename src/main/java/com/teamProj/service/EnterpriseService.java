@@ -72,4 +72,10 @@ public interface EnterpriseService {
     HttpResult agreeInterview(Integer id);
 
     HttpResult disagreeInterview(Integer id);
+
+    //求职申请按部门/学校分析
+    HttpResult applicationAnalysis1();
+
+    //求职申请按通过/未通过分析
+    HttpResult applicationAnalysis2();
 }

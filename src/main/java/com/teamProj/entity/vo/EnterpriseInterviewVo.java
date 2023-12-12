@@ -11,28 +11,11 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EnterpriseInterviewVo {
+    Integer applicationId;
+
     String studentName;
 
     String schoolName;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    Timestamp creationTime;
-
-    String selfDescription;
-
-    String careerObjective;
-
-    String educationExperience;
-
-    String internshipExperience;
-
-    String projectExperience;
-
-    String certificates;
-
-    String skills;
-
-    byte[] imageByte;
 
     Integer interviewId;
 

@@ -33,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -170,9 +171,17 @@ class TeamProjApplicationTests {
     }
 
     @Test
-    void TestFile() {
+    void TestFile() throws IOException {
         QueryWrapper<Announcement> announcementQueryWrapper = new QueryWrapper<>();
-        announcementQueryWrapper.eq("announcement_id", 54);
+        announcementQueryWrapper.eq("announcement_id", 53);
         byte[] bytes = announcementDao.selectOne(announcementQueryWrapper).getData();
+        for (int i = 0; i < bytes.length; i++) {
+            System.out.print(bytes[i]);
+            System.out.print(',');
+        }
+        System.out.println(bytes.length);
+//        File file = new File("./test.rar");
+//        FileOutputStream fos = new FileOutputStream(file);
+//        fos.write(bytes);
     }
 }
