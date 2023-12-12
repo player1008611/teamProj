@@ -318,4 +318,16 @@ public class EnterpriseController {
     HttpResult disagreeInterview(@RequestParam Integer id) {
         return enterpriseService.disagreeInterview(id);
     }
+
+    @GetMapping("/applicationAnalysisByDepartment")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult applicationAnalysisByDepartment() {
+        return enterpriseService.applicationAnalysisByDepartment();
+    }
+
+    @GetMapping("/applicationAnalysisBySchool")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult applicationAnalysisBySchool() {
+        return enterpriseService.applicationAnalysisBySchool();
+    }
 }

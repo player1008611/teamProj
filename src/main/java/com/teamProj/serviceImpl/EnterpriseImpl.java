@@ -665,7 +665,7 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
         enterpriseUserQueryWrapper.eq("user_id", userId);
         EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
-        CareerFair careerFair = new CareerFair(null, userId, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content,null);
+        CareerFair careerFair = new CareerFair(null, userId, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content, null);
         try {
             careerFairDao.insert(careerFair);
         } catch (Exception e) {
@@ -710,7 +710,7 @@ public class EnterpriseImpl implements EnterpriseService {
         enterpriseUserQueryWrapper.eq("user_id", userId);
         EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
         try {
-            careerFairDao.update(new CareerFair(null, null, school.getSchoolId(), null, startTime, endTime, location, host, null, title, content,null), careerFairUpdateWrapper);
+            careerFairDao.update(new CareerFair(null, null, school.getSchoolId(), null, startTime, endTime, location, host, null, title, content, null), careerFairUpdateWrapper);
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
         }
@@ -767,7 +767,7 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         int userId = loginUser.getUser().getUserId();
         Page<EnterpriseInterviewVo> page = new Page<>(current, 7);
-        return HttpResult.success(enterpriseUserDao.queryInterview(page, userId, date.isEmpty() ? null : Timestamp.valueOf(date + ":00"), school, code), "查询成功");
+        return HttpResult.success(enterpriseUserDao.queryInterview(page, userId, date.isEmpty() ? null : Timestamp.valueOf(date + " 00:00:00"), school, code), "查询成功");
     }
 
     @Override
@@ -817,12 +817,54 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult applicationAnalysis1() {
-        return null;
+    public HttpResult applicationAnalysisByDepartment() {
+        Map<String, Integer> map = new HashMap<>();
+        List<JobApplication> jobApplicationList = jobApplicationDao.selectList(null);
+        for (JobApplication jobApplication : jobApplicationList) {
+            QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+            recruitmentInfoQueryWrapper.eq("recruitment_id", jobApplication.getRecruitmentId());
+            RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
+            QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
+            departmentQueryWrapper.eq("department_id", recruitmentInfo.getDepartmentId());
+            Department department = departmentDao.selectOne(departmentQueryWrapper);
+            if (map.containsKey(department.getName())) {
+                map.put(department.getName(), map.get(department.getName()) + 1);
+            } else {
+                map.put(department.getName(), 1);
+            }
+        }
+        return HttpResult.success(map, "查询成功");
     }
 
     @Override
-    public HttpResult applicationAnalysis2() {
-        return null;
+    public HttpResult applicationAnalysisBySchool() {
+        Map<String, Integer> map = new HashMap<>();
+        List<JobApplication> jobApplicationList = jobApplicationDao.selectList(null);
+        for (JobApplication jobApplication : jobApplicationList) {
+            QueryWrapper<Student> studentQueryWrapper = new QueryWrapper<>();
+            studentQueryWrapper.eq("student_id", jobApplication.getStudentId());
+            Student student = studentDao.selectOne(studentQueryWrapper);
+            QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
+            schoolQueryWrapper.eq("school_id", student.getSchoolId());
+            School school = schoolDao.selectOne(schoolQueryWrapper);
+            if (map.containsKey(school.getSchoolName())) {
+                map.put(school.getSchoolName(), map.get(school.getSchoolName()) + 1);
+            } else {
+                map.put(school.getSchoolName(), 1);
+            }
+        }
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult applicationAnalysisByPass() {
+        Map<String, Integer> map = new HashMap<>();
+        QueryWrapper<JobApplication> passedApp = new QueryWrapper<>();
+        QueryWrapper<JobApplication> notPassApp = new QueryWrapper<>();
+        passedApp.eq("status", "2");
+        notPassApp.eq("status", "1");
+        map.put("已通过", jobApplicationDao.selectCount(passedApp));
+        map.put("未通过", jobApplicationDao.selectCount(notPassApp));
+        return HttpResult.success(map, "查询成功");
     }
 }

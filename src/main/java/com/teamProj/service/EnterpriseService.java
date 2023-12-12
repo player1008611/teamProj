@@ -2,6 +2,7 @@ package com.teamProj.service;
 
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.utils.HttpResult;
+import org.apache.tomcat.util.http.parser.HttpParser;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
@@ -73,9 +74,9 @@ public interface EnterpriseService {
 
     HttpResult disagreeInterview(Integer id);
 
-    //求职申请按部门/学校分析
-    HttpResult applicationAnalysis1();
+    HttpResult applicationAnalysisByDepartment();
 
-    //求职申请按通过/未通过分析
-    HttpResult applicationAnalysis2();
+    HttpResult applicationAnalysisBySchool();
+
+    HttpResult applicationAnalysisByPass();
 }
