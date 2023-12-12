@@ -2,7 +2,7 @@ package com.teamProj.service;
 
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.utils.HttpResult;
-import org.apache.tomcat.util.http.parser.HttpParser;
+import org.springframework.security.config.web.servlet.headers.HttpPublicKeyPinningDsl;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
@@ -79,4 +79,18 @@ public interface EnterpriseService {
     HttpResult applicationAnalysisBySchool();
 
     HttpResult applicationAnalysisByPass();
+
+    HttpResult fairAnalysisByMon(String year);
+
+    HttpResult fairAnalysisBySchool();
+
+    HttpResult fairAnalysisByPass();
+
+    HttpResult interviewAnalysisByMon(String year);
+
+    HttpResult interviewAnalysisByPass();
+
+    HttpResult recruitmentAnalysisByPass();
+
+    HttpResult recruitmentAnalysisByCity();
 }

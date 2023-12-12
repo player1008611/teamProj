@@ -867,4 +867,123 @@ public class EnterpriseImpl implements EnterpriseService {
         map.put("未通过", jobApplicationDao.selectCount(notPassApp));
         return HttpResult.success(map, "查询成功");
     }
+
+    @Override
+    public HttpResult fairAnalysisByMon(String year) {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("01月", 0);
+        map.put("02月", 0);
+        map.put("03月", 0);
+        map.put("04月", 0);
+        map.put("05月", 0);
+        map.put("06月", 0);
+        map.put("07月", 0);
+        map.put("08月", 0);
+        map.put("09月", 0);
+        map.put("10月", 0);
+        map.put("11月", 0);
+        map.put("12月", 0);
+        List<CareerFair> careerFairList = careerFairDao.selectList(null);
+        for (CareerFair careerFair : careerFairList) {
+            String startYear = careerFair.getStartTime().toString().substring(0, 4);
+            if (startYear.equals(year)) {
+                String startMon = careerFair.getStartTime().toString().substring(5, 7);
+                map.put(startMon + "月", map.get(startMon + "月") + 1);
+            }
+        }
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult fairAnalysisBySchool() {
+        Map<String, Integer> map = new HashMap<>();
+        List<CareerFair> careerFairList = careerFairDao.selectList(null);
+        for (CareerFair careerFair : careerFairList) {
+            QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
+            schoolQueryWrapper.eq("school_id", careerFair.getSchoolId());
+            School school = schoolDao.selectOne(schoolQueryWrapper);
+            if (map.containsKey(school.getSchoolName())) {
+                map.put(school.getSchoolName(), map.get(school.getSchoolName()) + 1);
+            } else {
+                map.put(school.getSchoolName(), 1);
+            }
+        }
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult fairAnalysisByPass() {
+        Map<String, Integer> map = new HashMap<>();
+        QueryWrapper<CareerFair> passedApp = new QueryWrapper<>();
+        QueryWrapper<CareerFair> notPassApp = new QueryWrapper<>();
+        passedApp.eq("status", "1");
+        notPassApp.eq("status", "2");
+        map.put("已通过", careerFairDao.selectCount(passedApp));
+        map.put("未通过", careerFairDao.selectCount(notPassApp));
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult interviewAnalysisByMon(String year) {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("01月", 0);
+        map.put("02月", 0);
+        map.put("03月", 0);
+        map.put("04月", 0);
+        map.put("05月", 0);
+        map.put("06月", 0);
+        map.put("07月", 0);
+        map.put("08月", 0);
+        map.put("09月", 0);
+        map.put("10月", 0);
+        map.put("11月", 0);
+        map.put("12月", 0);
+        List<InterviewInfo> interviewInfoList = interviewInfoDao.selectList(null);
+        for (InterviewInfo interviewInfo : interviewInfoList) {
+            String startYear = interviewInfo.getTime().toString().substring(0, 4);
+            if (startYear.equals(year)) {
+                String startMon = interviewInfo.getTime().toString().substring(5, 7);
+                map.put(startMon + "月", map.get(startMon + "月") + 1);
+            }
+        }
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult interviewAnalysisByPass() {
+        Map<String, Integer> map = new HashMap<>();
+        QueryWrapper<InterviewInfo> passedApp = new QueryWrapper<>();
+        QueryWrapper<InterviewInfo> notPassApp = new QueryWrapper<>();
+        passedApp.eq("status", "1");
+        notPassApp.eq("status", "2");
+        map.put("已通过", interviewInfoDao.selectCount(passedApp));
+        map.put("未通过", interviewInfoDao.selectCount(notPassApp));
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult recruitmentAnalysisByPass() {
+        Map<String, Integer> map = new HashMap<>();
+        QueryWrapper<RecruitmentInfo> passedApp = new QueryWrapper<>();
+        QueryWrapper<RecruitmentInfo> notPassApp = new QueryWrapper<>();
+        passedApp.eq("status", "2");
+        notPassApp.eq("status", "3");
+        map.put("已通过", recruitmentInfoDao.selectCount(passedApp));
+        map.put("未通过", recruitmentInfoDao.selectCount(notPassApp));
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult recruitmentAnalysisByCity() {
+        Map<String, Integer> map = new HashMap<>();
+        List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(null);
+        for (RecruitmentInfo recruitmentInfo : recruitmentInfoList) {
+            if (map.containsKey(recruitmentInfo.getCity())) {
+                map.put(recruitmentInfo.getCity(), map.get(recruitmentInfo.getCity()) + 1);
+            } else {
+                map.put(recruitmentInfo.getCity(), 1);
+            }
+        }
+        return HttpResult.success(map, "查询成功");
+    }
 }

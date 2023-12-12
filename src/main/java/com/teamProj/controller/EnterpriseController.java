@@ -330,4 +330,52 @@ public class EnterpriseController {
     HttpResult applicationAnalysisBySchool() {
         return enterpriseService.applicationAnalysisBySchool();
     }
+
+    @GetMapping("/applicationAnalysisByPass")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult applicationAnalysisByPass() {
+        return enterpriseService.applicationAnalysisByPass();
+    }
+
+    @GetMapping("/fairAnalysisBySchool")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult fairAnalysisBySchool() {
+        return enterpriseService.fairAnalysisBySchool();
+    }
+
+    @GetMapping("/fairAnalysisByPass")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult fairAnalysisByPass() {
+        return enterpriseService.fairAnalysisByPass();
+    }
+
+    @GetMapping("/fairAnalysisByMon")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult fairAnalysisByMon(@RequestParam String year) {
+        return enterpriseService.fairAnalysisByMon(year);
+    }
+
+    @GetMapping("/interviewAnalysisByMon")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult interviewAnalysisByMon(@RequestParam String year) {
+        return enterpriseService.interviewAnalysisByMon(year);
+    }
+
+    @GetMapping("/interviewAnalysisByPass")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult interviewAnalysisByPass() {
+        return enterpriseService.interviewAnalysisByPass();
+    }
+
+    @GetMapping("/recruitmentAnalysisByPass")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult recruitmentAnalysisByPass() {
+        return enterpriseService.recruitmentAnalysisByPass();
+    }
+
+    @GetMapping("/recruitmentAnalysisByCity")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult recruitmentAnalysisByCity() {
+        return enterpriseService.recruitmentAnalysisByCity();
+    }
 }
