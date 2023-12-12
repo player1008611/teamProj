@@ -1,5 +1,6 @@
 package com.teamProj.service;
 
+import com.teamProj.entity.Resume;
 import com.teamProj.utils.HttpResult;
 import io.swagger.models.auth.In;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,9 +17,10 @@ public interface StudentService {
 
     HttpResult setStudentPassword(String account, String oldPassword, String password);
 
-    HttpResult createResume(String account, MultipartFile imageByte, String selfDescription, String careerObjective,
-                            String educationExperience, String InternshipExperience, String projectExperience,
-                            String certificates, String skills, String resumeName);
+//    HttpResult createResume(String account, MultipartFile imageByte, String selfDescription, String careerObjective,
+//                            String educationExperience, String InternshipExperience, String projectExperience,
+//                            String certificates, String skills, String resumeName);
+    HttpResult createResume(String account, Resume resume);
 
     HttpResult editResume(String resumeId, String selfDescription, String careerObjective,
                           String educationExperience, String InternshipExperience, String projectExperience,

@@ -210,9 +210,9 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
-    public HttpResult createResume(String account, MultipartFile imageFile, String selfDescription, String careerObjective,
+    public HttpResult createResume(String account,/*MultipartFile imageFile, String selfDescription, String careerObjective,
                                    String educationExperience, String InternshipExperience, String projectExperience,
-                                   String certificates, String skills, String resumeName) {
+                                   String certificates, String skills, String resumeName,*/Resume resume) {
 
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
@@ -263,12 +263,15 @@ public class StudentImpl implements StudentService {
 //        }
 
 
-        Resume resume;
-        try {
-            resume = new Resume(null, student.getStudentId(), timestamp, resumeName, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, imageFile.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        Resume resume;
+//        try {
+//            resume = new Resume(null, student.getStudentId(), timestamp, resumeName, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, imageFile.getBytes());
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        resume.setStudentId(student.getStudentId());
+        resume.setCreationTime(timestamp);
+
 
         if (resumeDao.insert(resume) > 0) {
             return HttpResult.success(resume, "创建成功");

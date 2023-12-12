@@ -159,6 +159,7 @@ public class SchoolImpl implements SchoolService {
         College college = new College();
         college.setCollegeName(name);
         college.setSchoolId(schoolId);
+        college.setStudentNum(0);
         if (collegeDao.insert(college) > 0) {
             return HttpResult.success(college, "创建成功");
         }
@@ -200,6 +201,7 @@ public class SchoolImpl implements SchoolService {
         major.setMajorName(name);
         major.setCollegeId(collegeId);
         major.setSchoolId(schoolId);
+        major.setStudentNum(0);
         if (majorDao.insert(major) > 0) {
             return HttpResult.success(major, "创建成功");
         }

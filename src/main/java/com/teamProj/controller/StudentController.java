@@ -1,5 +1,6 @@
 package com.teamProj.controller;
 
+import com.teamProj.entity.Resume;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.HttpResult;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -85,18 +86,20 @@ public class StudentController {
     @PostMapping("/createResume")
     @PreAuthorize("hasAuthority('student')")
     HttpResult createResume(@RequestParam(value = "studentAccount") String account,
-                            @RequestParam(value = "image"/*, required = false*/) MultipartFile imageFile,
-                            @RequestParam(value = "selfDescription", required = false) String selfDescription,
-                            @RequestParam(value = "careerObjective", required = false) String careerObjective,
-                            @RequestParam(value = "educationExperience", required = false) String educationExperience,
-                            @RequestParam(value = "internshipExperience", required = false) String InternshipExperience,
-                            @RequestParam(value = "projectExperience", required = false) String projectExperience,
-                            @RequestParam(value = "certificates", required = false) String certificates,
-                            @RequestParam(value = "skills", required = false) String skills,
-                            @RequestParam(value = "resumeName") String resumeName
+//                            @RequestParam(value = "image"/*, required = false*/) MultipartFile imageFile,
+//                            @RequestParam(value = "selfDescription", required = false) String selfDescription,
+//                            @RequestParam(value = "careerObjective", required = false) String careerObjective,
+//                            @RequestParam(value = "educationExperience", required = false) String educationExperience,
+//                            @RequestParam(value = "internshipExperience", required = false) String InternshipExperience,
+//                            @RequestParam(value = "projectExperience", required = false) String projectExperience,
+//                            @RequestParam(value = "certificates", required = false) String certificates,
+//                            @RequestParam(value = "skills", required = false) String skills,
+//                            @RequestParam(value = "resumeName") String resumeName,
+                            @RequestBody Resume resume
 
-    ) {
-        return studentService.createResume(account, imageFile, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName);
+                            ) {
+        //return studentService.createResume(account, imageFile, selfDescription, careerObjective, educationExperience, InternshipExperience, projectExperience, certificates, skills, resumeName);
+        return studentService.createResume(account,resume);
     }
 
     @DeleteMapping("/deleteResume")
