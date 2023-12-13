@@ -897,10 +897,12 @@ public class EnterpriseImpl implements EnterpriseService {
     @Override
     public HttpResult fairAnalysisBySchool() {
         Map<String, Integer> map = new HashMap<>();
-        List<CareerFair> careerFairList = careerFairDao.selectList(null);
+        QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
+        careerFairQueryWrapper.eq("status", "1");
+        List<CareerFair> careerFairList = careerFairDao.selectList(careerFairQueryWrapper);
         for (CareerFair careerFair : careerFairList) {
             QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
-            schoolQueryWrapper.eq("school_id", careerFair.getSchoolId()).eq("status", "1");
+            schoolQueryWrapper.eq("school_id", careerFair.getSchoolId());
             School school = schoolDao.selectOne(schoolQueryWrapper);
             if (map.containsKey(school.getSchoolName())) {
                 map.put(school.getSchoolName(), map.get(school.getSchoolName()) + 1);
