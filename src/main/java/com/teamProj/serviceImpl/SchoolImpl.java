@@ -66,7 +66,11 @@ public class SchoolImpl implements SchoolService {
         String userId = String.valueOf(loginUser.getUser().getUserId());
         String jwt = JwtUtil.createJWT(userId);
         Map<String, String> map = new HashMap<>();
+        QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
+        schoolQueryWrapper.eq("school_id", userId);
+        String schoolName = schoolDao.selectOne(schoolQueryWrapper).getSchoolName();
         map.put("token", jwt);
+        map.put("schoolName",schoolName);
         redisCache.setCacheObject(userId, loginUser, 24, TimeUnit.HOURS);
         return HttpResult.success(map, "登录成功");
     }
@@ -145,9 +149,12 @@ public class SchoolImpl implements SchoolService {
 
     @Override
     public HttpResult queryCollege(String name, Integer current, Integer size) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int schoolId = loginUser.getUser().getUserId();
         Page<College> page = new Page<>(current, size);
         QueryWrapper<College> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("college_name", name);
+        queryWrapper.like("college_name", name).eq("school_id", schoolId);
         return HttpResult.success(collegeDao.selectPage(page, queryWrapper), "查询成功");
     }
 
@@ -186,9 +193,12 @@ public class SchoolImpl implements SchoolService {
 
     @Override
     public HttpResult queryMajor(String name, Integer current, Integer size, Integer collegeId) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int schoolId = loginUser.getUser().getUserId();
         Page<Major> page = new Page<>(current, size);
         QueryWrapper<Major> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("major_name", name).eq("college_id", collegeId);
+        queryWrapper.like("major_name", name).eq("college_id", collegeId).eq("school_id", schoolId);
         return HttpResult.success(majorDao.selectPage(page, queryWrapper), "查询成功");
     }
 
