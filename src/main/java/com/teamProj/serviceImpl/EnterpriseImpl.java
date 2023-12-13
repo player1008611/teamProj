@@ -883,7 +883,9 @@ public class EnterpriseImpl implements EnterpriseService {
         map.put("10月", 0);
         map.put("11月", 0);
         map.put("12月", 0);
-        List<CareerFair> careerFairList = careerFairDao.selectList(null);
+        QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
+        careerFairQueryWrapper.eq("status", "1");
+        List<CareerFair> careerFairList = careerFairDao.selectList(careerFairQueryWrapper);
         for (CareerFair careerFair : careerFairList) {
             String startYear = careerFair.getStartTime().toString().substring(0, 4);
             if (startYear.equals(year)) {
