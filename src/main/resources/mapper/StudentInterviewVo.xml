@@ -9,6 +9,7 @@
         where i.student_id = #{userId}
             AND i.application_id = a.application_id
             AND a.recruitment_id = r.recruitment_id
+            AND r.enterprise_id = e.enterprise_id
             <if test="queryInfo!=null and queryInfo!=''">
             AND (e.enterprise_name LIKE CONCAT('%', #{queryInfo}, '%')
             OR position LIKE CONCAT('%', #{queryInfo}, '%'))
