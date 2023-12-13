@@ -82,7 +82,7 @@ public interface EnterpriseService {
 
     HttpResult fairAnalysisByMon(String year);
 
-    HttpResult fairAnalysisBySchool();
+    HttpResult fairAnalysisBySchool(String mon);
 
     HttpResult fairAnalysisByPass();
 
@@ -90,7 +90,11 @@ public interface EnterpriseService {
 
     HttpResult interviewAnalysisByPass();
 
+    HttpResult interviewAnalysisByDepartment();
+
     HttpResult recruitmentAnalysisByPass();
 
     HttpResult recruitmentAnalysisByCity();
+
+    HttpResult recruitmentAnalysisByMaxSalary();
 }

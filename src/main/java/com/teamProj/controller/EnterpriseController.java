@@ -337,22 +337,22 @@ public class EnterpriseController {
         return enterpriseService.applicationAnalysisByPass();
     }
 
+    @GetMapping("/fairAnalysisByMon")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult fairAnalysisByMon(@RequestParam String year) {
+        return enterpriseService.fairAnalysisByMon(year);
+    }
+
     @GetMapping("/fairAnalysisBySchool")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult fairAnalysisBySchool() {
-        return enterpriseService.fairAnalysisBySchool();
+    HttpResult fairAnalysisBySchool(@RequestParam String mon) {
+        return enterpriseService.fairAnalysisBySchool(mon);
     }
 
     @GetMapping("/fairAnalysisByPass")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult fairAnalysisByPass() {
         return enterpriseService.fairAnalysisByPass();
-    }
-
-    @GetMapping("/fairAnalysisByMon")
-    @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult fairAnalysisByMon(@RequestParam String year) {
-        return enterpriseService.fairAnalysisByMon(year);
     }
 
     @GetMapping("/interviewAnalysisByMon")
@@ -367,6 +367,13 @@ public class EnterpriseController {
         return enterpriseService.interviewAnalysisByPass();
     }
 
+
+    @GetMapping("/interviewAnalysisByDepartment")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult interviewAnalysisByDepartment() {
+        return enterpriseService.interviewAnalysisByDepartment();
+    }
+
     @GetMapping("/recruitmentAnalysisByPass")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult recruitmentAnalysisByPass() {
@@ -377,5 +384,11 @@ public class EnterpriseController {
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult recruitmentAnalysisByCity() {
         return enterpriseService.recruitmentAnalysisByCity();
+    }
+
+    @GetMapping("/recruitmentAnalysisByMaxSalary")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult recruitmentAnalysisByMaxSalary() {
+        return enterpriseService.recruitmentAnalysisByMaxSalary();
     }
 }

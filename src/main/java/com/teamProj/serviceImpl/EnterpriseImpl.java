@@ -897,7 +897,7 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
-    public HttpResult fairAnalysisBySchool() {
+    public HttpResult fairAnalysisBySchool(String mon) {
         Map<String, Integer> map = new HashMap<>();
         QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
         careerFairQueryWrapper.eq("status", "1");
@@ -906,10 +906,12 @@ public class EnterpriseImpl implements EnterpriseService {
             QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
             schoolQueryWrapper.eq("school_id", careerFair.getSchoolId());
             School school = schoolDao.selectOne(schoolQueryWrapper);
-            if (map.containsKey(school.getSchoolName())) {
+            if (!map.containsKey(school.getSchoolName())) {
+                map.put(school.getSchoolName(), 0);
+            }
+            String startMon = careerFair.getStartTime().toString().substring(5, 7);
+            if (Objects.isNull(mon) || mon.isEmpty() || startMon.equals(mon)) {
                 map.put(school.getSchoolName(), map.get(school.getSchoolName()) + 1);
-            } else {
-                map.put(school.getSchoolName(), 1);
             }
         }
         return HttpResult.success(map, "查询成功");
@@ -966,6 +968,48 @@ public class EnterpriseImpl implements EnterpriseService {
     }
 
     @Override
+    public HttpResult interviewAnalysisByDepartment() {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+        EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
+
+        Map<String, Map<String, Integer>> map = new HashMap<>();
+        List<InterviewInfo> interviewInfoList = interviewInfoDao.selectList(null);
+        for (InterviewInfo interviewInfo : interviewInfoList) {
+            QueryWrapper<JobApplication> jobApplicationQueryWrapper = new QueryWrapper<>();
+            jobApplicationQueryWrapper.eq("application_id", interviewInfo.getApplicationId());
+            QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+            recruitmentInfoQueryWrapper.eq("recruitment_id", jobApplicationDao.selectOne(jobApplicationQueryWrapper).getRecruitmentId());
+            RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
+            if (recruitmentInfo.getEnterpriseId().equals(enterpriseUser.getEnterpriseId())) {
+                QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
+                departmentQueryWrapper.eq("department_id", recruitmentInfo.getDepartmentId());
+                Department department = departmentDao.selectOne(departmentQueryWrapper);
+                if (!map.containsKey(department.getName())) {
+                    map.put(department.getName(), new HashMap<>() {{
+                        put("面试数量", 0);
+                        put("通过数", 0);
+                        put("不通过数", 0);
+                    }});
+                }
+                Map<String, Integer> inner = map.get(department.getName());
+                inner.put("面试数量", inner.get("面试数量") + 1);
+                if (interviewInfo.getStatus().equals('1')) {
+                    inner.put("通过数", inner.get("通过数") + 1);
+                }
+                if (interviewInfo.getStatus().equals('2')) {
+                    inner.put("不通过数", inner.get("不通过数") + 1);
+                }
+                map.put(department.getName(), inner);
+            }
+        }
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
     public HttpResult recruitmentAnalysisByPass() {
         Map<String, Integer> map = new HashMap<>();
         QueryWrapper<RecruitmentInfo> passedApp = new QueryWrapper<>();
@@ -980,12 +1024,38 @@ public class EnterpriseImpl implements EnterpriseService {
     @Override
     public HttpResult recruitmentAnalysisByCity() {
         Map<String, Integer> map = new HashMap<>();
-        List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(null);
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.eq("status", "2");
+        List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
         for (RecruitmentInfo recruitmentInfo : recruitmentInfoList) {
             if (map.containsKey(recruitmentInfo.getCity())) {
                 map.put(recruitmentInfo.getCity(), map.get(recruitmentInfo.getCity()) + 1);
             } else {
                 map.put(recruitmentInfo.getCity(), 1);
+            }
+        }
+        return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult recruitmentAnalysisByMaxSalary() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("10k以下", 0);
+        map.put("10k-20k", 0);
+        map.put("20k-30k", 0);
+        map.put("30k以上", 0);
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.eq("status", "2");
+        List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
+        for (RecruitmentInfo recruitmentInfo : recruitmentInfoList) {
+            if (recruitmentInfo.getMaxSalary() < 10) {
+                map.put("10k以下", map.get("10k以下") + 1);
+            } else if (recruitmentInfo.getMaxSalary() < 20) {
+                map.put("10k-20k", map.get("10k-20k") + 1);
+            } else if (recruitmentInfo.getMaxSalary() < 30) {
+                map.put("20k-30k", map.get("20k-30k") + 1);
+            } else {
+                map.put("30k以上", map.get("30k以上") + 1);
             }
         }
         return HttpResult.success(map, "查询成功");
