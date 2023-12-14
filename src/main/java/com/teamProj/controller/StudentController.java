@@ -180,9 +180,27 @@ public class StudentController {
         return studentService.queryJobApplicationDetail(applicationId);
     }
 
-    @PostMapping("/verification")
-    HttpResult verification(@RequestParam(value = "email") String email) {
-        return studentService.verification(email);
+    @PostMapping("/verification/email")
+    HttpResult verificationEmail(@RequestParam(value = "email") String email) {
+        return studentService.verificationEmail(email);
+    }
+    @PostMapping("/verification/phone")
+    HttpResult verificationPhoneNumber(@RequestParam(value = "phoneNumber") String phoneNumber) {
+        try {
+            return studentService.verificationPhone(phoneNumber);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PostMapping("/verification/phone/check")
+    HttpResult verificationPhoneNumberCheck(@RequestParam(value = "messageId") String messageId,
+                                            @RequestParam(value = "code") String code) {
+        try {
+            return studentService.verificationPhoneCheck(messageId,code);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/homepage")

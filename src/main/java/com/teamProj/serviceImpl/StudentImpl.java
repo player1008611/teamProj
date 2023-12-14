@@ -27,11 +27,7 @@ import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
 import com.teamProj.service.StudentService;
-import com.teamProj.utils.EmailVerification;
-import com.teamProj.utils.HttpResult;
-import com.teamProj.utils.JwtUtil;
-import com.teamProj.utils.RedisCache;
-import com.teamProj.utils.ResultCodeEnum;
+import com.teamProj.utils.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -89,6 +85,8 @@ public class StudentImpl implements StudentService {
     private CollegeDao collegeDao;
     @Resource
     private MajorDao majorDao;
+    @Resource
+    private SMS sms;
 
     @Override
     public HttpResult studentLogin(String account, String password) {
@@ -199,13 +197,36 @@ public class StudentImpl implements StudentService {
 
 
     @Override
-    public HttpResult verification(String email) {
+    public HttpResult verificationEmail(String email) {
         EmailVerification emailVerification = new EmailVerification();
         String captcha = emailVerification.verificationService(email);
         if (captcha != null) {
             return HttpResult.success(captcha, "发送成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "发送失败");
+        }
+    }
+
+    @Override
+    public HttpResult verificationPhone(String phone) throws Exception {
+        Map<String, Object> param = sms.sendMessage(phone, phone);
+        if((boolean)param.get("success")) {
+            return HttpResult.success(param.get("messageId"), "发送成功");
+        }else{
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "发送失败");
+        }
+    }
+
+    @Override
+    public HttpResult verificationPhoneCheck(String messageId,String code){
+        try {
+            if (sms.checkMessage(messageId, code)) {
+                return HttpResult.success(null, "验证成功");
+            } else {
+                return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "验证失败");
+            }
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "验证失败");
         }
     }
 

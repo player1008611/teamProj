@@ -49,8 +49,10 @@ public interface StudentService {
 
     HttpResult queryJobApplication(String account);
 
-    HttpResult verification(String email);
+    HttpResult verificationEmail(String email);
+    HttpResult verificationPhone(String phone) throws Exception;
 
+    HttpResult verificationPhoneCheck(String phone, String code) throws Exception;
     HttpResult queryStudentInfo();
     HttpResult queryInterviewInfo(String queryInfo);
     HttpResult homepage();
