@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
 import com.teamProj.entity.vo.AdminStudentVo;
+import com.teamProj.entity.vo.SchoolFairVo;
 import com.teamProj.entity.vo.SchoolStudentVo;
 import com.teamProj.service.SchoolService;
 import com.teamProj.utils.HttpResult;
@@ -252,9 +253,9 @@ public class SchoolImpl implements SchoolService {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int schoolId = loginUser.getUser().getUserId();
-        Page<CareerFair> page = new Page<>(current, size);
-        QueryWrapper<CareerFair> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("school_id", schoolId).like("title", name);
-        return HttpResult.success(careerFairDao.selectPage(page, queryWrapper), "查询成功");
+        Page<SchoolFairVo> page = new Page<>(current, size);
+//        QueryWrapper<CareerFair> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.eq("school_id", schoolId).like("title", name);
+        return HttpResult.success(careerFairDao.queryFair(page,name,schoolId), "查询成功");
     }
 }
