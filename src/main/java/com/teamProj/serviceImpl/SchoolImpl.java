@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -257,5 +258,16 @@ public class SchoolImpl implements SchoolService {
 //        QueryWrapper<CareerFair> queryWrapper = new QueryWrapper<>();
 //        queryWrapper.eq("school_id", schoolId).like("title", name);
         return HttpResult.success(careerFairDao.queryFair(page,name,schoolId), "查询成功");
+    }
+
+    @Override
+    public HttpResult applicationData(){
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int schoolId = loginUser.getUser().getUserId();
+        QueryWrapper<Student> queryStudent = new QueryWrapper<>();
+        queryStudent.eq("school_id",schoolId);
+        List<Student> students = studentDao.selectList(queryStudent);
+        return null;
     }
 }

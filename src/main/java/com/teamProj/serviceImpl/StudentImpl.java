@@ -26,6 +26,7 @@ import com.teamProj.entity.Resume;
 import com.teamProj.entity.School;
 import com.teamProj.entity.Student;
 import com.teamProj.entity.User;
+import com.teamProj.entity.vo.CollegeMajorVo;
 import com.teamProj.service.StudentService;
 import com.teamProj.utils.*;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -719,4 +720,43 @@ public class StudentImpl implements StudentService {
         return HttpResult.success(null, "修改成功");
     }
 
+    @Override
+    public  HttpResult editPhoneNumber(String phoneNumber){
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser)authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("student_id",user.getUserId()).set("phone_number",phoneNumber);
+        studentDao.update(null,updateWrapper);
+        return HttpResult.success(null,"修改成功");
+    }
+
+    @Override
+    public HttpResult queryCollegeMajor(String schoolName){
+        QueryWrapper<School> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("school_name",schoolName);
+        Integer schoolId = schoolDao.selectOne(queryWrapper).getSchoolId();
+        QueryWrapper<College> queryWrapper1 = new QueryWrapper<>();
+        queryWrapper1.eq("school_id",schoolId);
+        List<College> collegeList = collegeDao.selectList(queryWrapper1);
+        QueryWrapper<Major> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper1.eq("school_id",schoolId);
+        List<Major> majorList = majorDao.selectList(queryWrapper2);
+        List<CollegeMajorVo> list = new ArrayList<>();
+        for(College temp:collegeList){
+            Integer collegeId = temp.getCollegeId();
+            List<Major> tempMajorList = new ArrayList<>();
+            for(Major major :majorList){
+                if(major.getCollegeId().equals(collegeId)){
+                    tempMajorList.add(major);
+                }
+            }
+            CollegeMajorVo collegeMajorVo = new CollegeMajorVo();
+            collegeMajorVo.setCollegeId(collegeId);
+            collegeMajorVo.setCollegeName(temp.getCollegeName());
+            collegeMajorVo.setMajorList(tempMajorList);
+            list.add(collegeMajorVo);
+        }
+        return HttpResult.success(list,"查询成功");
+    }
 }

@@ -6,7 +6,7 @@
     <select id="queryFair" resultType="com.teamProj.entity.vo.SchoolFairVo">
         select fair_id as fairId,user_id as userId,s.school_id as schoolId,e.enterprise_id as enterpriseId,
         school_name as schoolName,enterprise_name as enterpriseName,start_time as startTime,end_time as endTime,
-        location,host,f.status,title,content
+        location,host,f.status,title,content,reason
         FROM team_proj.career_fair as f, team_proj.school as s,team_proj.enterprise as e
         where f.school_id = s.school_id
         AND e.enterprise_id = f.enterprise_id

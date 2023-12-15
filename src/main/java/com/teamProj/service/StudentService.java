@@ -72,4 +72,8 @@ public interface StudentService {
     HttpResult hasReadAllMessage();
 
     HttpResult hasReadMessage(Integer messageId);
+
+    HttpResult editPhoneNumber(String phoneNumber);
+
+    HttpResult queryCollegeMajor(String schoolName);
 }

@@ -29,4 +29,6 @@ public interface SchoolService {
     HttpResult auditCareerFair(Integer careerFairId, String status, String reason);
 
     HttpResult queryCareerFair(String name, Integer current, Integer size);
+
+    HttpResult applicationData();
 }

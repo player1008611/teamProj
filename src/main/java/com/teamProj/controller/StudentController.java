@@ -43,7 +43,7 @@ public class StudentController {
                                @RequestParam(value = "password") String password,
                                @RequestParam(value = "schoolName") String schoolName,
                                @RequestParam(value = "name") String name,
-                               @RequestParam(value = "phoneNumber") String phoneNumber,
+                               @RequestParam(value = "phoneNumber",required = false) String phoneNumber,
                                @RequestParam(value = "collegeName") String collegeName,
                                @RequestParam(value = "majorName") String majorName
     ) {
@@ -256,5 +256,17 @@ public class StudentController {
     @PreAuthorize("hasAuthority('student')")
     HttpResult readMessage(@RequestParam(value = "messageId") Integer messageId){
         return studentService.hasReadMessage(messageId);
+    }
+
+    @PatchMapping("/editPhoneNumber")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult editPhoneNumber(@RequestParam(value = "phoneNumber") String phoneNumber){
+        return studentService.editPhoneNumber(phoneNumber);
+    }
+
+    @GetMapping("/queryCollegeMajor")
+    @PreAuthorize("hasAuthority('student')")
+    HttpResult queryCollegeMajor(@RequestParam(value = "schoolName") String schoolName){
+        return studentService.queryCollegeMajor(schoolName);
     }
 }

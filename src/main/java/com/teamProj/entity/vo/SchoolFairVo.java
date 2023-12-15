@@ -17,4 +17,5 @@ public class SchoolFairVo {
     String status;
     String title;
     String content;
+    String reason;
 }
