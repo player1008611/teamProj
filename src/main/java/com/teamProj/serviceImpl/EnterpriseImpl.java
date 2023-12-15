@@ -550,8 +550,11 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         int userId = loginUser.getUser().getUserId();
 
+        QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
+        enterpriseUserQueryWrapper.eq("user_id", userId);
+
         QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
-        departmentQueryWrapper.eq("name", departmentName);
+        departmentQueryWrapper.eq("name", departmentName).eq("enterprise_id", enterpriseUserDao.selectOne(enterpriseUserQueryWrapper).getEnterpriseId());
         Department department = departmentDao.selectOne(departmentQueryWrapper);
         if (Objects.isNull(department)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -575,7 +578,7 @@ public class EnterpriseImpl implements EnterpriseService {
 
         UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>();
         jobApplicationUpdateWrapper.eq("recruitment_id", recruitmentInfo.getRecruitmentId())
-                .eq("student_id", user.getUserId()).set("enterpriseVisible", "0");
+                .eq("student_id", user.getUserId()).set("enterprise_visible", "0");
         try {
             jobApplicationDao.update(null, jobApplicationUpdateWrapper);
         } catch (Exception e) {
