@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
 import com.teamProj.entity.vo.AdminStudentVo;
+import com.teamProj.entity.vo.SchoolApplicationDataVo;
 import com.teamProj.entity.vo.SchoolFairVo;
 import com.teamProj.entity.vo.SchoolStudentVo;
 import com.teamProj.service.SchoolService;
@@ -22,10 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -54,6 +52,8 @@ public class SchoolImpl implements SchoolService {
 
     @Resource
     private CareerFairDao careerFairDao;
+    @Resource
+    private JobApplicationDao jobApplicationDao;
 
     public HttpResult schoolLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
@@ -177,7 +177,9 @@ public class SchoolImpl implements SchoolService {
 
     @Override
     public HttpResult deleteCollege(Integer collegeId) {
-        if (collegeDao.deleteById(collegeId) > 0) {
+        QueryWrapper<College> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("college_id", collegeId);
+        if (collegeDao.delete(queryWrapper) > 0) {
             return HttpResult.success(collegeId, "删除成功");
         }
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -268,6 +270,57 @@ public class SchoolImpl implements SchoolService {
         QueryWrapper<Student> queryStudent = new QueryWrapper<>();
         queryStudent.eq("school_id",schoolId);
         List<Student> students = studentDao.selectList(queryStudent);
-        return null;
+        List<SchoolApplicationDataVo> schoolApplicationDataVos = jobApplicationDao.querySchoolApplicationData(schoolId);
+        Integer studentNum = students.size();
+        Map<String,Integer> map0 = new HashMap<>();
+        Map<String,Integer> map1 = new HashMap<>();
+        for(Student student:students){
+            for(SchoolApplicationDataVo dataVo:schoolApplicationDataVos){
+                if(student.getStudentId().equals(dataVo.getStudentId())){
+
+                    if(!dataVo.getStatus().equals("2"))continue;
+
+                    if(map1.containsKey(dataVo.getMajorName())){
+                        map1.put(dataVo.getMajorName(),map1.get(dataVo.getMajorName())+1);
+                    }else{
+                        map1.put(dataVo.getMajorName(),1);
+                    }
+                    if (map0.containsKey(dataVo.getCollegeName())){
+                        map0.put(dataVo.getCollegeName(),map0.get(dataVo.getCollegeName())+1);
+                    }else{
+                        map0.put(dataVo.getCollegeName(),1);
+                    }
+                    break;
+                }
+            }
+        }
+        Map<String,Integer> map2 = new HashMap<>();
+        Map<String,Integer> map3 = new HashMap<>();
+        for(SchoolApplicationDataVo dataVo:schoolApplicationDataVos){
+            if(map2.containsKey(dataVo.getEnterpriseName())){
+                map2.put(dataVo.getEnterpriseName(),map2.get(dataVo.getEnterpriseName())+1);
+            }else{
+                map2.put(dataVo.getEnterpriseName(),1);
+            }
+            if(map3.containsKey(dataVo.getCity())){
+                map3.put(dataVo.getCity(),map3.get(dataVo.getCity())+1);
+            }else{
+                map3.put(dataVo.getCity(),1);
+            }
+        }
+        Map<String,List<Map.Entry<String, Integer>>> map = new HashMap<>();
+        List<Map.Entry<String, Integer>> list0 = new ArrayList<>(map0.entrySet());
+        list0.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        map.put("college",list0);
+        List<Map.Entry<String, Integer>> list1 = new ArrayList<>(map1.entrySet());
+        list1.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        map.put("major",list1);
+        List<Map.Entry<String, Integer>> list2 = new ArrayList<>(map2.entrySet());
+        list2.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        map.put("enterprise",list2);
+        List<Map.Entry<String, Integer>> list3 = new ArrayList<>(map3.entrySet());
+        list3.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        map.put("city",list3);
+        return HttpResult.success(map,"查询成功");
     }
 }

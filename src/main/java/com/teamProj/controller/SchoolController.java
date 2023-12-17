@@ -129,4 +129,10 @@ public class SchoolController {
             , @RequestParam(value = "size") Integer size) {
         return schoolService.queryCareerFair(name, current, size);
     }
+
+    @GetMapping("/applicationData")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult applicationData() {
+        return schoolService.applicationData();
+    }
 }
