@@ -2,11 +2,10 @@ package com.teamProj.serviceImpl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.dao.*;
 import com.teamProj.entity.*;
-import com.teamProj.entity.vo.AdminStudentVo;
+import com.teamProj.entity.data.SchoolApplicationData;
 import com.teamProj.entity.vo.SchoolApplicationDataVo;
 import com.teamProj.entity.vo.SchoolFairVo;
 import com.teamProj.entity.vo.SchoolStudentVo;
@@ -55,6 +54,8 @@ public class SchoolImpl implements SchoolService {
     @Resource
     private JobApplicationDao jobApplicationDao;
 
+
+    @Override
     public HttpResult schoolLogin(String account, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
@@ -77,12 +78,34 @@ public class SchoolImpl implements SchoolService {
         return HttpResult.success(map, "登录成功");
     }
 
+    @Override
     public HttpResult schoolLogout() {
         UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int adminId = loginUser.getUser().getUserId();
         redisCache.deleteObject(String.valueOf(adminId));
         return HttpResult.success(null, "用户注销");
+    }
+
+    @Override
+    public HttpResult setSchoolPassword(String oldPassword, String password) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        if (user != null) {
+            if (bCryptPasswordEncoder.matches(oldPassword, user.getPassword())) {
+                user.setPassword(bCryptPasswordEncoder.encode(password));
+                userDao.updateById(user);
+                QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+                queryWrapper.select("account").eq("user_id", user.getUserId());
+                return HttpResult.success(userDao.selectOne(queryWrapper), "修改成功");
+            }
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("account").eq("user_id", user.getUserId());
+            return HttpResult.success(userDao.selectOne(queryWrapper), "密码错误");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
     }
 
     @Override
@@ -224,7 +247,9 @@ public class SchoolImpl implements SchoolService {
 
     @Override
     public HttpResult deleteMajor(Integer majorId) {
-        if (majorDao.deleteById(majorId) > 0) {
+        QueryWrapper<Major> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("major_id", majorId);
+        if (majorDao.delete(queryWrapper) > 0) {
             return HttpResult.success(majorId, "删除成功");
         }
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -257,8 +282,6 @@ public class SchoolImpl implements SchoolService {
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int schoolId = loginUser.getUser().getUserId();
         Page<SchoolFairVo> page = new Page<>(current, size);
-//        QueryWrapper<CareerFair> queryWrapper = new QueryWrapper<>();
-//        queryWrapper.eq("school_id", schoolId).like("title", name);
         return HttpResult.success(careerFairDao.queryFair(page,name,schoolId), "查询成功");
     }
 
@@ -271,56 +294,194 @@ public class SchoolImpl implements SchoolService {
         queryStudent.eq("school_id",schoolId);
         List<Student> students = studentDao.selectList(queryStudent);
         List<SchoolApplicationDataVo> schoolApplicationDataVos = jobApplicationDao.querySchoolApplicationData(schoolId);
-        Integer studentNum = students.size();
-        Map<String,Integer> map0 = new HashMap<>();
-        Map<String,Integer> map1 = new HashMap<>();
+        SchoolApplicationData schoolApplicationData = new SchoolApplicationData();
         for(Student student:students){
             for(SchoolApplicationDataVo dataVo:schoolApplicationDataVos){
                 if(student.getStudentId().equals(dataVo.getStudentId())){
-
+                    //仅统计已通过的
                     if(!dataVo.getStatus().equals("2"))continue;
 
-                    if(map1.containsKey(dataVo.getMajorName())){
-                        map1.put(dataVo.getMajorName(),map1.get(dataVo.getMajorName())+1);
+                    //修改school-num
+                    schoolApplicationData.setStudentNum(schoolApplicationData.getStudentNum()+1);
+                    //修改school-enterprise
+                    Map<String,Integer> schoolEnterprise=schoolApplicationData.getEnterprise();
+                    if(schoolEnterprise.containsKey(dataVo.getEnterpriseName())) {
+                        schoolEnterprise.put(dataVo.getEnterpriseName(), schoolEnterprise.get(dataVo.getEnterpriseName()) + 1);
                     }else{
-                        map1.put(dataVo.getMajorName(),1);
+                        schoolEnterprise.put(dataVo.getEnterpriseName(),1);
                     }
-                    if (map0.containsKey(dataVo.getCollegeName())){
-                        map0.put(dataVo.getCollegeName(),map0.get(dataVo.getCollegeName())+1);
+                    schoolApplicationData.setEnterprise(schoolEnterprise);
+
+                    //修改school-city
+                    Map<String,Integer> schoolCity=schoolApplicationData.getCity();
+                    if(schoolCity.containsKey(dataVo.getCity())) {
+                        schoolCity.put(dataVo.getCity(), schoolCity.get(dataVo.getCity()) + 1);
                     }else{
-                        map0.put(dataVo.getCollegeName(),1);
+                        schoolCity.put(dataVo.getCity(),1);
                     }
-                    break;
+                    schoolApplicationData.setCity(schoolCity);
+
+                    //修改college
+                    if(schoolApplicationData.getCollege().containsKey(dataVo.getCollegeName())) {
+
+                        SchoolApplicationData.CollegeApplicationData collegeApplicationData = schoolApplicationData.getCollege().get(dataVo.getCollegeName());
+                        //修改college-num
+                        collegeApplicationData.setStudentNum(collegeApplicationData.getStudentNum()+1);
+
+                        //修改college-city
+                        Map<String,Integer> collegeCity=collegeApplicationData.getCity();
+                        if(collegeCity.containsKey(dataVo.getCity())) {
+                            collegeCity.put(dataVo.getCity(), collegeCity.get(dataVo.getCity()) + 1);
+                            collegeApplicationData.setCity(collegeCity);
+                        }else{
+                            collegeCity.put(dataVo.getCity(),1);
+                            collegeApplicationData.setCity(collegeCity);
+                        }
+
+
+                        //修改college-enterprise
+                        Map<String,Integer> collegeEnterprise=collegeApplicationData.getEnterprise();
+                        if(collegeEnterprise.containsKey(dataVo.getEnterpriseName())){
+                            collegeEnterprise.put(dataVo.getEnterpriseName(),collegeEnterprise.get(dataVo.getEnterpriseName())+1);
+                            collegeApplicationData.setEnterprise(collegeEnterprise);
+                        }else{
+                            collegeEnterprise.put(dataVo.getEnterpriseName(),1);
+                            collegeApplicationData.setEnterprise(collegeEnterprise);
+                        }
+
+
+                        //修改major
+                        if(collegeApplicationData.getMajor().containsKey(dataVo.getMajorName())){
+                            SchoolApplicationData.MajorApplicationData majorApplicationData = collegeApplicationData.getMajor().get(dataVo.getMajorName());
+                            //修改major-num
+                            majorApplicationData.setStudentNum(majorApplicationData.getStudentNum()+1);
+
+                            //修改major-city
+                            Map<String,Integer> majorCity = majorApplicationData.getCity();
+                            if(majorCity.containsKey(dataVo.getCity())){
+                                majorCity.put(dataVo.getCity(), majorCity.get(dataVo.getCity())+1);
+                                majorApplicationData.setCity(majorCity);
+                            }else{
+                                majorCity.put(dataVo.getCity(),1);
+                                majorApplicationData.setCity(majorCity);
+                            }
+
+                            //修改major-enterprise
+
+                            Map<String,Integer> majorEnterprise = majorApplicationData.getEnterprise();
+                            if(majorEnterprise.containsKey(dataVo.getEnterpriseName())){
+                                majorEnterprise.put(dataVo.getEnterpriseName(), majorEnterprise.get(dataVo.getEnterpriseName())+1);
+                                majorApplicationData.setEnterprise(majorEnterprise);
+                            }else{
+                                majorEnterprise.put(dataVo.getEnterpriseName(), 1);
+                                majorApplicationData.setEnterprise(majorEnterprise);
+                            }
+                            System.out.println(majorApplicationData.getEnterprise());
+
+                            Map<String,SchoolApplicationData.MajorApplicationData> map = collegeApplicationData.getMajor();
+                            map.put(dataVo.getMajorName(),majorApplicationData);
+                            collegeApplicationData.setMajor(map);
+                        }else{
+                            Map<String,SchoolApplicationData.MajorApplicationData> map = collegeApplicationData.getMajor();
+                            SchoolApplicationData.MajorApplicationData majorApplicationData = new SchoolApplicationData.MajorApplicationData();
+                            Map<String,Integer> city = new HashMap<>();
+                            city.put(dataVo.getCity(),1);
+                            majorApplicationData.setCity(city);
+                            Map<String,Integer> enterprise = new HashMap<>();
+                            enterprise.put(dataVo.getEnterpriseName(),1);
+                            majorApplicationData.setEnterprise(enterprise);
+                            majorApplicationData.setStudentNum(1);
+                            map.put(dataVo.getMajorName(),majorApplicationData);
+
+                            collegeApplicationData.setMajor(map);
+                        }
+
+
+
+                    }else{
+                        Map<String,SchoolApplicationData.CollegeApplicationData> map = schoolApplicationData.getCollege();
+                        //新建一个college
+                        SchoolApplicationData.CollegeApplicationData collegeApplicationData = new SchoolApplicationData.CollegeApplicationData();
+                        //设置num
+                        collegeApplicationData.setStudentNum(1);
+                        //设置college-city
+                        Map<String,Integer> city = new HashMap<>();
+                        city.put(dataVo.getCity(),1);
+                        collegeApplicationData.setCity(city);
+                        //设置college-enterprise
+                        Map<String,Integer> enterprise = new HashMap<>();
+                        enterprise.put(dataVo.getEnterpriseName(), 1);
+                        collegeApplicationData.setEnterprise(enterprise);
+                        //设置college-major
+                        //新建major
+                        Map<String,SchoolApplicationData.MajorApplicationData> major = collegeApplicationData.getMajor();
+                        SchoolApplicationData.MajorApplicationData majorApplicationData = new SchoolApplicationData.MajorApplicationData();
+                        //设置major-num
+                        majorApplicationData.setStudentNum(1);
+                        //设置major-city
+                        city=new HashMap<>();
+                        city.put(dataVo.getCity(),1);
+                        majorApplicationData.setCity(city);
+                        //设置major-enterprise
+                        enterprise=new HashMap<>();
+                        enterprise.put(dataVo.getEnterpriseName(),1);
+                        majorApplicationData.setEnterprise(enterprise);
+                        //写入college-major
+                        major.put(dataVo.getMajorName(),majorApplicationData);
+                        collegeApplicationData.setMajor(major);
+
+                        //写入school-college
+                        map.put(dataVo.getCollegeName(), collegeApplicationData);
+                        schoolApplicationData.setCollege(map);
+                    }
                 }
             }
         }
-        Map<String,Integer> map2 = new HashMap<>();
-        Map<String,Integer> map3 = new HashMap<>();
-        for(SchoolApplicationDataVo dataVo:schoolApplicationDataVos){
-            if(map2.containsKey(dataVo.getEnterpriseName())){
-                map2.put(dataVo.getEnterpriseName(),map2.get(dataVo.getEnterpriseName())+1);
-            }else{
-                map2.put(dataVo.getEnterpriseName(),1);
-            }
-            if(map3.containsKey(dataVo.getCity())){
-                map3.put(dataVo.getCity(),map3.get(dataVo.getCity())+1);
-            }else{
-                map3.put(dataVo.getCity(),1);
+//        Map<String,Integer> map2 = new HashMap<>();
+//        Map<String,Integer> map3 = new HashMap<>();
+//        for(SchoolApplicationDataVo dataVo:schoolApplicationDataVos){
+//            if(map2.containsKey(dataVo.getEnterpriseName())){
+//                map2.put(dataVo.getEnterpriseName(),map2.get(dataVo.getEnterpriseName())+1);
+//            }else{
+//                map2.put(dataVo.getEnterpriseName(),1);
+//            }
+//            if(map3.containsKey(dataVo.getCity())){
+//                map3.put(dataVo.getCity(),map3.get(dataVo.getCity())+1);
+//            }else{
+//                map3.put(dataVo.getCity(),1);
+//            }
+//        }
+//        Map<String,List> map = new HashMap<>();
+//        Map<String,List<Map.Entry<String, Integer>>> temp = new HashMap<>();
+//        for(Map.Entry<String, Map<String,Integer>> entry:map0.entrySet()){
+//            Map<String,Integer> map1 = entry.getValue();
+//            List<Map.Entry<String, Integer>> list = new ArrayList<>(map1.entrySet());
+//            list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+//            temp.put(entry.getKey(), list);
+//        }
+//        List<Map.Entry<String,List<Map.Entry<String,Integer>>>> list1 = new ArrayList<>(temp.entrySet());
+//        list1.sort((o1, o2) -> o2.getValue().get(0).getValue().compareTo(o1.getValue().get(0).getValue()));
+//        map.put("college",list1);
+//        List<Map.Entry<String, Integer>> list2 = new ArrayList<>(map2.entrySet());
+//        list2.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+//        map.put("enterprise",list2);
+//        List<Map.Entry<String, Integer>> list3 = new ArrayList<>(map3.entrySet());
+//        list3.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+//        map.put("city",list3);
+
+        schoolApplicationData.setCity(SchoolApplicationData.sortMapByValue(schoolApplicationData.getCity()));
+        schoolApplicationData.setEnterprise(SchoolApplicationData.sortMapByValue(schoolApplicationData.getEnterprise()));
+        Map<String,SchoolApplicationData.CollegeApplicationData> college = schoolApplicationData.getCollege();
+        for(Map.Entry<String,SchoolApplicationData.CollegeApplicationData> entry:college.entrySet()){
+            entry.getValue().setCity(SchoolApplicationData.sortMapByValue(entry.getValue().getCity()));
+            entry.getValue().setEnterprise(SchoolApplicationData.sortMapByValue(entry.getValue().getEnterprise()));
+            Map<String,SchoolApplicationData.MajorApplicationData> major = entry.getValue().getMajor();
+            for(Map.Entry<String,SchoolApplicationData.MajorApplicationData> entry1:major.entrySet()){
+                entry1.getValue().setCity(SchoolApplicationData.sortMapByValue(entry1.getValue().getCity()));
+                entry1.getValue().setEnterprise(SchoolApplicationData.sortMapByValue(entry1.getValue().getEnterprise()));
             }
         }
-        Map<String,List<Map.Entry<String, Integer>>> map = new HashMap<>();
-        List<Map.Entry<String, Integer>> list0 = new ArrayList<>(map0.entrySet());
-        list0.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-        map.put("college",list0);
-        List<Map.Entry<String, Integer>> list1 = new ArrayList<>(map1.entrySet());
-        list1.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-        map.put("major",list1);
-        List<Map.Entry<String, Integer>> list2 = new ArrayList<>(map2.entrySet());
-        list2.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-        map.put("enterprise",list2);
-        List<Map.Entry<String, Integer>> list3 = new ArrayList<>(map3.entrySet());
-        list3.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-        map.put("city",list3);
-        return HttpResult.success(map,"查询成功");
+        schoolApplicationData.setCollege(college);
+        return HttpResult.success(schoolApplicationData,"查询成功");
     }
 }

@@ -7,6 +7,8 @@ public interface SchoolService {
 
     HttpResult schoolLogout();
 
+    HttpResult setSchoolPassword(String oldPassword, String newPassword);
+
     HttpResult queryStudent(String name,Integer majorId, Character status, Integer current, Integer size);
 
     HttpResult resetStudentPassword(String account);

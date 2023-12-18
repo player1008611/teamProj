@@ -24,6 +24,12 @@ public class SchoolController {
         return schoolService.schoolLogout();
     }
 
+    @PatchMapping("/resetPassword")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult setSchoolPassword(@RequestParam String oldPassword, @RequestParam String newPassword) {
+        return schoolService.setSchoolPassword(oldPassword, newPassword);
+    }
+
     @GetMapping("/queryStudent")
     @PreAuthorize("hasAuthority('school')")
     HttpResult queryStudent(@RequestParam(value = "name", required = false) String name
