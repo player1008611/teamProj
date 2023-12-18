@@ -13,4 +13,5 @@ public class Major {
     Integer collegeId;
     Integer schoolId;
     Integer studentNum;
+    String type;
 }

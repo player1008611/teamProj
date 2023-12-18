@@ -18,4 +18,7 @@ public class Message {
     String content;
     String time;
     String status;
+    String type;
+    String enterpriseDel;
+    String studentDel;
 }

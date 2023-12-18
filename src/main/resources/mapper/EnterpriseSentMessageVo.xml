@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.teamProj.dao.EnterpriseUserDao">
+    <select id="querySentMessage" resultType="com.teamProj.entity.vo.EnterpriseSentMessageVo">
+        SELECT message_id   as messageId,
+               time,
+               student.name as toName,
+               user.account as toAccount,
+               title,
+               type
+        FROM message,
+             user,
+             student
+        WHERE `to` = user.user_id
+          AND `from` = #{userId}
+          AND user.user_id = student_id
+          AND enterprise_del = '0'
+    </select>
+</mapper>

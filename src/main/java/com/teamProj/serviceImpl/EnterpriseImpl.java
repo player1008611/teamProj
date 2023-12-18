@@ -10,6 +10,7 @@ import com.teamProj.dao.EnterpriseDao;
 import com.teamProj.dao.EnterpriseUserDao;
 import com.teamProj.dao.InterviewInfoDao;
 import com.teamProj.dao.JobApplicationDao;
+import com.teamProj.dao.MessageDao;
 import com.teamProj.dao.RecruitmentInfoDao;
 import com.teamProj.dao.ResumeDao;
 import com.teamProj.dao.SchoolDao;
@@ -23,6 +24,7 @@ import com.teamProj.entity.EnterpriseUser;
 import com.teamProj.entity.InterviewInfo;
 import com.teamProj.entity.JobApplication;
 import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.Message;
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.entity.Resume;
 import com.teamProj.entity.School;
@@ -32,6 +34,7 @@ import com.teamProj.entity.vo.EnterpriseFairVo;
 import com.teamProj.entity.vo.EnterpriseInterviewVo;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
+import com.teamProj.entity.vo.EnterpriseSentMessageVo;
 import com.teamProj.entity.vo.StudentResumeAllVo;
 import com.teamProj.service.EnterpriseService;
 import com.teamProj.utils.EmailVerification;
@@ -107,6 +110,9 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
     private CareerFairDao careerFairDao;
+
+    @Resource
+    private MessageDao messageDao;
 
     @Override
     public HttpResult schoolList() {
@@ -1062,5 +1068,63 @@ public class EnterpriseImpl implements EnterpriseService {
             }
         }
         return HttpResult.success(map, "查询成功");
+    }
+
+    @Override
+    public HttpResult querySentMessageList(Integer current) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int userId = loginUser.getUser().getUserId();
+        Page<EnterpriseSentMessageVo> page = new Page<>(current, 10);
+        return HttpResult.success(enterpriseUserDao.querySentMessage(page, userId), "查询成功");
+    }
+
+    @Override
+    public HttpResult querySentMessage(Integer id) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<Message> messageQueryWrapper = new QueryWrapper<>();
+        messageQueryWrapper.eq("message_id", id).eq("enterprise_del", "0").eq("`from`", userId);
+        messageQueryWrapper.select("title", "content");
+        return HttpResult.success(messageDao.selectOne(messageQueryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult deleteSentMessage(Integer id) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int userId = loginUser.getUser().getUserId();
+        UpdateWrapper<Message> messageQueryWrapper = new UpdateWrapper<>();
+        messageQueryWrapper.eq("message_id", id).eq("enterprise_del", "0").eq("`from`", userId);
+        messageQueryWrapper.set("enterprise_del", "1");
+        if (messageDao.update(null, messageQueryWrapper) > 0) {
+            return HttpResult.success(id, "删除成功");
+        }
+        return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "删除失败");
+    }
+
+    @Override
+    public HttpResult queryRecentContacts() {
+        return null;
+    }
+
+    @Override
+    public HttpResult sendMessage(String account, String type, String title, String content) {
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.eq("account", account);
+        User user = userDao.selectOne(userQueryWrapper);
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Message message = new Message(null, userId, user.getUserId(), title, content, format.format(date), "0", type, "0", "0");
+        try {
+            messageDao.insert(message);
+        } catch (Exception e) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "发送失败");
+        }
+        return HttpResult.success(null, "发送成功");
     }
 }

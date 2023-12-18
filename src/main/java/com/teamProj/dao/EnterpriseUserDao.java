@@ -10,6 +10,7 @@ import com.teamProj.entity.vo.EnterpriseInfoVo;
 import com.teamProj.entity.vo.EnterpriseInterviewVo;
 import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
 import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
+import com.teamProj.entity.vo.EnterpriseSentMessageVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -49,4 +50,6 @@ public interface EnterpriseUserDao extends BaseMapper<EnterpriseUser> {
             , @Param("date") Timestamp date
             , @Param("school") String school
             , @Param("code") Integer code);
+
+    IPage<EnterpriseSentMessageVo> querySentMessage(Page<EnterpriseSentMessageVo> page, @Param("userId") Integer userId);
 }

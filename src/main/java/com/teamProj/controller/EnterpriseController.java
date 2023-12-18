@@ -391,4 +391,28 @@ public class EnterpriseController {
     HttpResult recruitmentAnalysisByMaxSalary() {
         return enterpriseService.recruitmentAnalysisByMaxSalary();
     }
+
+    @GetMapping("/querySentMessageList")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult querySentMessageList(@RequestParam Integer current) {
+        return enterpriseService.querySentMessageList(current);
+    }
+
+    @GetMapping("/querySentMessage")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult querySentMessage(@RequestParam Integer id) {
+        return enterpriseService.querySentMessage(id);
+    }
+
+    @DeleteMapping("/deleteSentMessage")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult deleteSentMessage(@RequestParam Integer id) {
+        return enterpriseService.deleteSentMessage(id);
+    }
+
+    @PostMapping("/sendMessage")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult sendMessage(@RequestParam String account, @RequestParam String type, @RequestParam String title, @RequestParam String content) {
+        return enterpriseService.sendMessage(account, type, title, content);
+    }
 }

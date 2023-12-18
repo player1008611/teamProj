@@ -2,7 +2,6 @@ package com.teamProj.service;
 
 import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.utils.HttpResult;
-import org.springframework.security.config.web.servlet.headers.HttpPublicKeyPinningDsl;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Date;
@@ -97,4 +96,14 @@ public interface EnterpriseService {
     HttpResult recruitmentAnalysisByCity();
 
     HttpResult recruitmentAnalysisByMaxSalary();
+
+    HttpResult querySentMessageList(Integer current);
+
+    HttpResult querySentMessage(Integer id);
+
+    HttpResult deleteSentMessage(Integer id);
+
+    HttpResult queryRecentContacts();
+
+    HttpResult sendMessage(String account, String type, String title, String content);
 }
