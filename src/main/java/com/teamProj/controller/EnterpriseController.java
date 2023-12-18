@@ -410,6 +410,12 @@ public class EnterpriseController {
         return enterpriseService.deleteSentMessage(id);
     }
 
+    @GetMapping("/queryRecentContacts")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult queryRecentContacts() {
+        return enterpriseService.queryRecentContacts();
+    }
+
     @PostMapping("/sendMessage")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult sendMessage(@RequestParam String account, @RequestParam String type, @RequestParam String title, @RequestParam String content) {

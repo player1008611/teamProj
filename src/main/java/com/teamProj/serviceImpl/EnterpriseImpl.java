@@ -1106,7 +1106,19 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Override
     public HttpResult queryRecentContacts() {
-        return null;
+        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        int userId = loginUser.getUser().getUserId();
+        QueryWrapper<Message> messageQueryWrapper = new QueryWrapper<>();
+        messageQueryWrapper.eq("`from`", userId).orderByAsc("time").last("limit 5");
+        List<Message> messageList = messageDao.selectList(messageQueryWrapper);
+        List<String> accountList = new ArrayList<>();
+        for (Message message : messageList) {
+            QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+            userQueryWrapper.eq("user_id", message.getTo());
+            accountList.add(userDao.selectOne(userQueryWrapper).getAccount());
+        }
+        return HttpResult.success(accountList, "查询成功");
     }
 
     @Override

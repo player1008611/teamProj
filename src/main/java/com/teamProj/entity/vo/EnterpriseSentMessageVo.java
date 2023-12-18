@@ -5,13 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class EnterpriseSentMessageVo {
     Integer messageId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
-    String time;
+    Timestamp time;
     String toName;
     String toAccount;
     String title;
