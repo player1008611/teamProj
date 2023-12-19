@@ -18,7 +18,8 @@ public class HomePageImpl implements HomePageService {
     @Override
     public HttpResult queryNews() {
         QueryWrapper<Announcement> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("category", "新闻");
+        queryWrapper.eq("category", "新闻")
+                .select("announcement_id", "title", "cover", "creation_time","content");
         List<Announcement> announcements = announcementDao.selectList(queryWrapper);
         announcements.sort((o1, o2) -> o2.getCreationTime().compareTo(o1.getCreationTime()));
         List<Announcement> result = announcements.subList(0, Math.min(announcements.size(), 5));
@@ -28,10 +29,20 @@ public class HomePageImpl implements HomePageService {
     @Override
     public HttpResult queryAnnouncement() {
         QueryWrapper<Announcement> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("category", "公告");
+        queryWrapper.eq("category", "公告")
+                .select("announcement_id", "title", "cover", "creation_time","content");;
         List<Announcement> announcements = announcementDao.selectList(queryWrapper);
         announcements.sort((o1, o2) -> o2.getCreationTime().compareTo(o1.getCreationTime()));
         List<Announcement> result = announcements.subList(0, Math.min(announcements.size(), 5));
         return HttpResult.success(result, "查询成功");
+    }
+
+    @Override
+    public HttpResult getData(Integer announcementId) {
+        QueryWrapper<Announcement> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("announcement_id", announcementId)
+                .select("data");
+        Announcement announcement = announcementDao.selectOne(queryWrapper);
+        return HttpResult.success(announcement, "查询成功");
     }
 }

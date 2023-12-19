@@ -6,5 +6,8 @@ import org.springframework.stereotype.Service;
 
 public interface HomePageService {
     HttpResult queryNews();
+
     HttpResult queryAnnouncement();
+
+    HttpResult getData(Integer announcementId);
 }

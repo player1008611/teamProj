@@ -23,4 +23,9 @@ public class HomePageController {
     HttpResult queryAnnouncement() {
         return homePageService.queryAnnouncement();
     }
+
+    @GetMapping("/getData")
+    HttpResult getData(Integer announcementId) {
+        return homePageService.getData(announcementId);
+    }
 }
