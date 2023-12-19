@@ -42,6 +42,7 @@ public class SecurityConfig {
                         "/student/verification/**",
                         "/student/verification/**/**",
                         "/student/querySchool/all",
+                        "/student/setPassword/forget",
                         "/swagger-ui.html",
                         "/webjars/**",
                         "/swagger-resources/**",

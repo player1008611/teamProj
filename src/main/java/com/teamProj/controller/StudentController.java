@@ -55,6 +55,12 @@ public class StudentController {
         return studentService.querySchool(depth,queryInfo);
     }
 
+    @PatchMapping("/setPassword/forget")
+    HttpResult studentSetPasswordForget(@RequestParam(value = "account") String account, @RequestParam(value = "password") String password) {
+        return studentService.setStudentPasswordForget(account, password);
+    }
+
+
     @PatchMapping("/setPassword")
     @PreAuthorize("hasAuthority('student')")
     HttpResult studentSetPassword(@RequestParam(value = "account") String account, @RequestParam(value = "oldPassword") String oldPassword, @RequestParam(value = "password") String password) {

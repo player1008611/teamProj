@@ -437,37 +437,6 @@ public class SchoolImpl implements SchoolService {
                 }
             }
         }
-//        Map<String,Integer> map2 = new HashMap<>();
-//        Map<String,Integer> map3 = new HashMap<>();
-//        for(SchoolApplicationDataVo dataVo:schoolApplicationDataVos){
-//            if(map2.containsKey(dataVo.getEnterpriseName())){
-//                map2.put(dataVo.getEnterpriseName(),map2.get(dataVo.getEnterpriseName())+1);
-//            }else{
-//                map2.put(dataVo.getEnterpriseName(),1);
-//            }
-//            if(map3.containsKey(dataVo.getCity())){
-//                map3.put(dataVo.getCity(),map3.get(dataVo.getCity())+1);
-//            }else{
-//                map3.put(dataVo.getCity(),1);
-//            }
-//        }
-//        Map<String,List> map = new HashMap<>();
-//        Map<String,List<Map.Entry<String, Integer>>> temp = new HashMap<>();
-//        for(Map.Entry<String, Map<String,Integer>> entry:map0.entrySet()){
-//            Map<String,Integer> map1 = entry.getValue();
-//            List<Map.Entry<String, Integer>> list = new ArrayList<>(map1.entrySet());
-//            list.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-//            temp.put(entry.getKey(), list);
-//        }
-//        List<Map.Entry<String,List<Map.Entry<String,Integer>>>> list1 = new ArrayList<>(temp.entrySet());
-//        list1.sort((o1, o2) -> o2.getValue().get(0).getValue().compareTo(o1.getValue().get(0).getValue()));
-//        map.put("college",list1);
-//        List<Map.Entry<String, Integer>> list2 = new ArrayList<>(map2.entrySet());
-//        list2.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-//        map.put("enterprise",list2);
-//        List<Map.Entry<String, Integer>> list3 = new ArrayList<>(map3.entrySet());
-//        list3.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-//        map.put("city",list3);
 
         schoolApplicationData.setCity(SchoolApplicationData.sortMapByValue(schoolApplicationData.getCity()));
         schoolApplicationData.setEnterprise(SchoolApplicationData.sortMapByValue(schoolApplicationData.getEnterprise()));

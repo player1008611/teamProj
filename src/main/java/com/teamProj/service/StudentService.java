@@ -17,6 +17,8 @@ public interface StudentService {
 
     HttpResult setStudentPassword(String account, String oldPassword, String password);
 
+    HttpResult setStudentPasswordForget(String account, String password);
+
 //    HttpResult createResume(String account, MultipartFile imageByte, String selfDescription, String careerObjective,
 //                            String educationExperience, String InternshipExperience, String projectExperience,
 //                            String certificates, String skills, String resumeName);

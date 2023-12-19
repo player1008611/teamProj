@@ -142,6 +142,24 @@ public class StudentImpl implements StudentService {
     }
 
     @Override
+    public HttpResult setStudentPasswordForget(String account,String password){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("account", account);
+        User user = userDao.selectOne(queryWrapper);
+        if (user != null) {
+            user.setPassword(bCryptPasswordEncoder.encode(password));
+            userDao.update(user, queryWrapper);
+            queryWrapper.select("account");
+            UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("student_id", user.getUserId()).set("change_password_time", new Timestamp(System.currentTimeMillis()));
+            studentDao.update(null, updateWrapper);
+            return HttpResult.success(userDao.selectOne(queryWrapper), "修改成功");
+        } else {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+    }
+
+    @Override
     public HttpResult studentRegister(String account, String password, String schoolName, String collegeName, String majorName, String name, String phoneNumber) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("account", account);
