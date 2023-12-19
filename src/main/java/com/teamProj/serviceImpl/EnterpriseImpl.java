@@ -1129,6 +1129,9 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("account", account);
         User user = userDao.selectOne(userQueryWrapper);
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "收件人不存在");
+        }
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Message message = new Message(null, userId, user.getUserId(), title, content, format.format(date), "0", type, "0", "0");
