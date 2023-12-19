@@ -43,6 +43,7 @@ public class SecurityConfig {
                         "/student/verification/**/**",
                         "/student/querySchool/all",
                         "/student/setPassword/forget",
+                        "/homePage/**",
                         "/swagger-ui.html",
                         "/webjars/**",
                         "/swagger-resources/**",
