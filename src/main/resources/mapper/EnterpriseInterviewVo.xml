@@ -6,7 +6,10 @@
     <select id="queryInterview" resultType="com.teamProj.entity.vo.EnterpriseInterviewVo">
         SELECT job_application.application_id as applicationId,
         student.name as studentName,
+        user.account as studentAccount,
         school.school_name as schoolName,
+        department.name as departmentName,
+        recruitment_info.job_title as jobTitle,
         interview_info.interview_id as interviewId,
         interview_info.date_time as dateTime,
         interview_info.position,
@@ -19,7 +22,9 @@
         student,
         enterprise_user,
         recruitment_info,
-        school
+        school,
+        user,
+        department
         WHERE enterprise_user.user_id = #{userId}
         AND enterprise_user.enterprise_id = recruitment_info.enterprise_id
         AND recruitment_info.recruitment_id = job_application.recruitment_id
@@ -28,6 +33,8 @@
         AND interview_info.student_id = student.student_id
         AND interview_info.principal_id = enterprise_user.user_id
         AND school.school_id = student.school_id
+        AND user.user_id = student.student_id
+        AND department.department_id = recruitment_info.department_id
         <if test="date!=null">
             AND interview_info.date_time <![CDATA[>]]> #{date}
             AND interview_info.date_time <![CDATA[<]]> timestampadd(DAY,1,#{date})

@@ -15,7 +15,13 @@ public class EnterpriseInterviewVo {
 
     String studentName;
 
+    String studentAccount;
+
     String schoolName;
+
+    String departmentName;
+
+    String jobTitle;
 
     Integer interviewId;
 
