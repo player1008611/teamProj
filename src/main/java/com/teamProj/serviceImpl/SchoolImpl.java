@@ -295,6 +295,7 @@ public class SchoolImpl implements SchoolService {
         List<Student> students = studentDao.selectList(queryStudent);
         List<SchoolApplicationDataVo> schoolApplicationDataVos = jobApplicationDao.querySchoolApplicationData(schoolId);
         SchoolApplicationData schoolApplicationData = new SchoolApplicationData();
+        schoolApplicationData.setTotal(students.size());
         for(Student student:students){
             for(SchoolApplicationDataVo dataVo:schoolApplicationDataVos){
                 if(student.getStudentId().equals(dataVo.getStudentId())){
@@ -376,7 +377,6 @@ public class SchoolImpl implements SchoolService {
                                 majorEnterprise.put(dataVo.getEnterpriseName(), 1);
                                 majorApplicationData.setEnterprise(majorEnterprise);
                             }
-                            System.out.println(majorApplicationData.getEnterprise());
 
                             Map<String,SchoolApplicationData.MajorApplicationData> map = collegeApplicationData.getMajor();
                             map.put(dataVo.getMajorName(),majorApplicationData);
@@ -391,6 +391,9 @@ public class SchoolImpl implements SchoolService {
                             enterprise.put(dataVo.getEnterpriseName(),1);
                             majorApplicationData.setEnterprise(enterprise);
                             majorApplicationData.setStudentNum(1);
+                            QueryWrapper<Major> queryWrapper = new QueryWrapper<>();
+                            queryWrapper.eq("major_name",dataVo.getMajorName()).eq("college_id",collegeDao.selectOne(new QueryWrapper<College>().eq("college_name",dataVo.getCollegeName()).eq("school_id",schoolId)).getCollegeId()).eq("school_id",schoolId);
+                            majorApplicationData.setTotal(majorDao.selectOne(queryWrapper).getStudentNum());
                             map.put(dataVo.getMajorName(),majorApplicationData);
 
                             collegeApplicationData.setMajor(map);
@@ -404,6 +407,11 @@ public class SchoolImpl implements SchoolService {
                         SchoolApplicationData.CollegeApplicationData collegeApplicationData = new SchoolApplicationData.CollegeApplicationData();
                         //设置num
                         collegeApplicationData.setStudentNum(1);
+                        //设置total
+                        QueryWrapper<College> queryWrapper = new QueryWrapper<>();
+                        queryWrapper.eq("college_name",dataVo.getCollegeName()).eq("school_id",schoolId);
+                        College college = collegeDao.selectOne(queryWrapper);
+                        collegeApplicationData.setTotal(college.getStudentNum());
                         //设置college-city
                         Map<String,Integer> city = new HashMap<>();
                         city.put(dataVo.getCity(),1);
@@ -418,6 +426,10 @@ public class SchoolImpl implements SchoolService {
                         SchoolApplicationData.MajorApplicationData majorApplicationData = new SchoolApplicationData.MajorApplicationData();
                         //设置major-num
                         majorApplicationData.setStudentNum(1);
+                        //设置major-total
+                        QueryWrapper<Major> queryWrapper1 = new QueryWrapper<>();
+                        queryWrapper1.eq("major_name",dataVo.getMajorName()).eq("college_id",college.getCollegeId()).eq("school_id",schoolId);
+                        majorApplicationData.setTotal(majorDao.selectOne(queryWrapper1).getStudentNum());
                         //设置major-city
                         city=new HashMap<>();
                         city.put(dataVo.getCity(),1);
