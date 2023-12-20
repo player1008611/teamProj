@@ -19,5 +19,6 @@
         <if test="category!=null and category!=''">
             AND announcement.category = #{category}
         </if>
+        ORDER BY announcement.top_time DESC,creation_time DESC
     </select>
 </mapper>
