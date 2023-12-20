@@ -31,7 +31,7 @@ mybatis-plus:
   mapper-locations: classpath:mapper/*.xml
 sms:
   apiUrl: https://sms_developer.zhenzikj.com
-  appId:  113592
+  appId: 113592
   appSecret: 0cd69007-1d3e-4089-b629-43bb629aaaf3
   timeOut: 5
   codeLength: 6

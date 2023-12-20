@@ -32,9 +32,8 @@ public class LoginUser implements UserDetails {
         if (authorities != null) {
             return authorities;
         }
-        authorities = permissions.stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        authorities =
+                permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         return authorities;
     }
 

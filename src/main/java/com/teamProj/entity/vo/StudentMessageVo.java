@@ -8,6 +8,7 @@ import lombok.Data;
 public class StudentMessageVo {
     @TableId(type = IdType.AUTO)
     Integer messageId;
+
     String from;
     String to;
     String title;

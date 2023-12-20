@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-
 public class MakeResume {
     public static byte[] makeResume(Map<String, Object> map) throws IOException {
         File resumeTemplate = new File("./Resume.pdf");

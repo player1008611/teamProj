@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.teamProj.entity.CareerFair;
 import com.teamProj.entity.vo.FairVo;
 import com.teamProj.entity.vo.SchoolFairVo;
-import com.teamProj.entity.vo.SchoolStudentVo;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -14,8 +13,6 @@ import java.util.List;
 @Mapper
 public interface CareerFairDao extends BaseMapper<CareerFair> {
     List<FairVo> queryCareerFair();
-    IPage<SchoolFairVo> queryFair(Page<SchoolFairVo> page,
-                                  String title,
-                                  Integer schoolId
-                                  );
+
+    IPage<SchoolFairVo> queryFair(Page<SchoolFairVo> page, String title, Integer schoolId);
 }

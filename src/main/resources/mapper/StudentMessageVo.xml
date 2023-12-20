@@ -4,22 +4,22 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.teamProj.dao.MessageDao">
     <select id="queryMessageList" resultType="com.teamProj.entity.vo.StudentMessageVo">
-        SELECT  message.message_id as messageId,
-                message.content    as content,
-                message.time       as time,
-                student.name       as `to`,
-                enterprise.enterprise_name   as `from`,
-                message.status     as status,
-                message.title       as title
+        SELECT message.message_id as messageId,
+        message.content as content,
+        message.time as time,
+        student.name as `to`,
+        enterprise.enterprise_name as `from`,
+        message.status as status,
+        message.title as title
         FROM message,student,enterprise_user,enterprise
         WHERE message.to = student.student_id
-          AND message.`from` = enterprise_user.user_id
-          AND message.to = #{userId}
-          AND enterprise_user.enterprise_id = enterprise.enterprise_id
-        <if test = "messageId != null">
+        AND message.`from` = enterprise_user.user_id
+        AND message.to = #{userId}
+        AND enterprise_user.enterprise_id = enterprise.enterprise_id
+        <if test="messageId != null">
             AND message.message_id = #{messageId}
         </if>
-        <if test = "queryInfo != null">
+        <if test="queryInfo != null">
             AND (enterprise.enterprise_name LIKE CONCAT('%',#{queryInfo},'%')
             OR message.title LIKE CONCAT('%',#{queryInfo},'%'))
         </if>

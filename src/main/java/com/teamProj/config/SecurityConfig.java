@@ -14,7 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import javax.annotation.Resource;
 
-
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
@@ -27,17 +26,22 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
-        return http
-                .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers("/**/login",
+        return http.csrf()
+                .disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers(
+                        "/**/login",
                         "/student/register",
                         "/student/verification/**",
                         "/student/verification/**/**",
@@ -47,8 +51,11 @@ public class SecurityConfig {
                         "/swagger-ui.html",
                         "/webjars/**",
                         "/swagger-resources/**",
-                        "/v2/**").permitAll()
-                .anyRequest().authenticated()
-                .and().build();
+                        "/v2/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .build();
     }
 }

@@ -9,5 +9,5 @@ import java.util.List;
 
 @Mapper
 public interface InterviewInfoDao extends BaseMapper<InterviewInfo> {
-    List<StudentInterviewVo> queryInterviewInfo(String queryInfo,Integer userId);
+    List<StudentInterviewVo> queryInterviewInfo(String queryInfo, Integer userId);
 }

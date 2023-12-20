@@ -29,9 +29,11 @@ public interface EnterpriseService {
 
     HttpResult deleteDepartment(String departmentName);
 
-    HttpResult createNewRecruitmentInfo(String draftName, String departmentName, RecruitmentInfo recruitmentInfo);
+    HttpResult createNewRecruitmentInfo(
+            String draftName, String departmentName, RecruitmentInfo recruitmentInfo);
 
-    HttpResult queryRecruitmentInfo(String city, String salaryRange, String departmentName, Integer statusName, Integer current);
+    HttpResult queryRecruitmentInfo(
+            String city, String salaryRange, String departmentName, Integer statusName, Integer current);
 
     HttpResult queryRecruitmentInfoByDraft(String draftName);
 
@@ -43,7 +45,8 @@ public interface EnterpriseService {
 
     HttpResult deleteDraft(String draftName);
 
-    HttpResult queryJobApplication(String schoolName, String departmentName, Integer code, Integer current);
+    HttpResult queryJobApplication(
+            String schoolName, String departmentName, Integer code, Integer current);
 
     HttpResult queryResume(Integer jobApplicationId);
 
@@ -53,17 +56,44 @@ public interface EnterpriseService {
 
     HttpResult agreeJobApplication(Integer id, String date, String position);
 
-    HttpResult createFair(String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName);
+    HttpResult createFair(
+            String title,
+            String content,
+            Timestamp startTime,
+            Timestamp endTime,
+            String location,
+            String host,
+            String schoolName);
 
-    HttpResult queryFair(String host, String location, String schoolName, Timestamp date, Integer code, Integer current);
+    HttpResult queryFair(
+            String host,
+            String location,
+            String schoolName,
+            Timestamp date,
+            Integer code,
+            Integer current);
 
-    HttpResult updateFair(Integer id, String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName);
+    HttpResult updateFair(
+            Integer id,
+            String title,
+            String content,
+            Timestamp startTime,
+            Timestamp endTime,
+            String location,
+            String host,
+            String schoolName);
 
     HttpResult deleteFair(Integer id);
 
     HttpResult queryInfo();
 
-    HttpResult updateInfo(MultipartFile avatar, String name, Date birthday, Integer age, String gender, String graduationSchool);
+    HttpResult updateInfo(
+            MultipartFile avatar,
+            String name,
+            Date birthday,
+            Integer age,
+            String gender,
+            String graduationSchool);
 
     HttpResult queryInterview(String date, String school, Integer status, Integer current);
 

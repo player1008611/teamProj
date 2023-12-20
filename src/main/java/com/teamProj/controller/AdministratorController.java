@@ -4,13 +4,7 @@ import com.teamProj.service.AdministratorService;
 import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -41,11 +35,12 @@ public class AdministratorController {
 
     @GetMapping("/queryStudent")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult queryStudent(@RequestParam(value = "name", required = false) String name
-            , @RequestParam(value = "schoolName", required = false) String schoolName
-            , @RequestParam(value = "status", required = false) Character status
-            , @RequestParam(value = "current") Integer current
-            , @RequestParam(value = "size") Integer size) {
+    HttpResult queryStudent(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "schoolName", required = false) String schoolName,
+            @RequestParam(value = "status", required = false) Character status,
+            @RequestParam(value = "current") Integer current,
+            @RequestParam(value = "size") Integer size) {
         return administratorService.queryStudent(name, schoolName, status, current, size);
     }
 
@@ -75,18 +70,20 @@ public class AdministratorController {
 
     @GetMapping("/queryEnterprise")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult queryEnterprise(@RequestParam(required = false) String name
-            , @RequestParam Integer current
-            , @RequestParam Integer size) {
+    HttpResult queryEnterprise(
+            @RequestParam(required = false) String name,
+            @RequestParam Integer current,
+            @RequestParam Integer size) {
         return administratorService.queryEnterprise(name, current, size);
     }
 
     @GetMapping("/queryEnterpriseUser")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult queryEnterpriseUser(@RequestParam String enterpriseName
-            , @RequestParam(required = false) String userName
-            , @RequestParam Integer current
-            , @RequestParam Integer size) {
+    HttpResult queryEnterpriseUser(
+            @RequestParam String enterpriseName,
+            @RequestParam(required = false) String userName,
+            @RequestParam Integer current,
+            @RequestParam Integer size) {
         return administratorService.queryEnterpriseUser(enterpriseName, userName, current, size);
     }
 
@@ -98,10 +95,11 @@ public class AdministratorController {
 
     @PostMapping("/createNewEnterpriseUser")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult createNewEnterpriseUser(@RequestParam String account
-            , @RequestParam String enterpriseName
-            , @RequestParam String name
-            , @RequestParam String tel) {
+    HttpResult createNewEnterpriseUser(
+            @RequestParam String account,
+            @RequestParam String enterpriseName,
+            @RequestParam String name,
+            @RequestParam String tel) {
         return administratorService.createNewEnterpriseUser(account, enterpriseName, name, tel);
     }
 
@@ -131,19 +129,21 @@ public class AdministratorController {
 
     @GetMapping("/querySchoolUser")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult querySchoolUser(@RequestParam(required = false) String principal
-            , @RequestParam(required = false) Character status
-            , @RequestParam Integer current
-            , @RequestParam Integer size) {
+    HttpResult querySchoolUser(
+            @RequestParam(required = false) String principal,
+            @RequestParam(required = false) Character status,
+            @RequestParam Integer current,
+            @RequestParam Integer size) {
         return administratorService.querySchoolUser(principal, status, current, size);
     }
 
     @PostMapping("/createNewSchoolUser")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult createNewSchoolUser(@RequestParam String account
-            , @RequestParam String schoolName
-            , @RequestParam String principal
-            , @RequestParam String tel) {
+    HttpResult createNewSchoolUser(
+            @RequestParam String account,
+            @RequestParam String schoolName,
+            @RequestParam String principal,
+            @RequestParam String tel) {
         return administratorService.createNewSchoolUser(account, schoolName, principal, tel);
     }
 
@@ -173,34 +173,39 @@ public class AdministratorController {
 
     @GetMapping("queryRecruitmentInfo")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult queryRecruitmentInfo(@RequestParam(required = false) String companyName
-            , @RequestParam(required = false) String departmentName
-            , @RequestParam(required = false) String jobTitle
-            , @RequestParam Integer current
-            , @RequestParam Integer size) {
-        return administratorService.queryRecruitmentInfo(companyName, departmentName, jobTitle, current, size);
+    HttpResult queryRecruitmentInfo(
+            @RequestParam(required = false) String companyName,
+            @RequestParam(required = false) String departmentName,
+            @RequestParam(required = false) String jobTitle,
+            @RequestParam Integer current,
+            @RequestParam Integer size) {
+        return administratorService.queryRecruitmentInfo(
+                companyName, departmentName, jobTitle, current, size);
     }
 
     @PatchMapping("auditRecruitmentInfo")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult auditRecruitmentInfo(@RequestParam String enterpriseName
-            , @RequestParam String departmentName
-            , @RequestParam String jobTitle
-            , @RequestParam String status
-            , @RequestParam(required = false) String rejectReason) {
+    HttpResult auditRecruitmentInfo(
+            @RequestParam String enterpriseName,
+            @RequestParam String departmentName,
+            @RequestParam String jobTitle,
+            @RequestParam String status,
+            @RequestParam(required = false) String rejectReason) {
         if (status.equals("3") && (Objects.isNull(rejectReason) || rejectReason.isEmpty())) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "请填写拒绝理由");
         }
-        return administratorService.auditRecruitmentInfo(enterpriseName, departmentName, jobTitle, status, rejectReason);
+        return administratorService.auditRecruitmentInfo(
+                enterpriseName, departmentName, jobTitle, status, rejectReason);
     }
 
     @PostMapping("createAnnouncement")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult createAnnouncement(@RequestParam String title
-            , @RequestParam(required = false) MultipartFile cover
-            , @RequestParam String category
-            , @RequestParam String content
-            , @RequestParam(required = false) MultipartFile data) {
+    HttpResult createAnnouncement(
+            @RequestParam String title,
+            @RequestParam(required = false) MultipartFile cover,
+            @RequestParam String category,
+            @RequestParam String content,
+            @RequestParam(required = false) MultipartFile data) {
         return administratorService.createAnnouncement(title, cover, category, content, data);
     }
 
@@ -212,9 +217,10 @@ public class AdministratorController {
 
     @GetMapping("queryAnnouncement")
     @PreAuthorize("hasAuthority('admin')")
-    HttpResult queryAnnouncement(@RequestParam(required = false) String title
-            , @RequestParam(required = false) String category
-            , @RequestParam Integer current) {
+    HttpResult queryAnnouncement(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String category,
+            @RequestParam Integer current) {
         return administratorService.queryAnnouncement(title, category, current);
     }
 

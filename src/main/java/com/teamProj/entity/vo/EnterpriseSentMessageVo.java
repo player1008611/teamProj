@@ -12,8 +12,10 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class EnterpriseSentMessageVo {
     Integer messageId;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
     Timestamp time;
+
     String toName;
     String toAccount;
     String title;

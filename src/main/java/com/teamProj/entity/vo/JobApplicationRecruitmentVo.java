@@ -8,5 +8,4 @@ public class JobApplicationRecruitmentVo {
     String jobTitle;
     String time;
     String companyName;
-
 }

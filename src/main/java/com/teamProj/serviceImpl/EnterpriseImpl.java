@@ -3,45 +3,11 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.teamProj.dao.CareerFairDao;
-import com.teamProj.dao.DepartmentDao;
-import com.teamProj.dao.DraftDao;
-import com.teamProj.dao.EnterpriseDao;
-import com.teamProj.dao.EnterpriseUserDao;
-import com.teamProj.dao.InterviewInfoDao;
-import com.teamProj.dao.JobApplicationDao;
-import com.teamProj.dao.MessageDao;
-import com.teamProj.dao.RecruitmentInfoDao;
-import com.teamProj.dao.ResumeDao;
-import com.teamProj.dao.SchoolDao;
-import com.teamProj.dao.StudentDao;
-import com.teamProj.dao.UserDao;
-import com.teamProj.entity.CareerFair;
-import com.teamProj.entity.Department;
-import com.teamProj.entity.Draft;
-import com.teamProj.entity.Enterprise;
-import com.teamProj.entity.EnterpriseUser;
-import com.teamProj.entity.InterviewInfo;
-import com.teamProj.entity.JobApplication;
-import com.teamProj.entity.LoginUser;
-import com.teamProj.entity.Message;
-import com.teamProj.entity.RecruitmentInfo;
-import com.teamProj.entity.Resume;
-import com.teamProj.entity.School;
-import com.teamProj.entity.Student;
-import com.teamProj.entity.User;
-import com.teamProj.entity.vo.EnterpriseFairVo;
-import com.teamProj.entity.vo.EnterpriseInterviewVo;
-import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
-import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
-import com.teamProj.entity.vo.EnterpriseSentMessageVo;
-import com.teamProj.entity.vo.StudentResumeAllVo;
+import com.teamProj.dao.*;
+import com.teamProj.entity.*;
+import com.teamProj.entity.vo.*;
 import com.teamProj.service.EnterpriseService;
-import com.teamProj.utils.EmailVerification;
-import com.teamProj.utils.HttpResult;
-import com.teamProj.utils.JwtUtil;
-import com.teamProj.utils.RedisCache;
-import com.teamProj.utils.ResultCodeEnum;
+import com.teamProj.utils.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -55,24 +21,16 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class EnterpriseImpl implements EnterpriseService {
 
     @Resource
-    private AuthenticationManager authenticationManager;
-
-    @Resource
     BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    @Resource
+    private AuthenticationManager authenticationManager;
     @Resource
     private RedisCache redisCache;
     @Resource
@@ -114,6 +72,13 @@ public class EnterpriseImpl implements EnterpriseService {
     @Resource
     private MessageDao messageDao;
 
+    // 获取学校列表
+
+    /**
+     * Retrieves a list of distinct school names.
+     *
+     * @return HTTP result containing a list of distinct school names retrieved from the database.
+     */
     @Override
     public HttpResult schoolList() {
         QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
@@ -121,6 +86,14 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(schoolDao.selectList(schoolQueryWrapper), "查询成功");
     }
 
+    // 获取城市列表
+
+    /**
+     * Retrieves a list of distinct cities associated with recruitment information.
+     *
+     * @return HTTP result containing a list of distinct cities retrieved from the recruitment
+     * information.
+     */
     @Override
     public HttpResult cityList() {
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
@@ -128,6 +101,13 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper), "查询成功");
     }
 
+    // 获取宣讲会主持人列表
+
+    /**
+     * Retrieves a list of distinct hosts associated with career fairs.
+     *
+     * @return HTTP result containing a list of distinct hosts retrieved from the career fair data.
+     */
     @Override
     public HttpResult hostList() {
         QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
@@ -135,6 +115,14 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(careerFairDao.selectList(careerFairQueryWrapper), "查询成功");
     }
 
+    // 获取宣讲会举办地列表
+
+    /**
+     * Retrieves a list of distinct locations where career fairs are held.
+     *
+     * @return HTTP result containing a list of distinct locations retrieved from the career fair
+     * data.
+     */
     @Override
     public HttpResult locationList() {
         QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
@@ -142,9 +130,19 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(careerFairDao.selectList(careerFairQueryWrapper), "查询成功");
     }
 
+    // 企业用户登录
+
+    /**
+     * Authenticates an enterprise user based on provided credentials.
+     *
+     * @param account  The user account for authentication.
+     * @param password The user password for authentication.
+     * @return HTTP result with authentication status and token if successful, else failure status.
+     */
     @Override
     public HttpResult enterpriseLogin(String account, String password) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(account, password);
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(account, password);
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         if (Objects.isNull(authentication)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -177,24 +175,45 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "登录成功");
     }
 
+    // 企业用户登出
+
+    /**
+     * Logs out an authenticated enterprise user.
+     *
+     * @return HTTP result indicating successful user logout.
+     */
     @Override
     public HttpResult enterpriseLogout() {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int userId = loginUser.getUser().getUserId();
         redisCache.deleteObject(String.valueOf(userId));
         return HttpResult.success(null, "用户注销");
     }
 
+    // 企业用户修改密码
+
+    /**
+     * Changes the password for an authenticated enterprise user.
+     *
+     * @param newPassword The new password to be set.
+     * @param oldPassword The old password to be validated before changing.
+     * @return HTTP result indicating success or failure of password change.
+     */
     @Override
     public HttpResult enterpriseChangePassword(String newPassword, String oldPassword) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int userId = loginUser.getUser().getUserId();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id", userId);
 
-        if (!bCryptPasswordEncoder.matches(oldPassword, userDao.selectOne(queryWrapper).getPassword())) {
+        if (!bCryptPasswordEncoder.matches(
+                oldPassword, userDao.selectOne(queryWrapper).getPassword())) {
             return HttpResult.failure(ResultCodeEnum.REDIRECT, "密码错误");
         }
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
@@ -207,9 +226,19 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(null, "修改成功");
     }
 
+    // 创建新部门
+
+    /**
+     * Creates a new department under the logged-in enterprise user.
+     *
+     * @param departmentName The name of the department to be created.
+     * @return HTTP result indicating the success or failure of department creation.
+     */
     @Override
     public HttpResult createNewDepartment(String departmentName) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -230,9 +259,20 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(departmentName, "创建成功");
     }
 
+    // 根据部门名称模糊查询部门
+
+    /**
+     * Queries departments based on the provided department name (can be fuzzy) under the logged-in
+     * enterprise user.
+     *
+     * @param departmentName The department name or part of it to search for.
+     * @return HTTP result containing department information based on the query.
+     */
     @Override
     public HttpResult queryDepartment(String departmentName) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -256,8 +296,12 @@ public class EnterpriseImpl implements EnterpriseService {
         List<Department> departmentList = departmentDao.selectList(departmentQueryWrapper);
         for (Department department : departmentList) {
             QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
-            recruitmentInfoQueryWrapper.ne("status", "0").orderByDesc("submission_time").eq("department_id", department.getDepartmentId());
-            List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
+            recruitmentInfoQueryWrapper
+                    .ne("status", "0")
+                    .orderByDesc("submission_time")
+                    .eq("department_id", department.getDepartmentId());
+            List<RecruitmentInfo> recruitmentInfoList =
+                    recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
             Map<String, Object> map = new HashMap<>();
             map.put("departmentName", department.getName());
             map.put("recruitmentInfoNum", recruitmentInfoList.size());
@@ -275,9 +319,19 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(list, "查询成功");
     }
 
+    // 删除部门
+
+    /**
+     * Deletes a department associated with the logged-in enterprise user.
+     *
+     * @param departmentName The name of the department to be deleted.
+     * @return An HttpResult indicating the success or failure of the deletion operation.
+     */
     @Override
     public HttpResult deleteDepartment(String departmentName) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -304,16 +358,29 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(departmentName, "删除成功");
     }
 
+    // 创建新招聘信息
+    // 招聘信息必须归属在某个部门下
+
+    /**
+     * Creates a new recruitment information entry linked to a specific department.
+     *
+     * @param draftName       The name of the recruitment draft.
+     * @param departmentName  The name of the department to which the recruitment info belongs.
+     * @param recruitmentInfo The details of the recruitment information to be created.
+     * @return An HttpResult indicating the success or failure of the creation operation.
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public HttpResult createNewRecruitmentInfo(String draftName, String departmentName, RecruitmentInfo recruitmentInfo) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+    public HttpResult createNewRecruitmentInfo(
+            String draftName, String departmentName, RecruitmentInfo recruitmentInfo) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         int userId = loginUser.getUser().getUserId();
-
 
         QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
         enterpriseUserQueryWrapper.eq("user_id", userId);
@@ -356,9 +423,17 @@ public class EnterpriseImpl implements EnterpriseService {
 
         if (recruitmentInfo.getStatus().equals('0')) {
             QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
-            recruitmentInfoQueryWrapper.eq("user_id", userId).eq("job_title", recruitmentInfo.getJobTitle());
+            recruitmentInfoQueryWrapper
+                    .eq("user_id", userId)
+                    .eq("job_title", recruitmentInfo.getJobTitle());
             RecruitmentInfo recruitmentInfo1 = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
-            Draft draft = new Draft(null, userId, recruitmentInfo1.getRecruitmentId(), Timestamp.valueOf(formatter.format(date)), draftName);
+            Draft draft =
+                    new Draft(
+                            null,
+                            userId,
+                            recruitmentInfo1.getRecruitmentId(),
+                            Timestamp.valueOf(formatter.format(date)),
+                            draftName);
             try {
                 draftDao.insert(draft);
             } catch (Exception e) {
@@ -369,9 +444,25 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(null, "添加成功");
     }
 
+    // 查询招聘信息
+
+    /**
+     * Queries recruitment information based on various parameters like city, salary range, department
+     * name, and status number.
+     *
+     * @param city           The city name to filter the recruitment information.
+     * @param salaryRange    The range of salary to filter the recruitment information.
+     * @param departmentName The department name to filter the recruitment information.
+     * @param statusNum      The status number to filter the recruitment information.
+     * @param current        The current page number for pagination.
+     * @return An HttpResult containing the queried recruitment information.
+     */
     @Override
-    public HttpResult queryRecruitmentInfo(String city, String salaryRange, String departmentName, Integer statusNum, Integer current) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+    public HttpResult queryRecruitmentInfo(
+            String city, String salaryRange, String departmentName, Integer statusNum, Integer current) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -385,12 +476,25 @@ public class EnterpriseImpl implements EnterpriseService {
             maxSalary = Integer.parseInt(salaryRange.substring(0, salaryRange.length() - 4));
         }
         Page<EnterpriseRecruitmentVo> page = new Page<>(current, 6);
-        return HttpResult.success(enterpriseUserDao.queryRecruitmentInfo(page, userId, city, maxSalary, departmentName, statusNum), "查询成功");
+        return HttpResult.success(
+                enterpriseUserDao.queryRecruitmentInfo(
+                        page, userId, city, maxSalary, departmentName, statusNum),
+                "查询成功");
     }
 
+    // 查询招聘信息草稿
+
+    /**
+     * Queries recruitment information by the specified draft name.
+     *
+     * @param draftName The name of the draft to filter the recruitment information.
+     * @return An HttpResult containing the queried recruitment information.
+     */
     @Override
     public HttpResult queryRecruitmentInfoByDraft(String draftName) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -403,15 +507,38 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
-        recruitmentInfoQueryWrapper.select("job_title", "job_description", "company_name", "city", "status", "submission_time", "approval_time", "recruit_num", "recruited_num", "byword", "job_duties", "min_salary", "max_salary");
+        recruitmentInfoQueryWrapper.select(
+                "job_title",
+                "job_description",
+                "company_name",
+                "city",
+                "status",
+                "submission_time",
+                "approval_time",
+                "recruit_num",
+                "recruited_num",
+                "byword",
+                "job_duties",
+                "min_salary",
+                "max_salary");
         recruitmentInfoQueryWrapper.eq("recruitment_id", draft.getRecruitmentId());
         return HttpResult.success(recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper), "查询成功");
     }
 
+    // 删除招聘信息
 
+    /**
+     * Deletes a specific recruitment information entry associated with a department.
+     *
+     * @param departmentName The name of the department related to the recruitment information.
+     * @param jobTitle       The job title for which recruitment information needs to be deleted.
+     * @return An HttpResult indicating the success or failure of the deletion operation.
+     */
     @Override
     public HttpResult deleteRecruitmentInfo(String departmentName, String jobTitle) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -446,10 +573,24 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(jobTitle, "删除成功");
     }
 
+    // 更新招聘信息草稿
+
+    /**
+     * Updates a recruitment information draft by replacing the old draft name with a new one and
+     * updating the associated recruitment information.
+     *
+     * @param oldDraftName    The old name of the draft to be updated.
+     * @param newDraftName    The new name to replace the old draft name.
+     * @param recruitmentInfo The updated recruitment information.
+     * @return An HttpResult indicating the success or failure of the update operation.
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public HttpResult updateDraft(String oldDraftName, String newDraftName, RecruitmentInfo recruitmentInfo) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+    public HttpResult updateDraft(
+            String oldDraftName, String newDraftName, RecruitmentInfo recruitmentInfo) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -479,9 +620,18 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(oldDraftName, "编辑成功");
     }
 
+    // 查询草稿
+
+    /**
+     * Queries the drafts associated with the current user.
+     *
+     * @return An HttpResult containing the queried drafts.
+     */
     @Override
     public HttpResult queryDraft() {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -490,9 +640,19 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(enterpriseUserDao.queryDraft(userId), "查询成功");
     }
 
+    // 删除草稿
+
+    /**
+     * Deletes a specific draft related to the current user.
+     *
+     * @param draftName The name of the draft to be deleted.
+     * @return An HttpResult indicating the success or failure of the deletion operation.
+     */
     @Override
     public HttpResult deleteDraft(String draftName) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -514,18 +674,43 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(draftName, "删除成功");
     }
 
+    // 根据学校名称、部门名称模糊查询求职申请
+
+    /**
+     * Queries job applications based on school name, department name, and code, allowing fuzzy
+     * search.
+     *
+     * @param schoolName     The school name for the query.
+     * @param departmentName The department name for the query.
+     * @param code           The code for the query.
+     * @param current        The current page for paginated results.
+     * @return An HttpResult containing the queried job applications.
+     */
     @Override
-    public HttpResult queryJobApplication(String schoolName, String departmentName, Integer code, Integer current) {
+    public HttpResult queryJobApplication(
+            String schoolName, String departmentName, Integer code, Integer current) {
         Page<EnterpriseJobApplicationVo> page = new Page<>(current, 7);
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         int userId = loginUser.getUser().getUserId();
-        return HttpResult.success(enterpriseUserDao.queryJobApplication(page, schoolName, departmentName, code, userId), "查询成功");
+        return HttpResult.success(
+                enterpriseUserDao.queryJobApplication(page, schoolName, departmentName, code, userId),
+                "查询成功");
     }
 
+    // 获取求职申请对应简历
+
+    /**
+     * Queries the resume associated with a specific job application.
+     *
+     * @param jobApplicationId The ID of the job application to retrieve the resume for.
+     * @return An HttpResult containing the queried resume information.
+     */
     @Override
     public HttpResult queryResume(Integer jobApplicationId) {
         QueryWrapper<JobApplication> jobApplicationQueryWrapper = new QueryWrapper<>();
@@ -543,13 +728,29 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<Student> studentQueryWrapper = new QueryWrapper<>();
         studentQueryWrapper.eq("student_id", resume.getStudentId());
         Student student = studentDao.selectOne(studentQueryWrapper);
-        StudentResumeAllVo data = new StudentResumeAllVo(resume, student.getName(), student.getGender(), student.getPhoneNumber());
+        StudentResumeAllVo data =
+                new StudentResumeAllVo(
+                        resume, student.getName(), student.getGender(), student.getPhoneNumber());
         return HttpResult.success(data, "查询成功");
     }
 
+    // 删除求职申请
+    // 实际是更改标志位使该申请在企业端不显示
+
+    /**
+     * Deletes a job application by changing the flag to hide it on the enterprise end.
+     *
+     * @param studentAccount The account of the student associated with the job application.
+     * @param departmentName The department name related to the job application.
+     * @param jobTitle       The title of the job related to the application.
+     * @return An HttpResult indicating the success or failure of the deletion operation.
+     */
     @Override
-    public HttpResult deleteJobApplication(String studentAccount, String departmentName, String jobTitle) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+    public HttpResult deleteJobApplication(
+            String studentAccount, String departmentName, String jobTitle) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -560,7 +761,11 @@ public class EnterpriseImpl implements EnterpriseService {
         enterpriseUserQueryWrapper.eq("user_id", userId);
 
         QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
-        departmentQueryWrapper.eq("name", departmentName).eq("enterprise_id", enterpriseUserDao.selectOne(enterpriseUserQueryWrapper).getEnterpriseId());
+        departmentQueryWrapper
+                .eq("name", departmentName)
+                .eq(
+                        "enterprise_id",
+                        enterpriseUserDao.selectOne(enterpriseUserQueryWrapper).getEnterpriseId());
         Department department = departmentDao.selectOne(departmentQueryWrapper);
         if (Objects.isNull(department)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -574,7 +779,8 @@ public class EnterpriseImpl implements EnterpriseService {
         }
 
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
-        recruitmentInfoQueryWrapper.eq("department_id", department.getDepartmentId())
+        recruitmentInfoQueryWrapper
+                .eq("department_id", department.getDepartmentId())
                 .eq("job_title", jobTitle)
                 .eq("user_id", userId);
         RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
@@ -583,8 +789,10 @@ public class EnterpriseImpl implements EnterpriseService {
         }
 
         UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>();
-        jobApplicationUpdateWrapper.eq("recruitment_id", recruitmentInfo.getRecruitmentId())
-                .eq("student_id", user.getUserId()).set("enterprise_visible", "0");
+        jobApplicationUpdateWrapper
+                .eq("recruitment_id", recruitmentInfo.getRecruitmentId())
+                .eq("student_id", user.getUserId())
+                .set("enterprise_visible", "0");
         try {
             jobApplicationDao.update(null, jobApplicationUpdateWrapper);
         } catch (Exception e) {
@@ -593,12 +801,22 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(jobTitle, "删除成功");
     }
 
+    // 否决求职申请
+
+    /**
+     * Disagrees with a job application by updating its status and providing a rejection reason.
+     *
+     * @param id           Integer ID of the job application to reject.
+     * @param rejectReason String Reason for rejecting the job application.
+     * @return HttpResult Result of the operation.
+     */
     @Override
     public HttpResult disagreeJobApplication(Integer id, String rejectReason) {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>();
-        jobApplicationUpdateWrapper.set("status", "1")
+        jobApplicationUpdateWrapper
+                .set("status", "1")
                 .set("rejection_reason", rejectReason)
                 .set("approval_time", Timestamp.valueOf(format.format(date)))
                 .eq("application_id", id);
@@ -608,9 +826,23 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "操作失败");
     }
 
+    // 通过求职申请
+    // 会发送邮件提醒学生参加面试相关信息
+
+    /**
+     * Approves a job application, schedules an interview, and sends an email notification to the
+     * student.
+     *
+     * @param id       Integer ID of the job application to approve.
+     * @param date     String Date of the scheduled interview.
+     * @param position String Position for the interview.
+     * @return HttpResult Result of the operation.
+     */
     @Override
     public HttpResult agreeJobApplication(Integer id, String date, String position) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -624,16 +856,28 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         Date time = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        InterviewInfo interviewInfo = new InterviewInfo(null, jobApplication.getStudentId(), jobApplication.getApplicationId(), userId, Timestamp.valueOf(date + ":00"), position, '0', Timestamp.valueOf(simpleDateFormat.format(time)), '0');
+        InterviewInfo interviewInfo =
+                new InterviewInfo(
+                        null,
+                        jobApplication.getStudentId(),
+                        jobApplication.getApplicationId(),
+                        userId,
+                        Timestamp.valueOf(date + ":00"),
+                        position,
+                        '0',
+                        Timestamp.valueOf(simpleDateFormat.format(time)),
+                        '0');
         try {
             interviewInfoDao.insert(interviewInfo);
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "新建面试失败");
         }
         UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>(jobApplication);
-        jobApplicationUpdateWrapper.set("status", '2').set("approval_time", Timestamp.valueOf(simpleDateFormat.format(time)));
+        jobApplicationUpdateWrapper
+                .set("status", '2')
+                .set("approval_time", Timestamp.valueOf(simpleDateFormat.format(time)));
         jobApplicationDao.update(null, jobApplicationUpdateWrapper);
-        //给学生发邮箱提醒
+        // 给学生发邮箱提醒
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
         recruitmentInfoQueryWrapper.eq("recruitment_id", jobApplication.getRecruitmentId());
         RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
@@ -647,28 +891,58 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "学生信息不存在");
         }
         EmailVerification emailVerification = new EmailVerification();
-        String content = "您于" + jobApplication.getApplicationTime()
-                + "向" + recruitmentInfo.getCompanyName()
-                + "的" + department.getName()
-                + "申请" + recruitmentInfo.getJobTitle()
-                + "的简历已经通过，面试将在" + date
-                + "于" + interviewInfo.getPosition()
-                + "进行,请按时参加。";
+        String content =
+                "您于"
+                        + jobApplication.getApplicationTime()
+                        + "向"
+                        + recruitmentInfo.getCompanyName()
+                        + "的"
+                        + department.getName()
+                        + "申请"
+                        + recruitmentInfo.getJobTitle()
+                        + "的简历已经通过，面试将在"
+                        + date
+                        + "于"
+                        + interviewInfo.getPosition()
+                        + "进行,请按时参加。";
         if (!emailVerification.interviewReminderService(user.getAccount(), content)) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "邮件发送失败");
         }
         return HttpResult.success();
     }
 
+    // 创建招聘宣讲会
+
+    /**
+     * Creates a career fair event with specific details.
+     *
+     * @param title      String Title of the career fair.
+     * @param content    String Content or description of the event.
+     * @param startTime  Timestamp Start time of the event.
+     * @param endTime    Timestamp End time of the event.
+     * @param location   String Location where the event will be held.
+     * @param host       String Host or organizer of the event.
+     * @param schoolName String Name of the school associated with the event.
+     * @return HttpResult Result of the operation.
+     */
     @Override
-    public HttpResult createFair(String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName) {
+    public HttpResult createFair(
+            String title,
+            String content,
+            Timestamp startTime,
+            Timestamp endTime,
+            String location,
+            String host,
+            String schoolName) {
         QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
         schoolQueryWrapper.eq("school_name", schoolName);
         School school = schoolDao.selectOne(schoolQueryWrapper);
         if (Objects.isNull(school)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "学校不存在");
         }
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -677,7 +951,20 @@ public class EnterpriseImpl implements EnterpriseService {
         QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
         enterpriseUserQueryWrapper.eq("user_id", userId);
         EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
-        CareerFair careerFair = new CareerFair(null, userId, school.getSchoolId(), enterpriseUser.getEnterpriseId(), startTime, endTime, location, host, "0", title, content, null);
+        CareerFair careerFair =
+                new CareerFair(
+                        null,
+                        userId,
+                        school.getSchoolId(),
+                        enterpriseUser.getEnterpriseId(),
+                        startTime,
+                        endTime,
+                        location,
+                        host,
+                        "0",
+                        title,
+                        content,
+                        null);
         try {
             careerFairDao.insert(careerFair);
         } catch (Exception e) {
@@ -686,21 +973,69 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(title, "创建成功");
     }
 
+    // 查询宣讲会
+
+    /**
+     * Queries career fair events based on specific parameters like host, location, school name, date,
+     * and code.
+     *
+     * @param host       String Name of the host or organizer.
+     * @param location   String Location where the career fair will be held.
+     * @param schoolName String Name of the school associated with the career fair.
+     * @param date       Timestamp Date of the career fair.
+     * @param code       Integer Code related to the career fair.
+     * @param current    Integer Current page number for pagination.
+     * @return HttpResult Result of the query operation.
+     */
     @Override
-    public HttpResult queryFair(String host, String location, String schoolName, Timestamp date, Integer code, Integer current) {
+    public HttpResult queryFair(
+            String host,
+            String location,
+            String schoolName,
+            Timestamp date,
+            Integer code,
+            Integer current) {
         Page<EnterpriseFairVo> page = new Page<>(current, 7);
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         int userId = loginUser.getUser().getUserId();
-        return HttpResult.success(enterpriseUserDao.queryFair(page, host, location, schoolName, date, code, userId), "查询成功");
+        return HttpResult.success(
+                enterpriseUserDao.queryFair(page, host, location, schoolName, date, code, userId), "查询成功");
     }
 
+    // 修改宣讲会
+
+    /**
+     * Modifies details of a career fair event.
+     *
+     * @param id         Integer ID of the career fair to be updated.
+     * @param title      String Title of the career fair.
+     * @param content    String Content or description of the career fair.
+     * @param startTime  Timestamp Start time of the career fair.
+     * @param endTime    Timestamp End time of the career fair.
+     * @param location   String Location where the career fair will be held.
+     * @param host       String Host or organizer of the career fair.
+     * @param schoolName String Name of the school associated with the career fair.
+     * @return HttpResult Result of the update operation.
+     */
     @Override
-    public HttpResult updateFair(Integer id, String title, String content, Timestamp startTime, Timestamp endTime, String location, String host, String schoolName) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+    public HttpResult updateFair(
+            Integer id,
+            String title,
+            String content,
+            Timestamp startTime,
+            Timestamp endTime,
+            String location,
+            String host,
+            String schoolName) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -722,13 +1057,35 @@ public class EnterpriseImpl implements EnterpriseService {
         enterpriseUserQueryWrapper.eq("user_id", userId);
         EnterpriseUser enterpriseUser = enterpriseUserDao.selectOne(enterpriseUserQueryWrapper);
         try {
-            careerFairDao.update(new CareerFair(null, null, school.getSchoolId(), null, startTime, endTime, location, host, null, title, content, null), careerFairUpdateWrapper);
+            careerFairDao.update(
+                    new CareerFair(
+                            null,
+                            null,
+                            school.getSchoolId(),
+                            null,
+                            startTime,
+                            endTime,
+                            location,
+                            host,
+                            null,
+                            title,
+                            content,
+                            null),
+                    careerFairUpdateWrapper);
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
         }
         return HttpResult.success(null, "修改成功");
     }
 
+    // 删除宣讲会
+
+    /**
+     * Deletes a career fair event by its ID.
+     *
+     * @param id Integer ID of the career fair to be deleted.
+     * @return HttpResult Result of the deletion operation.
+     */
     @Override
     public HttpResult deleteFair(Integer id) {
         QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
@@ -739,9 +1096,18 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "对象不存在");
     }
 
+    // 获取本账号当前信息
+
+    /**
+     * Retrieves current account information associated with the logged-in user.
+     *
+     * @return HttpResult Result containing the queried account information.
+     */
     @Override
     public HttpResult queryInfo() {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -750,9 +1116,30 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(enterpriseUserDao.queryInfo(userId), "查询成功");
     }
 
+    // 更新账号信息
+
+    /**
+     * Updates account information for the logged-in user.
+     *
+     * @param avatar           MultipartFile Avatar or profile picture of the user.
+     * @param name             String Name of the user.
+     * @param birthday         java.sql.Date Birthday of the user.
+     * @param age              Integer Age of the user.
+     * @param gender           String Gender of the user.
+     * @param graduationSchool String Name of the user's graduation school.
+     * @return HttpResult Result of the information update operation.
+     */
     @Override
-    public HttpResult updateInfo(MultipartFile avatar, String name, java.sql.Date birthday, Integer age, String gender, String graduationSchool) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+    public HttpResult updateInfo(
+            MultipartFile avatar,
+            String name,
+            java.sql.Date birthday,
+            Integer age,
+            String gender,
+            String graduationSchool) {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -761,7 +1148,20 @@ public class EnterpriseImpl implements EnterpriseService {
         UpdateWrapper<EnterpriseUser> enterpriseUserUpdateWrapper = new UpdateWrapper<>();
         enterpriseUserUpdateWrapper.eq("user_id", userId);
         try {
-            if (enterpriseUserDao.update(new EnterpriseUser(null, null, name, age, birthday, gender, graduationSchool, null, null, avatar.getBytes()), enterpriseUserUpdateWrapper) > 0) {
+            if (enterpriseUserDao.update(
+                    new EnterpriseUser(
+                            null,
+                            null,
+                            name,
+                            age,
+                            birthday,
+                            gender,
+                            graduationSchool,
+                            null,
+                            null,
+                            avatar.getBytes()),
+                    enterpriseUserUpdateWrapper)
+                    > 0) {
                 return HttpResult.success();
             }
         } catch (Exception e) {
@@ -770,18 +1170,46 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "修改失败");
     }
 
+    // 查询面试信息
+    // 可以通过日期、学校、
+
+    /**
+     * Queries interview information based on provided parameters such as date, school, and status
+     * code.
+     *
+     * @param date    String Date to filter interviews (format: "YYYY-MM-DD").
+     * @param school  String School name to filter interviews.
+     * @param code    Integer Status code to filter interviews.
+     * @param current Integer Current page number for pagination.
+     * @return HttpResult Result containing the queried interview information.
+     */
     @Override
     public HttpResult queryInterview(String date, String school, Integer code, Integer current) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
         int userId = loginUser.getUser().getUserId();
         Page<EnterpriseInterviewVo> page = new Page<>(current, 7);
-        return HttpResult.success(enterpriseUserDao.queryInterview(page, userId, date.isEmpty() ? null : Timestamp.valueOf(date + " 00:00:00"), school, code), "查询成功");
+        return HttpResult.success(
+                enterpriseUserDao.queryInterview(
+                        page,
+                        userId,
+                        date.isEmpty() ? null : Timestamp.valueOf(date + " 00:00:00"),
+                        school,
+                        code),
+                "查询成功");
     }
 
+    /**
+     * Deletes an interview record by its ID.
+     *
+     * @param id Integer ID of the interview to be deleted.
+     * @return HttpResult Result of the deletion operation.
+     */
     @Override
     public HttpResult deleteInterview(Integer id) {
         QueryWrapper<InterviewInfo> interviewInfoQueryWrapper = new QueryWrapper<>();
@@ -792,9 +1220,17 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "删除失败");
     }
 
+    /**
+     * Approves an interview by changing its status to '1' (approved).
+     *
+     * @param id Integer ID of the interview to be approved.
+     * @return HttpResult Result of the approval operation.
+     */
     @Override
     public HttpResult agreeInterview(Integer id) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -803,16 +1239,28 @@ public class EnterpriseImpl implements EnterpriseService {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         UpdateWrapper<InterviewInfo> interviewInfoUpdateWrapper = new UpdateWrapper<>();
-        interviewInfoUpdateWrapper.eq("interview_id", id).set("status", "1").set("principal_id", userId).set("time", Timestamp.valueOf(format.format(date)));
+        interviewInfoUpdateWrapper
+                .eq("interview_id", id)
+                .set("status", "1")
+                .set("principal_id", userId)
+                .set("time", Timestamp.valueOf(format.format(date)));
         if (interviewInfoDao.update(null, interviewInfoUpdateWrapper) > 0) {
             return HttpResult.success(id, "审核成功");
         }
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "审核失败");
     }
 
+    /**
+     * Disapproves an interview by changing its status to '2' (disapproved).
+     *
+     * @param id Integer ID of the interview to be disapproved.
+     * @return HttpResult Result of the disapproval operation.
+     */
     @Override
     public HttpResult disagreeInterview(Integer id) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         if (Objects.isNull(loginUser)) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -821,13 +1269,22 @@ public class EnterpriseImpl implements EnterpriseService {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         UpdateWrapper<InterviewInfo> interviewInfoUpdateWrapper = new UpdateWrapper<>();
-        interviewInfoUpdateWrapper.eq("interview_id", id).set("status", "2").set("principal_id", userId).set("time", Timestamp.valueOf(format.format(date)));
+        interviewInfoUpdateWrapper
+                .eq("interview_id", id)
+                .set("status", "2")
+                .set("principal_id", userId)
+                .set("time", Timestamp.valueOf(format.format(date)));
         if (interviewInfoDao.update(null, interviewInfoUpdateWrapper) > 0) {
             return HttpResult.success(id, "审核成功");
         }
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "审核失败");
     }
 
+    /**
+     * Analyzes job applications by department, counting the number of applications per department.
+     *
+     * @return HttpResult Result containing the analysis data grouped by department.
+     */
     @Override
     public HttpResult applicationAnalysisByDepartment() {
         Map<String, Integer> map = new HashMap<>();
@@ -848,6 +1305,11 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes job applications by school, counting the number of applications per school.
+     *
+     * @return HttpResult Result containing the analysis data grouped by school.
+     */
     @Override
     public HttpResult applicationAnalysisBySchool() {
         Map<String, Integer> map = new HashMap<>();
@@ -868,6 +1330,12 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes job applications by pass status, counting the number of applications that are passed
+     * or not passed.
+     *
+     * @return HttpResult Result containing the analysis data grouped by pass status.
+     */
     @Override
     public HttpResult applicationAnalysisByPass() {
         Map<String, Integer> map = new HashMap<>();
@@ -880,6 +1348,12 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes career fairs by month for a given year, counting the number of fairs held each month.
+     *
+     * @param year String representing the year for which analysis is performed.
+     * @return HttpResult Result containing the analysis data grouped by month for the given year.
+     */
     @Override
     public HttpResult fairAnalysisByMon(String year) {
         Map<String, Integer> map = new HashMap<>();
@@ -908,6 +1382,13 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes career fairs by school and month, counting the number of fairs held per school for a
+     * specific month. If no specific month is provided, it analyzes all months.
+     *
+     * @param mon String representing the month for which analysis is performed.
+     * @return HttpResult Result containing the analysis data grouped by school for the given month.
+     */
     @Override
     public HttpResult fairAnalysisBySchool(String mon) {
         Map<String, Integer> map = new HashMap<>();
@@ -929,6 +1410,12 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes career fairs by their pass status, counting the number of fairs that are passed or not
+     * passed.
+     *
+     * @return HttpResult Result containing the analysis data grouped by pass status of career fairs.
+     */
     @Override
     public HttpResult fairAnalysisByPass() {
         Map<String, Integer> map = new HashMap<>();
@@ -941,6 +1428,14 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes interviews by month for a given year, counting the number of interviews held each
+     * month.
+     *
+     * @param year String representing the year for which analysis is performed.
+     * @return HttpResult Result containing the analysis data grouped by month for interviews in the
+     * given year.
+     */
     @Override
     public HttpResult interviewAnalysisByMon(String year) {
         Map<String, Integer> map = new HashMap<>();
@@ -967,6 +1462,12 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes interviews by their pass status, counting the number of interviews that are passed or
+     * not passed.
+     *
+     * @return HttpResult Result containing the analysis data grouped by pass status of interviews.
+     */
     @Override
     public HttpResult interviewAnalysisByPass() {
         Map<String, Integer> map = new HashMap<>();
@@ -979,9 +1480,18 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes interviews by department within the enterprise, counting the number of interviews
+     * held, the number of interviews passed, and the number of interviews not passed in each
+     * department.
+     *
+     * @return HttpResult Result containing the analysis data grouped by department in the enterprise.
+     */
     @Override
     public HttpResult interviewAnalysisByDepartment() {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int userId = loginUser.getUser().getUserId();
         QueryWrapper<EnterpriseUser> enterpriseUserQueryWrapper = new QueryWrapper<>();
@@ -994,18 +1504,24 @@ public class EnterpriseImpl implements EnterpriseService {
             QueryWrapper<JobApplication> jobApplicationQueryWrapper = new QueryWrapper<>();
             jobApplicationQueryWrapper.eq("application_id", interviewInfo.getApplicationId());
             QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
-            recruitmentInfoQueryWrapper.eq("recruitment_id", jobApplicationDao.selectOne(jobApplicationQueryWrapper).getRecruitmentId());
+            recruitmentInfoQueryWrapper.eq(
+                    "recruitment_id",
+                    jobApplicationDao.selectOne(jobApplicationQueryWrapper).getRecruitmentId());
             RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
             if (recruitmentInfo.getEnterpriseId().equals(enterpriseUser.getEnterpriseId())) {
                 QueryWrapper<Department> departmentQueryWrapper = new QueryWrapper<>();
                 departmentQueryWrapper.eq("department_id", recruitmentInfo.getDepartmentId());
                 Department department = departmentDao.selectOne(departmentQueryWrapper);
                 if (!map.containsKey(department.getName())) {
-                    map.put(department.getName(), new HashMap<>() {{
-                        put("面试数量", 0);
-                        put("通过数", 0);
-                        put("不通过数", 0);
-                    }});
+                    map.put(
+                            department.getName(),
+                            new HashMap<>() {
+                                {
+                                    put("面试数量", 0);
+                                    put("通过数", 0);
+                                    put("不通过数", 0);
+                                }
+                            });
                 }
                 Map<String, Integer> inner = map.get(department.getName());
                 inner.put("面试数量", inner.get("面试数量") + 1);
@@ -1021,6 +1537,13 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes recruitment information by its pass status, counting the number of recruitments that
+     * are passed or not passed.
+     *
+     * @return HttpResult Result containing the analysis data grouped by pass status of recruitment
+     * information.
+     */
     @Override
     public HttpResult recruitmentAnalysisByPass() {
         Map<String, Integer> map = new HashMap<>();
@@ -1033,12 +1556,19 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes recruitment information by city, counting the number of recruitments in each city that
+     * have been marked as passed.
+     *
+     * @return HttpResult Result containing the analysis data grouped by city for passed recruitments.
+     */
     @Override
     public HttpResult recruitmentAnalysisByCity() {
         Map<String, Integer> map = new HashMap<>();
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
         recruitmentInfoQueryWrapper.eq("status", "2");
-        List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
+        List<RecruitmentInfo> recruitmentInfoList =
+                recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
         for (RecruitmentInfo recruitmentInfo : recruitmentInfoList) {
             if (map.containsKey(recruitmentInfo.getCity())) {
                 map.put(recruitmentInfo.getCity(), map.get(recruitmentInfo.getCity()) + 1);
@@ -1049,6 +1579,13 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Analyzes recruitment information by maximum salary range, categorizing recruitments based on
+     * their maximum salary values.
+     *
+     * @return HttpResult Result containing the analysis data grouped by maximum salary range for
+     * passed recruitments.
+     */
     @Override
     public HttpResult recruitmentAnalysisByMaxSalary() {
         Map<String, Integer> map = new HashMap<>();
@@ -1058,7 +1595,8 @@ public class EnterpriseImpl implements EnterpriseService {
         map.put("30k以上", 0);
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
         recruitmentInfoQueryWrapper.eq("status", "2");
-        List<RecruitmentInfo> recruitmentInfoList = recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
+        List<RecruitmentInfo> recruitmentInfoList =
+                recruitmentInfoDao.selectList(recruitmentInfoQueryWrapper);
         for (RecruitmentInfo recruitmentInfo : recruitmentInfoList) {
             if (recruitmentInfo.getMaxSalary() < 10) {
                 map.put("10k以下", map.get("10k以下") + 1);
@@ -1073,18 +1611,36 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(map, "查询成功");
     }
 
+    /**
+     * Queries the list of sent messages for the currently logged-in enterprise user.
+     *
+     * @param current Integer value indicating the current page for pagination.
+     * @return HttpResult Result containing the list of sent messages for the logged-in enterprise
+     * user.
+     */
     @Override
     public HttpResult querySentMessageList(Integer current) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int userId = loginUser.getUser().getUserId();
         Page<EnterpriseSentMessageVo> page = new Page<>(current, 10);
         return HttpResult.success(enterpriseUserDao.querySentMessage(page, userId), "查询成功");
     }
 
+    /**
+     * Queries a specific sent message for the currently logged-in enterprise user.
+     *
+     * @param id Integer value indicating the ID of the message to be queried.
+     * @return HttpResult Result containing the details of the queried sent message for the logged-in
+     * enterprise user.
+     */
     @Override
     public HttpResult querySentMessage(Integer id) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int userId = loginUser.getUser().getUserId();
         QueryWrapper<Message> messageQueryWrapper = new QueryWrapper<>();
@@ -1093,9 +1649,18 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(messageDao.selectOne(messageQueryWrapper), "查询成功");
     }
 
+    /**
+     * Deletes a sent message by setting the 'enterprise_del' flag to 1, indicating deletion by the
+     * enterprise user.
+     *
+     * @param id Integer value indicating the ID of the message to be deleted.
+     * @return HttpResult Result indicating the success or failure of the deletion operation.
+     */
     @Override
     public HttpResult deleteSentMessage(Integer id) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int userId = loginUser.getUser().getUserId();
         UpdateWrapper<Message> messageQueryWrapper = new UpdateWrapper<>();
@@ -1107,9 +1672,17 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "删除失败");
     }
 
+    /**
+     * Queries the list of recent contacts for the currently logged-in enterprise user.
+     *
+     * @return HttpResult Result containing a list of recent contacts based on the latest messages
+     * sent by the user.
+     */
     @Override
     public HttpResult queryRecentContacts() {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int userId = loginUser.getUser().getUserId();
         QueryWrapper<Message> messageQueryWrapper = new QueryWrapper<>();
@@ -1124,9 +1697,21 @@ public class EnterpriseImpl implements EnterpriseService {
         return HttpResult.success(accountList, "查询成功");
     }
 
+    /**
+     * Sends a message from the currently logged-in enterprise user to another user identified by
+     * their account.
+     *
+     * @param account String value indicating the account of the recipient user.
+     * @param type    String value indicating the type of message being sent.
+     * @param title   String value indicating the title of the message.
+     * @param content String value indicating the content of the message.
+     * @return HttpResult Result indicating the success or failure of the sending operation.
+     */
     @Override
     public HttpResult sendMessage(String account, String type, String title, String content) {
-        UsernamePasswordAuthenticationToken authenticationToken = (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         int userId = loginUser.getUser().getUserId();
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
@@ -1137,7 +1722,18 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Message message = new Message(null, userId, user.getUserId(), title, content, format.format(date), "0", type, "0", "0");
+        Message message =
+                new Message(
+                        null,
+                        userId,
+                        user.getUserId(),
+                        title,
+                        content,
+                        format.format(date),
+                        "0",
+                        type,
+                        "0",
+                        "0");
         try {
             messageDao.insert(message);
         } catch (Exception e) {

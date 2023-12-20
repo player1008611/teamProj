@@ -13,10 +13,13 @@ import lombok.NoArgsConstructor;
 public class Message {
     @TableId(type = IdType.AUTO)
     Integer messageId;
+
     @TableField(value = "`from`")
     Integer from;
+
     @TableField(value = "`to`")
     Integer to;
+
     String title;
     String content;
     String time;

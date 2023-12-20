@@ -10,7 +10,8 @@ public interface AdministratorService {
 
     HttpResult queryHome();
 
-    HttpResult queryStudent(String name, String schoolName, Character status, Integer current, Integer size);
+    HttpResult queryStudent(
+            String name, String schoolName, Character status, Integer current, Integer size);
 
     HttpResult resetStudentPassword(String account);
 
@@ -22,11 +23,13 @@ public interface AdministratorService {
 
     HttpResult queryEnterprise(String name, Integer current, Integer size);
 
-    HttpResult queryEnterpriseUser(String enterpriseName, String userName, Integer current, Integer size);
+    HttpResult queryEnterpriseUser(
+            String enterpriseName, String userName, Integer current, Integer size);
 
     HttpResult createNewEnterprise(String name, String url);
 
-    HttpResult createNewEnterpriseUser(String account, String enterpriseName, String name, String tel);
+    HttpResult createNewEnterpriseUser(
+            String account, String enterpriseName, String name, String tel);
 
     HttpResult resetEnterpriseUserPassword(String account);
 
@@ -48,11 +51,18 @@ public interface AdministratorService {
 
     HttpResult deleteSchoolUser(String account);
 
-    HttpResult queryRecruitmentInfo(String companyName, String departmentName, String jobTitle, Integer current, Integer size);
+    HttpResult queryRecruitmentInfo(
+            String companyName, String departmentName, String jobTitle, Integer current, Integer size);
 
-    HttpResult auditRecruitmentInfo(String enterpriseName, String departmentName, String jobTitle, String status, String rejectReason);
+    HttpResult auditRecruitmentInfo(
+            String enterpriseName,
+            String departmentName,
+            String jobTitle,
+            String status,
+            String rejectReason);
 
-    HttpResult createAnnouncement(String title, MultipartFile cover, String category, String content, MultipartFile data);
+    HttpResult createAnnouncement(
+            String title, MultipartFile cover, String category, String content, MultipartFile data);
 
     HttpResult deleteAnnouncement(Integer id);
 

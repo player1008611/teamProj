@@ -2,7 +2,6 @@ package com.teamProj.entity.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.*;
 
@@ -12,13 +11,14 @@ public class SchoolApplicationData {
 
     @Data
     @AllArgsConstructor
-    public static class CollegeApplicationData{
+    public static class CollegeApplicationData {
         Integer studentNum;
-        Map<String,Integer> enterprise;
-        Map<String,Integer> city;
-        Map<String,MajorApplicationData> major;
+        Map<String, Integer> enterprise;
+        Map<String, Integer> city;
+        Map<String, MajorApplicationData> major;
         Integer total;
-        public CollegeApplicationData(){
+
+        public CollegeApplicationData() {
             setStudentNum(0);
             setEnterprise(new HashMap<>());
             setCity(new HashMap<>());
@@ -28,24 +28,26 @@ public class SchoolApplicationData {
 
     @Data
     @AllArgsConstructor
-    public static class MajorApplicationData{
+    public static class MajorApplicationData {
         Integer studentNum;
-        Map<String,Integer> enterprise;
-        Map<String,Integer> city;
+        Map<String, Integer> enterprise;
+        Map<String, Integer> city;
         Integer total;
-        public MajorApplicationData(){
+
+        public MajorApplicationData() {
             setStudentNum(0);
             setCity(new HashMap<>());
             setEnterprise(new HashMap<>());
         }
     }
+
     Integer total;
     Integer studentNum;
-    Map<String,Integer> enterprise;
-    Map<String,Integer> city;
-    Map<String,CollegeApplicationData> college;
+    Map<String, Integer> enterprise;
+    Map<String, Integer> city;
+    Map<String, CollegeApplicationData> college;
 
-    public SchoolApplicationData(){
+    public SchoolApplicationData() {
         setStudentNum(0);
         setCollege(new HashMap<>());
         setEnterprise(new HashMap<>());
@@ -69,8 +71,4 @@ public class SchoolApplicationData {
 
         return sortedMap;
     }
-
 }
-
-
-

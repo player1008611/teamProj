@@ -13,9 +13,10 @@ import javax.annotation.Resource;
 public class SchoolController {
     @Resource
     SchoolService schoolService;
+
     @PostMapping("/login")
     HttpResult schoolLogin(@RequestParam String account, @RequestParam String password) {
-        return schoolService.schoolLogin(account,password);
+        return schoolService.schoolLogin(account, password);
     }
 
     @PostMapping("/logout")
@@ -32,12 +33,13 @@ public class SchoolController {
 
     @GetMapping("/queryStudent")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult queryStudent(@RequestParam(value = "name", required = false) String name
-                            ,@RequestParam(value = "majorId",required = false) Integer majorId
-            , @RequestParam(value = "status", required = false) Character status
-            , @RequestParam(value = "current") Integer current
-            , @RequestParam(value = "size") Integer size) {
-        return schoolService.queryStudent(name,majorId, status, current, size);
+    HttpResult queryStudent(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "majorId", required = false) Integer majorId,
+            @RequestParam(value = "status", required = false) Character status,
+            @RequestParam(value = "current") Integer current,
+            @RequestParam(value = "size") Integer size) {
+        return schoolService.queryStudent(name, majorId, status, current, size);
     }
 
     @PatchMapping("/resetStudentPassword")
@@ -66,9 +68,10 @@ public class SchoolController {
 
     @GetMapping("/College/query")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult queryCollege(@RequestParam(value = "name", required = false) String name
-            , @RequestParam(value = "current") Integer current
-            , @RequestParam(value = "size") Integer size) {
+    HttpResult queryCollege(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "current") Integer current,
+            @RequestParam(value = "size") Integer size) {
         return schoolService.queryCollege(name, current, size);
     }
 
@@ -92,16 +95,19 @@ public class SchoolController {
 
     @GetMapping("/Major/query")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult queryMajor(@RequestParam(value = "name", required = false) String name
-            , @RequestParam(value = "current") Integer current
-            , @RequestParam(value = "size") Integer size
-            , @RequestParam(value = "collegeId") Integer collegeId) {
+    HttpResult queryMajor(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "current") Integer current,
+            @RequestParam(value = "size") Integer size,
+            @RequestParam(value = "collegeId") Integer collegeId) {
         return schoolService.queryMajor(name, current, size, collegeId);
     }
 
     @PostMapping("/Major/create")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult createMajor(@RequestParam(value = "name") String name, @RequestParam(value = "collegeId") Integer collegeId) {
+    HttpResult createMajor(
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "collegeId") Integer collegeId) {
         return schoolService.createMajor(name, collegeId);
     }
 
@@ -113,26 +119,29 @@ public class SchoolController {
 
     @PatchMapping("/Major/edit")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult editMajor(@RequestParam(value = "majorId") Integer majorId, @RequestParam(value = "name") String name) {
+    HttpResult editMajor(
+            @RequestParam(value = "majorId") Integer majorId, @RequestParam(value = "name") String name) {
         return schoolService.editMajor(majorId, name);
     }
 
     @PatchMapping("/auditCareerFair")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult auditCareerFair(@RequestParam(value = "careerFairId") Integer careerFairId
-            , @RequestParam(value = "status") String status
-            , @RequestParam(value ="reason",required = false) String reason) {
-        if(status.equals("2")&&reason==null){
-            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR,"请填写拒绝理由");
+    HttpResult auditCareerFair(
+            @RequestParam(value = "careerFairId") Integer careerFairId,
+            @RequestParam(value = "status") String status,
+            @RequestParam(value = "reason", required = false) String reason) {
+        if (status.equals("2") && reason == null) {
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "请填写拒绝理由");
         }
         return schoolService.auditCareerFair(careerFairId, status, reason);
     }
 
     @GetMapping("/queryCareerFair")
     @PreAuthorize("hasAuthority('school')")
-    HttpResult queryCareerFair(@RequestParam(value = "name", required = false) String name
-            , @RequestParam(value = "current") Integer current
-            , @RequestParam(value = "size") Integer size) {
+    HttpResult queryCareerFair(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "current") Integer current,
+            @RequestParam(value = "size") Integer size) {
         return schoolService.queryCareerFair(name, current, size);
     }
 

@@ -21,12 +21,9 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.teamProj"))
                 .paths(PathSelectors.any())
                 .build();
-
     }
 
     private ApiInfo apiInfo() {
-        return new ApiInfoBuilder().title("团队项目接口文档")
-                .version("1.0").build();
+        return new ApiInfoBuilder().title("团队项目接口文档").version("1.0").build();
     }
-
 }

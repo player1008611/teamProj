@@ -11,15 +11,15 @@ import java.util.List;
 
 @Mapper
 public interface RecruitmentInfoDao extends BaseMapper<RecruitmentInfo> {
-    List<MarkRecruitmentVo> queryMarkedRecruitment(@Param("queryInfo") String queryInfo,
-                                                   @Param("maxSalary") String maxSalary,
-                                                   @Param("minSalary") String minSalary,
-                                                   @Param("userId") Integer userId
-    );
+    List<MarkRecruitmentVo> queryMarkedRecruitment(
+            @Param("queryInfo") String queryInfo,
+            @Param("maxSalary") String maxSalary,
+            @Param("minSalary") String minSalary,
+            @Param("userId") Integer userId);
 
-    List<RecruitmentVo> queryRecruitmentInfo(@Param("queryInfo") String queryInfo,
-                                             @Param("maxSalary") String maxSalary,
-                                             @Param("minSalary") String minSalary,
-                                             @Param("userId") Integer userId
-    );
+    List<RecruitmentVo> queryRecruitmentInfo(
+            @Param("queryInfo") String queryInfo,
+            @Param("maxSalary") String maxSalary,
+            @Param("minSalary") String minSalary,
+            @Param("userId") Integer userId);
 }

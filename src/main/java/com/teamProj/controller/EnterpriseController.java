@@ -4,14 +4,7 @@ import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.service.EnterpriseService;
 import com.teamProj.utils.HttpResult;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -63,7 +56,8 @@ public class EnterpriseController {
 
     @PatchMapping("/enterpriseChangePassword")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult enterpriseChangePassword(@RequestParam String newPassword, @RequestParam String oldPassword) {
+    HttpResult enterpriseChangePassword(
+            @RequestParam String newPassword, @RequestParam String oldPassword) {
         return enterpriseService.enterpriseChangePassword(newPassword, oldPassword);
     }
 
@@ -87,46 +81,51 @@ public class EnterpriseController {
 
     @PostMapping("/createNewRecruitmentInfo")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult createNewRecruitmentInfo(@RequestParam String departmentName
-            , @RequestParam String jobTitle
-            , @RequestParam String jobDescription
-            , @RequestParam String city
-            , @RequestParam Integer recruitNum
-            , @RequestParam String byword
-            , @RequestParam String jobDuties
-            , @RequestParam Integer minSalary
-            , @RequestParam Integer maxSalary
-            , @RequestParam Character status
-            , @RequestParam(required = false) String draftName) {
-        RecruitmentInfo recruitmentInfo = new RecruitmentInfo(null
-                , null
-                , null
-                , jobTitle
-                , jobDescription
-                , null
-                , null
-                , city
-                , status
-                , null
-                , null
-                , null
-                , recruitNum
-                , null
-                , byword
-                , jobDuties
-                , minSalary
-                , maxSalary);
+    HttpResult createNewRecruitmentInfo(
+            @RequestParam String departmentName,
+            @RequestParam String jobTitle,
+            @RequestParam String jobDescription,
+            @RequestParam String city,
+            @RequestParam Integer recruitNum,
+            @RequestParam String byword,
+            @RequestParam String jobDuties,
+            @RequestParam Integer minSalary,
+            @RequestParam Integer maxSalary,
+            @RequestParam Character status,
+            @RequestParam(required = false) String draftName) {
+        RecruitmentInfo recruitmentInfo =
+                new RecruitmentInfo(
+                        null,
+                        null,
+                        null,
+                        jobTitle,
+                        jobDescription,
+                        null,
+                        null,
+                        city,
+                        status,
+                        null,
+                        null,
+                        null,
+                        recruitNum,
+                        null,
+                        byword,
+                        jobDuties,
+                        minSalary,
+                        maxSalary);
         return enterpriseService.createNewRecruitmentInfo(draftName, departmentName, recruitmentInfo);
     }
 
     @GetMapping("/queryRecruitmentInfo")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult queryRecruitmentInfo(@RequestParam(required = false) String city
-            , @RequestParam(required = false) String salaryRange
-            , @RequestParam String departmentName
-            , @RequestParam Integer statusNum
-            , @RequestParam Integer current) {
-        return enterpriseService.queryRecruitmentInfo(city, salaryRange, departmentName, statusNum, current);
+    HttpResult queryRecruitmentInfo(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String salaryRange,
+            @RequestParam String departmentName,
+            @RequestParam Integer statusNum,
+            @RequestParam Integer current) {
+        return enterpriseService.queryRecruitmentInfo(
+                city, salaryRange, departmentName, statusNum, current);
     }
 
     @GetMapping("queryRecruitmentInfoByDraft")
@@ -137,41 +136,45 @@ public class EnterpriseController {
 
     @DeleteMapping("/deleteRecruitmentInfo")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult deleteRecruitmentInfo(@RequestParam String departmentName, @RequestParam String jobTitle) {
+    HttpResult deleteRecruitmentInfo(
+            @RequestParam String departmentName, @RequestParam String jobTitle) {
         return enterpriseService.deleteRecruitmentInfo(departmentName, jobTitle);
     }
 
     @PutMapping("/updateDraft")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult updateDraft(@RequestParam String oldDraftName
-            , @RequestParam String newDraftName
-            , @RequestParam String jobTitle
-            , @RequestParam String jobDescription
-            , @RequestParam String city
-            , @RequestParam Integer recruitNum
-            , @RequestParam String byword
-            , @RequestParam String jobDuties
-            , @RequestParam Integer minSalary
-            , @RequestParam Integer maxSalary
-            , @RequestParam Character status) {
-        RecruitmentInfo recruitmentInfo = new RecruitmentInfo(null
-                , null
-                , null
-                , jobTitle
-                , jobDescription
-                , null
-                , null
-                , city
-                , status
-                , null
-                , null
-                , null
-                , recruitNum
-                , null
-                , byword
-                , jobDuties
-                , minSalary
-                , maxSalary);
+    HttpResult updateDraft(
+            @RequestParam String oldDraftName,
+            @RequestParam String newDraftName,
+            @RequestParam String jobTitle,
+            @RequestParam String jobDescription,
+            @RequestParam String city,
+            @RequestParam Integer recruitNum,
+            @RequestParam String byword,
+            @RequestParam String jobDuties,
+            @RequestParam Integer minSalary,
+            @RequestParam Integer maxSalary,
+            @RequestParam Character status) {
+        RecruitmentInfo recruitmentInfo =
+                new RecruitmentInfo(
+                        null,
+                        null,
+                        null,
+                        jobTitle,
+                        jobDescription,
+                        null,
+                        null,
+                        city,
+                        status,
+                        null,
+                        null,
+                        null,
+                        recruitNum,
+                        null,
+                        byword,
+                        jobDuties,
+                        minSalary,
+                        maxSalary);
         return enterpriseService.updateDraft(oldDraftName, newDraftName, recruitmentInfo);
     }
 
@@ -189,18 +192,20 @@ public class EnterpriseController {
 
     @GetMapping("/queryJobApplication")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult queryJobApplication(@RequestParam(required = false) String schoolName
-            , @RequestParam(required = false) String departmentName
-            , @RequestParam(required = false) Integer code
-            , @RequestParam Integer current) {
+    HttpResult queryJobApplication(
+            @RequestParam(required = false) String schoolName,
+            @RequestParam(required = false) String departmentName,
+            @RequestParam(required = false) Integer code,
+            @RequestParam Integer current) {
         return enterpriseService.queryJobApplication(schoolName, departmentName, code, current);
     }
 
     @DeleteMapping("/deleteJobApplication")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult deleteJobApplication(@RequestParam String studentAccount
-            , @RequestParam String departmentName
-            , @RequestParam String jobTitle) {
+    HttpResult deleteJobApplication(
+            @RequestParam String studentAccount,
+            @RequestParam String departmentName,
+            @RequestParam String jobTitle) {
         return enterpriseService.deleteJobApplication(studentAccount, departmentName, jobTitle);
     }
 
@@ -212,7 +217,8 @@ public class EnterpriseController {
 
     @PostMapping("/agreeJobApplication")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult agreeJobApplication(@RequestParam Integer id, @RequestParam String date, @RequestParam String position) {
+    HttpResult agreeJobApplication(
+            @RequestParam Integer id, @RequestParam String date, @RequestParam String position) {
         return enterpriseService.agreeJobApplication(id, date, position);
     }
 
@@ -224,24 +230,33 @@ public class EnterpriseController {
 
     @PostMapping("/createFair")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult createFair(@RequestParam String title
-            , @RequestParam String content
-            , @RequestParam String startTime
-            , @RequestParam String endTime
-            , @RequestParam String location
-            , @RequestParam String host
-            , @RequestParam String schoolName) {
-        return enterpriseService.createFair(title, content, Timestamp.valueOf(startTime + ":00"), Timestamp.valueOf(endTime + ":00"), location, host, schoolName);
+    HttpResult createFair(
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String startTime,
+            @RequestParam String endTime,
+            @RequestParam String location,
+            @RequestParam String host,
+            @RequestParam String schoolName) {
+        return enterpriseService.createFair(
+                title,
+                content,
+                Timestamp.valueOf(startTime + ":00"),
+                Timestamp.valueOf(endTime + ":00"),
+                location,
+                host,
+                schoolName);
     }
 
     @GetMapping("/queryFair")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult queryFair(@RequestParam(required = false) String host
-            , @RequestParam(required = false) String location
-            , @RequestParam(required = false) String schoolName
-            , @RequestParam(required = false) String date
-            , @RequestParam(required = false) Integer code
-            , @RequestParam Integer current) {
+    HttpResult queryFair(
+            @RequestParam(required = false) String host,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String schoolName,
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) Integer code,
+            @RequestParam Integer current) {
         Timestamp timestamp = null;
         if (Objects.isNull(date) || date.isEmpty()) {
             timestamp = null;
@@ -253,15 +268,24 @@ public class EnterpriseController {
 
     @PutMapping("/updateFair")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult updateFair(@RequestParam Integer id
-            , @RequestParam String title
-            , @RequestParam String content
-            , @RequestParam String startTime
-            , @RequestParam String endTime
-            , @RequestParam String location
-            , @RequestParam String host
-            , @RequestParam String schoolName) {
-        return enterpriseService.updateFair(id, title, content, Timestamp.valueOf(startTime + ":00"), Timestamp.valueOf(endTime + ":00"), location, host, schoolName);
+    HttpResult updateFair(
+            @RequestParam Integer id,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String startTime,
+            @RequestParam String endTime,
+            @RequestParam String location,
+            @RequestParam String host,
+            @RequestParam String schoolName) {
+        return enterpriseService.updateFair(
+                id,
+                title,
+                content,
+                Timestamp.valueOf(startTime + ":00"),
+                Timestamp.valueOf(endTime + ":00"),
+                location,
+                host,
+                schoolName);
     }
 
     @DeleteMapping("/deleteFair")
@@ -278,26 +302,29 @@ public class EnterpriseController {
 
     @PatchMapping("/updateInfo")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult updateInfo(@RequestParam(required = false) MultipartFile avatar
-            , @RequestParam(required = false) String name
-            , @RequestParam(required = false) String birthday
-            , @RequestParam(required = false) Integer age
-            , @RequestParam(required = false) String gender
-            , @RequestParam(required = false) String graduationSchool) {
-        return enterpriseService.updateInfo(avatar.isEmpty() ? null : avatar
-                , name.isEmpty() ? null : name
-                , birthday.isEmpty() ? null : Date.valueOf(birthday)
-                , age
-                , gender.isEmpty() ? null : gender
-                , graduationSchool.isEmpty() ? null : graduationSchool);
+    HttpResult updateInfo(
+            @RequestParam(required = false) MultipartFile avatar,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String birthday,
+            @RequestParam(required = false) Integer age,
+            @RequestParam(required = false) String gender,
+            @RequestParam(required = false) String graduationSchool) {
+        return enterpriseService.updateInfo(
+                avatar.isEmpty() ? null : avatar,
+                name.isEmpty() ? null : name,
+                birthday.isEmpty() ? null : Date.valueOf(birthday),
+                age,
+                gender.isEmpty() ? null : gender,
+                graduationSchool.isEmpty() ? null : graduationSchool);
     }
 
     @GetMapping("/queryInterview")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult queryInterview(@RequestParam(required = false) String date
-            , @RequestParam(required = false) String school
-            , @RequestParam(required = false) Integer code
-            , @RequestParam Integer current) {
+    HttpResult queryInterview(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) String school,
+            @RequestParam(required = false) Integer code,
+            @RequestParam Integer current) {
         return enterpriseService.queryInterview(date, school, code, current);
     }
 
@@ -367,7 +394,6 @@ public class EnterpriseController {
         return enterpriseService.interviewAnalysisByPass();
     }
 
-
     @GetMapping("/interviewAnalysisByDepartment")
     @PreAuthorize("hasAuthority('enterprise')")
     HttpResult interviewAnalysisByDepartment() {
@@ -418,7 +444,11 @@ public class EnterpriseController {
 
     @PostMapping("/sendMessage")
     @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult sendMessage(@RequestParam String account, @RequestParam String type, @RequestParam String title, @RequestParam String content) {
+    HttpResult sendMessage(
+            @RequestParam String account,
+            @RequestParam String type,
+            @RequestParam String title,
+            @RequestParam String content) {
         return enterpriseService.sendMessage(account, type, title, content);
     }
 }

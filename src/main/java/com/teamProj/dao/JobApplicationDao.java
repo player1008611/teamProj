@@ -12,5 +12,6 @@ import java.util.List;
 @Mapper
 public interface JobApplicationDao extends BaseMapper<JobApplication> {
     List<JobApplicationRecruitmentVo> queryJobApplication(@Param("userId") Integer userId);
+
     List<SchoolApplicationDataVo> querySchoolApplicationData(@Param("schoolId") Integer schoolId);
 }

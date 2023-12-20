@@ -82,11 +82,16 @@ public class HttpResult<T> implements Serializable {
 
     @Override
     public String toString() {
-        return "HttpResult{" +
-                "success=" + success +
-                ", code=" + code +
-                ", data=" + info +
-                ", message='" + message + '\'' +
-                '}';
+        return "HttpResult{"
+                + "success="
+                + success
+                + ", code="
+                + code
+                + ", data="
+                + info
+                + ", message='"
+                + message
+                + '\''
+                + '}';
     }
 }

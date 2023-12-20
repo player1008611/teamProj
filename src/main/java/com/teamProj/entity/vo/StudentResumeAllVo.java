@@ -4,7 +4,6 @@ import com.teamProj.entity.Resume;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-
 @Data
 @AllArgsConstructor
 public class StudentResumeAllVo {
