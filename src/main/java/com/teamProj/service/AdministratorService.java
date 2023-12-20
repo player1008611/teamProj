@@ -71,4 +71,8 @@ public interface AdministratorService {
     HttpResult queryAnnouncementCover(Integer id);
 
     HttpResult queryAnnouncementData(Integer id);
+
+    HttpResult setAnnouncementTop(Integer id);
+
+    HttpResult setAnnouncementDown(Integer id);
 }

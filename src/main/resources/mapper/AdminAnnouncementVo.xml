@@ -9,7 +9,8 @@
         announcement.title,
         announcement.category,
         announcement.content,
-        announcement.creation_time as creationTime
+        announcement.creation_time as creationTime,
+        announcement.top as top
         FROM announcement,administrator
         WHERE announcement.admin_id = administrator.admin_id
         <if test="title!=null and title!=''">

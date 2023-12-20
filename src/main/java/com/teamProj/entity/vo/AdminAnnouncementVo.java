@@ -23,4 +23,6 @@ public class AdminAnnouncementVo {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     Timestamp creationTime;
+
+    String top;
 }

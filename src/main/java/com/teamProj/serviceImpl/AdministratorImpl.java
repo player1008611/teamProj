@@ -6,9 +6,33 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.teamProj.dao.*;
-import com.teamProj.entity.*;
-import com.teamProj.entity.vo.*;
+import com.teamProj.dao.AdministratorDao;
+import com.teamProj.dao.AnnouncementDao;
+import com.teamProj.dao.CollegeDao;
+import com.teamProj.dao.DepartmentDao;
+import com.teamProj.dao.EnterpriseDao;
+import com.teamProj.dao.EnterpriseUserDao;
+import com.teamProj.dao.MajorDao;
+import com.teamProj.dao.RecruitmentInfoDao;
+import com.teamProj.dao.SchoolDao;
+import com.teamProj.dao.StudentDao;
+import com.teamProj.dao.UserDao;
+import com.teamProj.entity.Announcement;
+import com.teamProj.entity.College;
+import com.teamProj.entity.Department;
+import com.teamProj.entity.Enterprise;
+import com.teamProj.entity.EnterpriseUser;
+import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.Major;
+import com.teamProj.entity.RecruitmentInfo;
+import com.teamProj.entity.School;
+import com.teamProj.entity.Student;
+import com.teamProj.entity.User;
+import com.teamProj.entity.vo.AdminAnnouncementVo;
+import com.teamProj.entity.vo.AdminEnterpriseUserVo;
+import com.teamProj.entity.vo.AdminRecruitmentVo;
+import com.teamProj.entity.vo.AdminSchoolUserVo;
+import com.teamProj.entity.vo.AdminStudentVo;
 import com.teamProj.service.AdministratorService;
 import com.teamProj.utils.HttpResult;
 import com.teamProj.utils.JwtUtil;
@@ -254,7 +278,7 @@ public class AdministratorImpl implements AdministratorService {
         College college = collegeDao.selectOne(collegeQueryWrapper);
 
         UpdateWrapper<College> collegeUpdateWrapper = new UpdateWrapper<>();
-        collegeUpdateWrapper.eq("college_id", student.getCollegeId()).set("student_num", college.getStudentNum()-1);
+        collegeUpdateWrapper.eq("college_id", student.getCollegeId()).set("student_num", college.getStudentNum() - 1);
         collegeDao.update(null, collegeUpdateWrapper);
 
         QueryWrapper<Major> majorQueryWrapper = new QueryWrapper<>();
@@ -262,7 +286,7 @@ public class AdministratorImpl implements AdministratorService {
         Major major = majorDao.selectOne(majorQueryWrapper);
 
         UpdateWrapper<Major> majorUpdateWrapper = new UpdateWrapper<>();
-        majorUpdateWrapper.eq("major_id", student.getMajorId()).set("student_num", major.getStudentNum()-1);
+        majorUpdateWrapper.eq("major_id", student.getMajorId()).set("student_num", major.getStudentNum() - 1);
         majorDao.update(null, majorUpdateWrapper);
 
         if (userDao.delete(userQueryWrapper) > 0) {
@@ -706,7 +730,8 @@ public class AdministratorImpl implements AdministratorService {
                             category,
                             content,
                             data == null ? null : data.getBytes(),
-                            Timestamp.valueOf(format.format(date))));
+                            Timestamp.valueOf(format.format(date)),
+                            "0"));
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "发布失败");
         }
@@ -776,5 +801,25 @@ public class AdministratorImpl implements AdministratorService {
         QueryWrapper<Announcement> announcementQueryWrapper = new QueryWrapper<>();
         announcementQueryWrapper.eq("announcement_id", id).select("data");
         return HttpResult.success(announcementDao.selectOne(announcementQueryWrapper), "查询成功");
+    }
+
+    @Override
+    public HttpResult setAnnouncementTop(Integer id) {
+        UpdateWrapper<Announcement> announcementUpdateWrapper = new UpdateWrapper<>();
+        announcementUpdateWrapper.eq("announcement_id", id).set("top", "1");
+        if (announcementDao.update(null, announcementUpdateWrapper) > 0) {
+            return HttpResult.success(id, "已置顶");
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "置顶失败");
+    }
+
+    @Override
+    public HttpResult setAnnouncementDown(Integer id) {
+        UpdateWrapper<Announcement> announcementUpdateWrapper = new UpdateWrapper<>();
+        announcementUpdateWrapper.eq("announcement_id", id).set("top", "0");
+        if (announcementDao.update(null, announcementUpdateWrapper) > 0) {
+            return HttpResult.success(id, "已取消置顶");
+        }
+        return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "取消置顶失败");
     }
 }
