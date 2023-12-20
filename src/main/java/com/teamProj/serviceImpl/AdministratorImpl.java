@@ -68,6 +68,11 @@ public class AdministratorImpl implements AdministratorService {
     @Resource
     private AnnouncementDao announcementDao;
 
+    @Resource
+    private CollegeDao collegeDao;
+
+    @Resource
+    private MajorDao majorDao;
     // 管理员登录
 
     /**
@@ -234,6 +239,32 @@ public class AdministratorImpl implements AdministratorService {
     public HttpResult deleteStudentAccount(String account) {
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         userQueryWrapper.eq("account", account).eq("permission", "student");
+        User user = userDao.selectOne(userQueryWrapper);
+
+        if (Objects.isNull(user)) {
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
+        }
+
+        QueryWrapper<Student> studentQueryWrapper = new QueryWrapper<>();
+        studentQueryWrapper.eq("student_id", user.getUserId());
+        Student student = studentDao.selectOne(studentQueryWrapper);
+
+        QueryWrapper<College> collegeQueryWrapper = new QueryWrapper<>();
+        collegeQueryWrapper.eq("college_id", student.getCollegeId());
+        College college = collegeDao.selectOne(collegeQueryWrapper);
+
+        UpdateWrapper<College> collegeUpdateWrapper = new UpdateWrapper<>();
+        collegeUpdateWrapper.eq("college_id", student.getCollegeId()).set("student_num", college.getStudentNum()-1);
+        collegeDao.update(null, collegeUpdateWrapper);
+
+        QueryWrapper<Major> majorQueryWrapper = new QueryWrapper<>();
+        majorQueryWrapper.eq("major_id", student.getMajorId());
+        Major major = majorDao.selectOne(majorQueryWrapper);
+
+        UpdateWrapper<Major> majorUpdateWrapper = new UpdateWrapper<>();
+        majorUpdateWrapper.eq("major_id", student.getMajorId()).set("student_num", major.getStudentNum()-1);
+        majorDao.update(null, majorUpdateWrapper);
+
         if (userDao.delete(userQueryWrapper) > 0) {
             return HttpResult.success(account, "删除成功");
         }
