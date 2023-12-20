@@ -595,9 +595,12 @@ public class EnterpriseImpl implements EnterpriseService {
 
     @Override
     public HttpResult disagreeJobApplication(Integer id, String rejectReason) {
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>();
         jobApplicationUpdateWrapper.set("status", "1")
                 .set("rejection_reason", rejectReason)
+                .set("approval_time", Timestamp.valueOf(format.format(date)))
                 .eq("application_id", id);
         if (jobApplicationDao.update(null, jobApplicationUpdateWrapper) > 0) {
             return HttpResult.success();
@@ -628,7 +631,7 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "新建面试失败");
         }
         UpdateWrapper<JobApplication> jobApplicationUpdateWrapper = new UpdateWrapper<>(jobApplication);
-        jobApplicationUpdateWrapper.set("status", '2');
+        jobApplicationUpdateWrapper.set("status", '2').set("approval_time", Timestamp.valueOf(simpleDateFormat.format(time)));
         jobApplicationDao.update(null, jobApplicationUpdateWrapper);
         //给学生发邮箱提醒
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();

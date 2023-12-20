@@ -10,7 +10,8 @@
         department.`name` as departmentName,
         job_application.`status` as status,
         recruitment_info.job_title as jobTitle,
-        user.account as studentAccount
+        user.account as studentAccount,
+        application_time as applicationTime
         FROM student,
         school,
         department,
