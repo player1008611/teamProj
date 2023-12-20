@@ -550,6 +550,11 @@ public class StudentImpl implements StudentService {
         queryWrapper1.eq("account", account);
         User user = userDao.selectOne(queryWrapper1);
         int studentId = user.getUserId();
+
+        QueryWrapper<Student> queryWrapper2 = new QueryWrapper<>();
+        queryWrapper2.eq("student_id", studentId);
+        Student oldStudent = studentDao.selectOne(queryWrapper2);
+
         UpdateWrapper<Student> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("student_id", studentId);
         Student student = new Student();
@@ -564,10 +569,42 @@ public class StudentImpl implements StudentService {
             student.setQq(qq);
         }
         if (collegeId != null) {
+            QueryWrapper<College> collegeQueryWrapper = new QueryWrapper<>();
+            collegeQueryWrapper.eq("college_id", collegeId);
+            College college = collegeDao.selectOne(collegeQueryWrapper);
+
+            UpdateWrapper<College> collegeUpdateWrapper = new UpdateWrapper<>();
+            collegeUpdateWrapper.eq("college_id", oldStudent.getCollegeId()).set("student_num", college.getStudentNum() - 1);
+            collegeDao.update(null, collegeUpdateWrapper);
+
             student.setCollegeId(collegeId);
+
+            QueryWrapper<College> newCollegeQueryWrapper = new QueryWrapper<>();
+            newCollegeQueryWrapper.eq("college_id", collegeId);
+            College newCollege = collegeDao.selectOne(newCollegeQueryWrapper);
+
+            UpdateWrapper<College> newCollegeUpdateWrapper = new UpdateWrapper<>();
+            newCollegeUpdateWrapper.eq("college_id", collegeId).set("student_num", newCollege.getStudentNum() + 1);
+            collegeDao.update(null, newCollegeUpdateWrapper);
         }
         if (majorId != null) {
+            QueryWrapper<Major> majorQueryWrapper = new QueryWrapper<>();
+            majorQueryWrapper.eq("major_id", majorId);
+            Major major = majorDao.selectOne(majorQueryWrapper);
+
+            UpdateWrapper<Major> majorUpdateWrapper = new UpdateWrapper<>();
+            majorUpdateWrapper.eq("major_id", oldStudent.getMajorId()).set("student_num", major.getStudentNum() - 1);
+            majorDao.update(null, majorUpdateWrapper);
+
             student.setMajorId(majorId);
+
+            QueryWrapper<Major> newMajorQueryWrapper = new QueryWrapper<>();
+            newMajorQueryWrapper.eq("major_id", majorId);
+            Major newMajor = majorDao.selectOne(newMajorQueryWrapper);
+
+            UpdateWrapper<Major> newMajorUpdateWrapper = new UpdateWrapper<>();
+            newMajorUpdateWrapper.eq("major_id", majorId).set("student_num", newMajor.getStudentNum() + 1);
+            majorDao.update(null, newMajorUpdateWrapper);
         }
         if (address != null && !address.isEmpty()) {
             student.setAddress(address);
