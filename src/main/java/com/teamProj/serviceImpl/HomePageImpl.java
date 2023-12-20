@@ -22,7 +22,7 @@ public class HomePageImpl implements HomePageService {
                 .select("announcement_id", "title", "cover", "creation_time","content");
         List<Announcement> announcements = announcementDao.selectList(queryWrapper);
         announcements.sort((o1, o2) -> o2.getCreationTime().compareTo(o1.getCreationTime()));
-        List<Announcement> result = announcements.subList(0, Math.min(announcements.size(), 5));
+        List<Announcement> result = announcements.subList(0, Math.min(announcements.size(), 6));
         return HttpResult.success(result, "查询成功");
     }
 
@@ -33,7 +33,7 @@ public class HomePageImpl implements HomePageService {
                 .select("announcement_id", "title", "cover", "creation_time","content");;
         List<Announcement> announcements = announcementDao.selectList(queryWrapper);
         announcements.sort((o1, o2) -> o2.getCreationTime().compareTo(o1.getCreationTime()));
-        List<Announcement> result = announcements.subList(0, Math.min(announcements.size(), 5));
+        List<Announcement> result = announcements.subList(0, Math.min(announcements.size(), 6));
         return HttpResult.success(result, "查询成功");
     }
 

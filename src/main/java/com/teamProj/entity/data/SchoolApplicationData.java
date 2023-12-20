@@ -17,7 +17,7 @@ public class SchoolApplicationData {
         Map<String,Integer> enterprise;
         Map<String,Integer> city;
         Map<String,MajorApplicationData> major;
-
+        Integer total;
         public CollegeApplicationData(){
             setStudentNum(0);
             setEnterprise(new HashMap<>());
@@ -32,14 +32,14 @@ public class SchoolApplicationData {
         Integer studentNum;
         Map<String,Integer> enterprise;
         Map<String,Integer> city;
-
+        Integer total;
         public MajorApplicationData(){
             setStudentNum(0);
             setCity(new HashMap<>());
             setEnterprise(new HashMap<>());
         }
     }
-
+    Integer total;
     Integer studentNum;
     Map<String,Integer> enterprise;
     Map<String,Integer> city;
