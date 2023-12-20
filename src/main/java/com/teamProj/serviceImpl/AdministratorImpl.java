@@ -805,8 +805,10 @@ public class AdministratorImpl implements AdministratorService {
 
     @Override
     public HttpResult setAnnouncementTop(Integer id) {
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UpdateWrapper<Announcement> announcementUpdateWrapper = new UpdateWrapper<>();
-        announcementUpdateWrapper.eq("announcement_id", id).set("top", "1");
+        announcementUpdateWrapper.eq("announcement_id", id).set("top", "1").set("top_time", Timestamp.valueOf(format.format(date)));
         if (announcementDao.update(null, announcementUpdateWrapper) > 0) {
             return HttpResult.success(id, "已置顶");
         }
@@ -816,7 +818,7 @@ public class AdministratorImpl implements AdministratorService {
     @Override
     public HttpResult setAnnouncementDown(Integer id) {
         UpdateWrapper<Announcement> announcementUpdateWrapper = new UpdateWrapper<>();
-        announcementUpdateWrapper.eq("announcement_id", id).set("top", "0");
+        announcementUpdateWrapper.eq("announcement_id", id).set("top", "0").set("top_time", null);
         if (announcementDao.update(null, announcementUpdateWrapper) > 0) {
             return HttpResult.success(id, "已取消置顶");
         }
