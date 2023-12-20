@@ -20,7 +20,7 @@ public class SendEmail {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            System.out.println("已经建立连接!");
+            //System.out.println("已经建立连接!");
         }
     }
 
@@ -117,7 +117,6 @@ public class SendEmail {
         out.write(content + "\r\n");
         // 句点加回车结束邮件内容输入
         result = sendServer(".", in, out);
-        System.out.println(result);
         if (result != 250) {
             throw new IOException("发送数据错误");
         }

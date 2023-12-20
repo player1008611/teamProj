@@ -33,10 +33,10 @@ public class EmailVerification {
             boolean flag;
             flag = smtp.sendMail(message, server);
             if (flag) {
-                System.out.println("邮件发送成功！");
+                //System.out.println("邮件发送成功！");
                 return true;
             } else {
-                System.out.println("邮件发送失败！");
+                //System.out.println("邮件发送失败！");
                 return false;
             }
         } catch (UnknownHostException e) {
