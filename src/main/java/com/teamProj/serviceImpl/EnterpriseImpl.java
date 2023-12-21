@@ -3,11 +3,45 @@ package com.teamProj.serviceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.teamProj.dao.*;
-import com.teamProj.entity.*;
-import com.teamProj.entity.vo.*;
+import com.teamProj.dao.CareerFairDao;
+import com.teamProj.dao.DepartmentDao;
+import com.teamProj.dao.DraftDao;
+import com.teamProj.dao.EnterpriseDao;
+import com.teamProj.dao.EnterpriseUserDao;
+import com.teamProj.dao.InterviewInfoDao;
+import com.teamProj.dao.JobApplicationDao;
+import com.teamProj.dao.MessageDao;
+import com.teamProj.dao.RecruitmentInfoDao;
+import com.teamProj.dao.ResumeDao;
+import com.teamProj.dao.SchoolDao;
+import com.teamProj.dao.StudentDao;
+import com.teamProj.dao.UserDao;
+import com.teamProj.entity.CareerFair;
+import com.teamProj.entity.Department;
+import com.teamProj.entity.Draft;
+import com.teamProj.entity.Enterprise;
+import com.teamProj.entity.EnterpriseUser;
+import com.teamProj.entity.InterviewInfo;
+import com.teamProj.entity.JobApplication;
+import com.teamProj.entity.LoginUser;
+import com.teamProj.entity.Message;
+import com.teamProj.entity.RecruitmentInfo;
+import com.teamProj.entity.Resume;
+import com.teamProj.entity.School;
+import com.teamProj.entity.Student;
+import com.teamProj.entity.User;
+import com.teamProj.entity.vo.EnterpriseFairVo;
+import com.teamProj.entity.vo.EnterpriseInterviewVo;
+import com.teamProj.entity.vo.EnterpriseJobApplicationVo;
+import com.teamProj.entity.vo.EnterpriseRecruitmentVo;
+import com.teamProj.entity.vo.EnterpriseSentMessageVo;
+import com.teamProj.entity.vo.StudentResumeAllVo;
 import com.teamProj.service.EnterpriseService;
-import com.teamProj.utils.*;
+import com.teamProj.utils.EmailVerification;
+import com.teamProj.utils.HttpResult;
+import com.teamProj.utils.JwtUtil;
+import com.teamProj.utils.RedisCache;
+import com.teamProj.utils.ResultCodeEnum;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +55,13 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -1740,5 +1780,27 @@ public class EnterpriseImpl implements EnterpriseService {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "发送失败");
         }
         return HttpResult.success(null, "发送成功");
+    }
+
+    @Override
+    public HttpResult homeCalendar() {
+        List<Map<String, String>> list = new ArrayList<>();
+        QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
+        careerFairQueryWrapper.eq("status", "1");
+        List<CareerFair> careerFairList = careerFairDao.selectList(careerFairQueryWrapper);
+        for (CareerFair careerFair : careerFairList) {
+            QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
+            schoolQueryWrapper.eq("school_id", careerFair.getSchoolId());
+            School school = schoolDao.selectOne(schoolQueryWrapper);
+            String time = String.valueOf(careerFair.getStartTime()).substring(0, 10);
+            list.add(new HashMap<>() {
+                {
+                    put("date", time);
+                    put("content", school.getSchoolName() + careerFair.getTitle());
+                    put("div_num", 'x' + time);
+                }
+            });
+        }
+        return HttpResult.success(list, "查询成功");
     }
 }

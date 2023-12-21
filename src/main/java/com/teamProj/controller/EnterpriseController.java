@@ -4,7 +4,14 @@ import com.teamProj.entity.RecruitmentInfo;
 import com.teamProj.service.EnterpriseService;
 import com.teamProj.utils.HttpResult;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -450,5 +457,11 @@ public class EnterpriseController {
             @RequestParam String title,
             @RequestParam String content) {
         return enterpriseService.sendMessage(account, type, title, content);
+    }
+
+    @GetMapping("/homeCalendar")
+    @PreAuthorize("hasAuthority('enterprise')")
+    HttpResult homeCalendar() {
+        return enterpriseService.homeCalendar();
     }
 }
