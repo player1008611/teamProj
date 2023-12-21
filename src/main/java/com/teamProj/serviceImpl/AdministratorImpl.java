@@ -731,7 +731,9 @@ public class AdministratorImpl implements AdministratorService {
                             content,
                             data == null ? null : data.getBytes(),
                             Timestamp.valueOf(format.format(date)),
-                            "0"));
+                            "0",
+                            null
+                    ));
         } catch (Exception e) {
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "发布失败");
         }

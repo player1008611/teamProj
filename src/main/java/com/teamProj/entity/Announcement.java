@@ -32,4 +32,7 @@ public class Announcement {
     Timestamp creationTime;
 
     String top;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    Timestamp topTime;
 }

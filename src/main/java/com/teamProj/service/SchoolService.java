@@ -40,5 +40,9 @@ public interface SchoolService {
 
     HttpResult queryCareerFair(String name, Integer current, Integer size);
 
+    HttpResult queryCareerFairNum();
+
+    HttpResult queryCareerFairToday();
+
     HttpResult applicationData();
 }

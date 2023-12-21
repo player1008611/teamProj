@@ -145,6 +145,18 @@ public class SchoolController {
         return schoolService.queryCareerFair(name, current, size);
     }
 
+    @GetMapping("/queryCareerFairNum")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult queryCareerFairNum() {
+        return schoolService.queryCareerFairNum();
+    }
+
+    @GetMapping("/queryCareerFairToday")
+    @PreAuthorize("hasAuthority('school')")
+    HttpResult queryCareerFairToday() {
+        return schoolService.queryCareerFairToday();
+    }
+
     @GetMapping("/applicationData")
     @PreAuthorize("hasAuthority('school')")
     HttpResult applicationData() {

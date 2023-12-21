@@ -22,6 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -456,6 +458,41 @@ public class SchoolImpl implements SchoolService {
         int schoolId = loginUser.getUser().getUserId();
         Page<SchoolFairVo> page = new Page<>(current, size);
         return HttpResult.success(careerFairDao.queryFair(page, name, schoolId), "查询成功");
+    }
+
+    /**
+     * Queries the number of career fairs.
+     *
+     * @return HttpResult Result containing the number of career fairs.
+     */
+    @Override
+    public HttpResult queryCareerFairNum() {
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        QueryWrapper<CareerFair> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status", "0").eq("school_id", user.getUserId());
+        return HttpResult.success(careerFairDao.selectCount(queryWrapper), "查询成功");
+    }
+
+    /**
+     * Queries the number of career fairs today.
+     *
+     * @return HttpResult Result containing the number of career fairs today.
+     */
+    @Override
+    public HttpResult queryCareerFairToday(){
+        UsernamePasswordAuthenticationToken authenticationToken =
+                (UsernamePasswordAuthenticationToken)
+                        SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
+        User user = loginUser.getUser();
+        QueryWrapper<CareerFair> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("status", "1").eq("school_id", user.getUserId()).le("start_time", new Timestamp(System.currentTimeMillis())).ge("end_time", new Timestamp(System.currentTimeMillis()));
+        System.out.println(LocalDate.now());
+        return HttpResult.success(careerFairDao.selectList(queryWrapper), "查询成功");
     }
 
     @Override

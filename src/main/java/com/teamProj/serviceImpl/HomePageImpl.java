@@ -24,11 +24,17 @@ public class HomePageImpl implements HomePageService {
     public HttpResult queryNews() {
         QueryWrapper<Announcement> queryWrapper = new QueryWrapper<>();
         queryWrapper
-                .eq("category", "新闻")
-                .select("announcement_id", "title", "cover", "creation_time", "content");
+                .eq("category", "新闻").eq("top","0")
+                .select("announcement_id", "title", "cover", "creation_time", "content","top");
         List<Announcement> announcements = announcementDao.selectList(queryWrapper);
+        queryWrapper.clear();
+        queryWrapper.eq("category","新闻").eq("top","1")
+                        .select("announcement_id", "title", "cover", "creation_time", "content","top","top_time");
+        List<Announcement> topAnnouncements = announcementDao.selectList(queryWrapper);
+        topAnnouncements.sort(((o1, o2) -> o2.getTopTime().compareTo(o1.getTopTime())));
         announcements.sort((o1, o2) -> o2.getCreationTime().compareTo(o1.getCreationTime()));
-        List<Announcement> result = announcements.subList(0, Math.min(announcements.size(), 6));
+        List<Announcement> result = topAnnouncements.subList(0,Math.min(topAnnouncements.size(),6));
+                result.addAll(announcements.subList(0, Math.min(announcements.size(), 6- result.size())));
         return HttpResult.success(result, "查询成功");
     }
 
@@ -41,11 +47,17 @@ public class HomePageImpl implements HomePageService {
     public HttpResult queryAnnouncement() {
         QueryWrapper<Announcement> queryWrapper = new QueryWrapper<>();
         queryWrapper
-                .eq("category", "公告")
-                .select("announcement_id", "title", "cover", "creation_time", "content");
+                .eq("category", "公告").eq("top","0")
+                .select("announcement_id", "title", "cover", "creation_time", "content","top");
         List<Announcement> announcements = announcementDao.selectList(queryWrapper);
+        queryWrapper.clear();
+        queryWrapper.eq("category","公告").eq("top","1")
+                .select("announcement_id", "title", "cover", "creation_time", "content","top","top_time");
+        List<Announcement> topAnnouncements = announcementDao.selectList(queryWrapper);
+        topAnnouncements.sort(((o1, o2) -> o2.getTopTime().compareTo(o1.getTopTime())));
         announcements.sort((o1, o2) -> o2.getCreationTime().compareTo(o1.getCreationTime()));
-        List<Announcement> result = announcements.subList(0, Math.min(announcements.size(), 6));
+        List<Announcement> result = topAnnouncements.subList(0,Math.min(topAnnouncements.size(),6));
+        result.addAll(announcements.subList(0, Math.min(announcements.size(), 6- result.size())));
         return HttpResult.success(result, "查询成功");
     }
 
