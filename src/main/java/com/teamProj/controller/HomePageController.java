@@ -28,4 +28,9 @@ public class HomePageController {
     HttpResult getData(Integer announcementId) {
         return homePageService.getData(announcementId);
     }
+
+    @GetMapping("/homeCalendar")
+    HttpResult homeCalendar() {
+        return homePageService.homeCalendar();
+    }
 }

@@ -1781,26 +1781,4 @@ public class EnterpriseImpl implements EnterpriseService {
         }
         return HttpResult.success(null, "发送成功");
     }
-
-    @Override
-    public HttpResult homeCalendar() {
-        List<Map<String, String>> list = new ArrayList<>();
-        QueryWrapper<CareerFair> careerFairQueryWrapper = new QueryWrapper<>();
-        careerFairQueryWrapper.eq("status", "1");
-        List<CareerFair> careerFairList = careerFairDao.selectList(careerFairQueryWrapper);
-        for (CareerFair careerFair : careerFairList) {
-            QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
-            schoolQueryWrapper.eq("school_id", careerFair.getSchoolId());
-            School school = schoolDao.selectOne(schoolQueryWrapper);
-            String time = String.valueOf(careerFair.getStartTime()).substring(0, 10);
-            list.add(new HashMap<>() {
-                {
-                    put("date", time);
-                    put("content", school.getSchoolName() + careerFair.getTitle());
-                    put("div_num", 'x' + time);
-                }
-            });
-        }
-        return HttpResult.success(list, "查询成功");
-    }
 }

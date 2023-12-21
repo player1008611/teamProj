@@ -458,10 +458,4 @@ public class EnterpriseController {
             @RequestParam String content) {
         return enterpriseService.sendMessage(account, type, title, content);
     }
-
-    @GetMapping("/homeCalendar")
-    @PreAuthorize("hasAuthority('enterprise')")
-    HttpResult homeCalendar() {
-        return enterpriseService.homeCalendar();
-    }
 }

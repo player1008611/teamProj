@@ -136,6 +136,4 @@ public interface EnterpriseService {
     HttpResult queryRecentContacts();
 
     HttpResult sendMessage(String account, String type, String title, String content);
-
-    HttpResult homeCalendar();
 }

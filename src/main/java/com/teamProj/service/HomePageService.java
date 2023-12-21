@@ -8,4 +8,6 @@ public interface HomePageService {
     HttpResult queryAnnouncement();
 
     HttpResult getData(Integer announcementId);
+
+    HttpResult homeCalendar();
 }
