@@ -79,6 +79,12 @@ public class StudentImpl implements StudentService {
         if (!loginUser.getPermissions().get(0).equals("student")) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
+        QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("student_id", loginUser.getUser().getUserId());
+        Student student = studentDao.selectOne(queryWrapper);
+        if (!student.getUserStatus().equals("1")){
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "账号已被禁用");
+        }
         String userId = String.valueOf(loginUser.getUser().getUserId());
         String jwt = JwtUtil.createJWT(userId);
         Map<String, String> map = new HashMap<>();

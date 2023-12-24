@@ -56,6 +56,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The type Administrator.
+ */
 @Service
 public class AdministratorImpl implements AdministratorService {
     @Resource
@@ -125,7 +128,7 @@ public class AdministratorImpl implements AdministratorService {
         return HttpResult.success(map, "登录成功");
     }
 
-    // 管理员登出
+
 
     /**
      * Administrator logout functionality.
@@ -142,7 +145,6 @@ public class AdministratorImpl implements AdministratorService {
         return HttpResult.success(null, "用户注销");
     }
 
-    // 管理员主页信息
 
     /**
      * Retrieves information for the administrator's home page.
@@ -162,7 +164,7 @@ public class AdministratorImpl implements AdministratorService {
         return HttpResult.success(count, "查询成功");
     }
 
-    // 模糊搜索学生
+
 
     /**
      * Retrieves a paginated list of students based on provided parameters.
@@ -182,7 +184,6 @@ public class AdministratorImpl implements AdministratorService {
                 administratorDao.queryStudent(page, name, schoolName, status), "查询成功");
     }
 
-    // 根据account指定重置学生密码
 
     /**
      * Resets the password for a student based on their account.
@@ -807,6 +808,7 @@ public class AdministratorImpl implements AdministratorService {
         announcementQueryWrapper.eq("announcement_id", id).select("data");
         return HttpResult.success(announcementDao.selectOne(announcementQueryWrapper), "查询成功");
     }
+
 
     @Override
     public HttpResult setAnnouncementTop(Integer id) {

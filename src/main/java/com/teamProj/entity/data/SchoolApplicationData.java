@@ -54,7 +54,7 @@ public class SchoolApplicationData {
         setCity(new HashMap<>());
     }
 
-    // 示例方法，对Map中的值进行排序
+
     public static LinkedHashMap<String, Integer> sortMapByValue(Map<String, Integer> unsortedMap) {
         LinkedHashMap<String, Integer> sortedMap = new LinkedHashMap<>();
 

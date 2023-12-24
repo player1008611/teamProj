@@ -11,12 +11,25 @@ import java.sql.SQLException;
 
 import static com.teamProj.utils.ResultCodeEnum.SERVER_ERROR;
 
+/**
+ * The type Student controller.
+ */
 @RestController
 @RequestMapping("/student")
 public class StudentController {
+    /**
+     * The Student service.
+     */
     @Resource
     StudentService studentService;
 
+    /**
+     * Student login http result.
+     *
+     * @param account  the account
+     * @param password the password
+     * @return the http result
+     */
     @PostMapping("/login")
     HttpResult studentLogin(
             @RequestParam(value = "account") String account,
@@ -24,12 +37,29 @@ public class StudentController {
         return studentService.studentLogin(account, password);
     }
 
+    /**
+     * Student logout http result.
+     *
+     * @return the http result
+     */
     @PostMapping("/logout")
     @PreAuthorize("hasAuthority('student')")
     HttpResult studentLogout() {
         return studentService.studentLogout();
     }
 
+    /**
+     * Student register http result.
+     *
+     * @param account     the account
+     * @param password    the password
+     * @param schoolName  the school name
+     * @param name        the name
+     * @param phoneNumber the phone number
+     * @param collegeName the college name
+     * @param majorName   the major name
+     * @return the http result
+     */
     @PostMapping("/register")
     HttpResult studentRegister(
             @RequestParam(value = "account") String account,
@@ -43,6 +73,13 @@ public class StudentController {
                 account, password, schoolName, collegeName, majorName, name, phoneNumber);
     }
 
+    /**
+     * Query school http result.
+     *
+     * @param depth     the depth
+     * @param queryInfo the query info
+     * @return the http result
+     */
     @GetMapping("/querySchool/all")
     HttpResult querySchool(
             @RequestParam(value = "depth") Integer depth,
@@ -50,6 +87,13 @@ public class StudentController {
         return studentService.querySchool(depth, queryInfo);
     }
 
+    /**
+     * Student set password forget http result.
+     *
+     * @param account  the account
+     * @param password the password
+     * @return the http result
+     */
     @PatchMapping("/setPassword/forget")
     HttpResult studentSetPasswordForget(
             @RequestParam(value = "account") String account,
@@ -57,6 +101,14 @@ public class StudentController {
         return studentService.setStudentPasswordForget(account, password);
     }
 
+    /**
+     * Student set password http result.
+     *
+     * @param account     the account
+     * @param oldPassword the old password
+     * @param password    the password
+     * @return the http result
+     */
     @PatchMapping("/setPassword")
     @PreAuthorize("hasAuthority('student')")
     HttpResult studentSetPassword(
@@ -66,6 +118,20 @@ public class StudentController {
         return studentService.setStudentPassword(account, oldPassword, password);
     }
 
+    /**
+     * Sets student info.
+     *
+     * @param account   the account
+     * @param name      the name
+     * @param gender    the gender
+     * @param wechat    the wechat
+     * @param qq        the qq
+     * @param collegeId the college id
+     * @param majorId   the major id
+     * @param address   the address
+     * @param age       the age
+     * @return the student info
+     */
     @PatchMapping("/setStudentInfo")
     @PreAuthorize("hasAuthority('student')")
     HttpResult setStudentInfo(
@@ -82,12 +148,23 @@ public class StudentController {
                 account, name, gender, wechat, qq, collegeId, majorId, address, age);
     }
 
+    /**
+     * Query student info http result.
+     *
+     * @return the http result
+     */
     @GetMapping("/queryStudentInfo")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryStudentInfo() {
         return studentService.queryStudentInfo();
     }
 
+    /**
+     * Query interview info http result.
+     *
+     * @param queryInfo the query info
+     * @return the http result
+     */
     @GetMapping("/queryInterviewInfo")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryInterviewInfo(
@@ -95,6 +172,21 @@ public class StudentController {
         return studentService.queryInterviewInfo(queryInfo);
     }
 
+    /**
+     * Create resume http result.
+     *
+     * @param account              the account
+     * @param imageFile            the image file
+     * @param selfDescription      the self description
+     * @param careerObjective      the career objective
+     * @param educationExperience  the education experience
+     * @param InternshipExperience the internship experience
+     * @param projectExperience    the project experience
+     * @param certificates         the certificates
+     * @param skills               the skills
+     * @param resumeName           the resume name
+     * @return the http result
+     */
     @PostMapping("/createResume")
     @PreAuthorize("hasAuthority('student')")
     HttpResult createResume(
@@ -125,18 +217,36 @@ public class StudentController {
         //return studentService.createResume(resume);
     }
 
+    /**
+     * Delete resume http result.
+     *
+     * @param resumeId the resume id
+     * @return the http result
+     */
     @DeleteMapping("/deleteResume")
     @PreAuthorize("hasAuthority('student')")
     HttpResult deleteResume(@RequestParam(value = "resumeId") Integer resumeId) {
         return studentService.deleteResume(resumeId);
     }
 
+    /**
+     * Query resume http result.
+     *
+     * @return the http result
+     */
     @GetMapping("/queryResume")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryResume() {
         return studentService.queryResume();
     }
 
+    /**
+     * Query resume detail http result.
+     *
+     * @param resumeId the resume id
+     * @return the http result
+     * @throws SQLException the sql exception
+     */
     @GetMapping("/queryResumeDetail")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryResumeDetail(@RequestParam(value = "resumeId") Integer resumeId)
@@ -144,6 +254,20 @@ public class StudentController {
         return studentService.queryResumeDetail(resumeId);
     }
 
+    /**
+     * Edit resume http result.
+     *
+     * @param resumeId             the resume id
+     * @param selfDescription      the self description
+     * @param careerObjective      the career objective
+     * @param educationExperience  the education experience
+     * @param InternshipExperience the internship experience
+     * @param projectExperience    the project experience
+     * @param certificates         the certificates
+     * @param skills               the skills
+     * @param resumeName           the resume name
+     * @return the http result
+     */
     @PostMapping("/editResume")
     @PreAuthorize("hasAuthority('student')")
     HttpResult editResume(
@@ -168,6 +292,16 @@ public class StudentController {
                 resumeName);
     }
 
+    /**
+     * Query recruitment info http result.
+     *
+     * @param account   the account
+     * @param queryInfo the query info
+     * @param minSalary the min salary
+     * @param maxSalary the max salary
+     * @param mark      the mark
+     * @return the http result
+     */
     @GetMapping("/queryRecruitmentInfo")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryRecruitmentInfo(
@@ -185,6 +319,13 @@ public class StudentController {
         }
     }
 
+    /**
+     * Mark recruitment info http result.
+     *
+     * @param account           the account
+     * @param recruitmentInfoId the recruitment info id
+     * @return the http result
+     */
     @PostMapping("/markRecruitmentInfo")
     @PreAuthorize("hasAuthority('student')")
     HttpResult markRecruitmentInfo(
@@ -193,6 +334,14 @@ public class StudentController {
         return studentService.markRecruitmentInfo(account, recruitmentInfoId);
     }
 
+    /**
+     * Create job application http result.
+     *
+     * @param account           the account
+     * @param recruitmentInfoId the recruitment info id
+     * @param resumeId          the resume id
+     * @return the http result
+     */
     @PostMapping("/createJobApplication")
     @PreAuthorize("hasAuthority('student')")
     HttpResult createJobApplication(
@@ -202,6 +351,12 @@ public class StudentController {
         return studentService.createJobApplication(account, recruitmentInfoId, resumeId);
     }
 
+    /**
+     * Delete job application http result.
+     *
+     * @param jobApplicationId the job application id
+     * @return the http result
+     */
     @DeleteMapping("/deleteJobApplication")
     @PreAuthorize("hasAuthority('student')")
     HttpResult deleteJobApplication(
@@ -209,12 +364,24 @@ public class StudentController {
         return studentService.deleteJobApplication(jobApplicationId);
     }
 
+    /**
+     * Query job application http result.
+     *
+     * @param account the account
+     * @return the http result
+     */
     @GetMapping("/queryJobApplication")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryJobApplication(@RequestParam(value = "account") String account) {
         return studentService.queryJobApplication(account);
     }
 
+    /**
+     * Query job application detail http result.
+     *
+     * @param applicationId the application id
+     * @return the http result
+     */
     @GetMapping("/queryJobApplicationDetail")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryJobApplicationDetail(
@@ -222,11 +389,23 @@ public class StudentController {
         return studentService.queryJobApplicationDetail(applicationId);
     }
 
+    /**
+     * Verification email http result.
+     *
+     * @param email the email
+     * @return the http result
+     */
     @PostMapping("/verification/email")
     HttpResult verificationEmail(@RequestParam(value = "email") String email) {
         return studentService.verificationEmail(email);
     }
 
+    /**
+     * Verification phone number http result.
+     *
+     * @param phoneNumber the phone number
+     * @return the http result
+     */
     @PostMapping("/verification/phone")
     HttpResult verificationPhoneNumber(@RequestParam(value = "phoneNumber") String phoneNumber) {
         try {
@@ -236,6 +415,13 @@ public class StudentController {
         }
     }
 
+    /**
+     * Verification phone number check http result.
+     *
+     * @param messageId the message id
+     * @param code      the code
+     * @return the http result
+     */
     @PostMapping("/verification/phone/check")
     HttpResult verificationPhoneNumberCheck(
             @RequestParam(value = "messageId") String messageId,
@@ -247,30 +433,58 @@ public class StudentController {
         }
     }
 
+    /**
+     * Homepage http result.
+     *
+     * @return the http result
+     */
     @GetMapping("/homepage")
     @PreAuthorize("hasAuthority('student')")
     HttpResult homepage() {
         return studentService.homepage();
     }
 
+    /**
+     * Gets recommendation.
+     *
+     * @param page the page
+     * @return the recommendation
+     */
     @GetMapping("/getRecommendation")
     @PreAuthorize("hasAuthority('student')")
     HttpResult getRecommendation(@RequestParam(value = "page", required = false) Integer page) {
         return studentService.getRecommendation(page);
     }
 
+    /**
+     * Query fair http result.
+     *
+     * @return the http result
+     */
     @GetMapping("/queryFair")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryFair() {
         return studentService.queryFair();
     }
 
+    /**
+     * Query message list http result.
+     *
+     * @return the http result
+     */
     @GetMapping("/message/queryList")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryMessageList() {
         return studentService.queryMessageList();
     }
 
+    /**
+     * Query message http result.
+     *
+     * @param messageId the message id
+     * @param queryInfo the query info
+     * @return the http result
+     */
     @GetMapping("/message/query")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryMessage(
@@ -279,36 +493,70 @@ public class StudentController {
         return studentService.queryMessage(messageId, queryInfo);
     }
 
+    /**
+     * Delete all message http result.
+     *
+     * @return the http result
+     */
     @DeleteMapping("/message/deleteAll")
     @PreAuthorize("hasAuthority('student')")
     HttpResult deleteAllMessage() {
         return studentService.deleteAllMessage();
     }
 
+    /**
+     * Delete message http result.
+     *
+     * @param messageId the message id
+     * @return the http result
+     */
     @DeleteMapping("/message/delete")
     @PreAuthorize("hasAuthority('student')")
     HttpResult deleteMessage(@RequestParam(value = "messageId") Integer messageId) {
         return studentService.deleteMessage(messageId);
     }
 
+    /**
+     * Read all message http result.
+     *
+     * @return the http result
+     */
     @PatchMapping("/message/readAll")
     @PreAuthorize("hasAuthority('student')")
     HttpResult readAllMessage() {
         return studentService.hasReadAllMessage();
     }
 
+    /**
+     * Read message http result.
+     *
+     * @param messageId the message id
+     * @return the http result
+     */
     @PatchMapping("/message/read")
     @PreAuthorize("hasAuthority('student')")
     HttpResult readMessage(@RequestParam(value = "messageId") Integer messageId) {
         return studentService.hasReadMessage(messageId);
     }
 
+    /**
+     * Edit phone number http result.
+     *
+     * @param phoneNumber the phone number
+     * @return the http result
+     */
     @PatchMapping("/editPhoneNumber")
     @PreAuthorize("hasAuthority('student')")
     HttpResult editPhoneNumber(@RequestParam(value = "phoneNumber") String phoneNumber) {
         return studentService.editPhoneNumber(phoneNumber);
     }
 
+    /**
+     * Query college major http result.
+     *
+     * @param schoolName the school name
+     * @return the http result
+     */
     @GetMapping("/queryCollegeMajor")
     @PreAuthorize("hasAuthority('student')")
     HttpResult queryCollegeMajor(@RequestParam(value = "schoolName") String schoolName) {

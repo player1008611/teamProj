@@ -78,10 +78,15 @@ public class SchoolImpl implements SchoolService {
         if (!loginUser.getPermissions().get(0).equals("school")) {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
+        QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
+        schoolQueryWrapper.eq("school_id", loginUser.getUser().getUserId());
+        if(!schoolDao.selectOne(schoolQueryWrapper).getStatus().equals("1")){
+            return HttpResult.failure(ResultCodeEnum.NOT_FOUND, "该账号已被禁用");
+        }
+        schoolQueryWrapper.clear();
         String userId = String.valueOf(loginUser.getUser().getUserId());
         String jwt = JwtUtil.createJWT(userId);
         Map<String, String> map = new HashMap<>();
-        QueryWrapper<School> schoolQueryWrapper = new QueryWrapper<>();
         schoolQueryWrapper.eq("school_id", userId);
         String schoolName = schoolDao.selectOne(schoolQueryWrapper).getSchoolName();
         map.put("token", jwt);
