@@ -919,7 +919,10 @@ public class StudentImpl implements StudentService {
         QueryWrapper<Student> queryWrapper1 = new QueryWrapper<>();
         queryWrapper1.eq("student_id", user.getUserId());
         Student student = studentDao.selectOne(queryWrapper1);
-        String byword = student.getByword();
+        String byword = "";
+        if(student.getByword()!=""&&student.getByword()!=null) {
+            byword = student.getByword();
+        }
         List<RecruitmentInfo> list = recruitmentInfoDao.selectList(null);
         Map<RecruitmentInfo, Integer> map = new HashMap<>();
         for (RecruitmentInfo temp : list) {
