@@ -1200,7 +1200,7 @@ public class EnterpriseImpl implements EnterpriseService {
                             graduationSchool,
                             tel,
                             null,
-                            avatar.getBytes()),
+                            Objects.isNull(avatar) ? null : avatar.getBytes()),
                     enterpriseUserUpdateWrapper)
                     > 0) {
                 return HttpResult.success();
@@ -1285,7 +1285,16 @@ public class EnterpriseImpl implements EnterpriseService {
                 .set("status", "1")
                 .set("principal_id", userId)
                 .set("time", Timestamp.valueOf(format.format(date)));
+        InterviewInfo interviewInfo = interviewInfoDao.selectOne(interviewInfoUpdateWrapper);
+        QueryWrapper<JobApplication> jobApplicationQueryWrapper = new QueryWrapper<>();
+        jobApplicationQueryWrapper.eq("application_id", interviewInfo.getApplicationId());
+        JobApplication jobApplication = jobApplicationDao.selectOne(jobApplicationQueryWrapper);
+        UpdateWrapper<RecruitmentInfo> recruitmentInfoUpdateWrapper = new UpdateWrapper<>();
+        recruitmentInfoUpdateWrapper.eq("recruitment_id", jobApplication.getRecruitmentId());
+        RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoUpdateWrapper);
+        recruitmentInfoUpdateWrapper.set("recruited_num", recruitmentInfoDao.selectOne(recruitmentInfoUpdateWrapper).getRecruitedNum() + 1);
         if (interviewInfoDao.update(null, interviewInfoUpdateWrapper) > 0) {
+            recruitmentInfoDao.update(null, recruitmentInfoUpdateWrapper);
             return HttpResult.success(id, "审核成功");
         }
         return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "审核失败");
