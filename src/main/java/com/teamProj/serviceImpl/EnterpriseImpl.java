@@ -1199,7 +1199,7 @@ public class EnterpriseImpl implements EnterpriseService {
                             gender,
                             graduationSchool,
                             tel,
-                            "1",
+                            null,
                             avatar.getBytes()),
                     enterpriseUserUpdateWrapper)
                     > 0) {
