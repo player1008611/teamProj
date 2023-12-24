@@ -1,7 +1,7 @@
 package com.teamProj.service;
 
-import com.teamProj.entity.Resume;
 import com.teamProj.utils.HttpResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.SQLException;
 
@@ -25,12 +25,12 @@ public interface StudentService {
 
     HttpResult setStudentPasswordForget(String account, String password);
 
-    //    HttpResult createResume(String account, MultipartFile imageByte, String selfDescription,
-    // String careerObjective,
-    //                            String educationExperience, String InternshipExperience, String
-    // projectExperience,
-    //                            String certificates, String skills, String resumeName);
-    HttpResult createResume(Resume resume);
+    HttpResult createResume(String account, MultipartFile imageByte, String selfDescription,
+                            String careerObjective,
+                            String educationExperience, String InternshipExperience, String
+                                    projectExperience,
+                            String certificates, String skills, String resumeName);
+    //HttpResult createResume(Resume resume);
 
     HttpResult editResume(
             String resumeId,

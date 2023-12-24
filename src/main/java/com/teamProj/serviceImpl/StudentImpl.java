@@ -13,8 +13,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -327,18 +329,23 @@ public class StudentImpl implements StudentService {
     /**
      * Creates a resume for a student.
      *
-     * @param account The account of the student.
-     * @param resume  The resume details including self description, career objective, education
-     *                experience, etc.
-     * @return HttpResult indicating success or failure of the resume creation.
+     * @param account               The account of the student.
+     * @param imageByte             The image file representing the student.
+     * @param selfDescription       Description provided by the student about themselves.
+     * @param careerObjective       The career objective or goal of the student.
+     * @param educationExperience   Details of the student's educational background and experiences.
+     * @param internshipExperience  Information regarding the student's internship experiences.
+     * @param projectExperience     Details of the projects the student has been involved in.
+     * @param certificates          Certificates or achievements earned by the student.
+     * @param skills                Skills possessed by the student.
+     * @param resumeName            The name or title for the created resume.
+     * @return                      An HttpResult indicating the success or failure of the resume creation.
      */
     @Override
-    public HttpResult createResume(
-            /*MultipartFile imageFile, String selfDescription, String careerObjective,
-                                   String educationExperience, String InternshipExperience, String projectExperience,
-                                   String certificates, String skills, String resumeName,*/
-            Resume resume) {
-
+    public HttpResult createResume(String account, MultipartFile imageByte, String selfDescription,
+                                   String careerObjective, String educationExperience, String internshipExperience,
+                                   String projectExperience, String certificates, String skills, String resumeName
+            /*Resume resume*/) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 (UsernamePasswordAuthenticationToken)
                         SecurityContextHolder.getContext().getAuthentication();
@@ -348,18 +355,18 @@ public class StudentImpl implements StudentService {
         queryWrapper1.eq("student_id", user.getUserId());
         Student student = studentDao.selectOne(queryWrapper1);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        //        Image image = null;
+        //                Image image = null;
         //
-        //        if (imageFile != null && !imageFile.isEmpty()) {
-        //            byte[] imageByte;
-        //            try {
-        //                imageByte = imageFile.getBytes();
-        //            } catch (IOException e) {
-        //                throw new RuntimeException(e);
-        //            }
+        //                if (imageFile != null && !imageFile.isEmpty()) {
+        //                    byte[] imageByte;
+        //                    try {
+        //                        imageByte = imageFile.getBytes();
+        //                    } catch (IOException e) {
+        //                        throw new RuntimeException(e);
+        //                    }
         //
-        //            //image = new Image(ImageDataFactory.create(imageByte));
-        //        }
+        //                    //image = new Image(ImageDataFactory.create(imageByte));
+        //                }
         //
         //        byte[] resumePdf;
         //        if (attachPDF != null && !attachPDF.isEmpty()) {
@@ -389,14 +396,14 @@ public class StudentImpl implements StudentService {
         //            }
         //        }
 
-        //        Resume resume;
-        //        try {
-        //            resume = new Resume(null, student.getStudentId(), timestamp, resumeName,
-        // selfDescription, careerObjective, educationExperience, InternshipExperience,
-        // projectExperience, certificates, skills, imageFile.getBytes());
-        //        } catch (IOException e) {
-        //            throw new RuntimeException(e);
-        //        }
+        Resume resume;
+        try {
+            resume = new Resume(null, student.getStudentId(), timestamp, resumeName,
+                    selfDescription, careerObjective, educationExperience, internshipExperience,
+                    projectExperience, certificates, skills, imageByte.getBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         resume.setStudentId(student.getStudentId());
         resume.setCreationTime(timestamp);
 
@@ -920,7 +927,7 @@ public class StudentImpl implements StudentService {
         queryWrapper1.eq("student_id", user.getUserId());
         Student student = studentDao.selectOne(queryWrapper1);
         String byword = "";
-        if(student.getByword()!=null&&!student.getByword().isEmpty()) {
+        if (student.getByword() != null && !student.getByword().isEmpty()) {
             byword = student.getByword();
         }
         List<RecruitmentInfo> list = recruitmentInfoDao.selectList(null);
