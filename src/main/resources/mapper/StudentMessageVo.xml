@@ -16,6 +16,7 @@
         AND message.`from` = enterprise_user.user_id
         AND message.to = #{userId}
         AND enterprise_user.enterprise_id = enterprise.enterprise_id
+        AND message.student_del=0
         <if test="messageId != null">
             AND message.message_id = #{messageId}
         </if>

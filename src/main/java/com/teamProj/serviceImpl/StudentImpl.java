@@ -1031,9 +1031,9 @@ public class StudentImpl implements StudentService {
                         SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authenticationToken.getPrincipal();
         User user = loginUser.getUser();
-        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("`to`", user.getUserId());
-        if (messageDao.delete(queryWrapper) > 0) {
+        UpdateWrapper<Message> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("`to`", user.getUserId()).set("student_del",1);
+        if (messageDao.update(null,updateWrapper) > 0) {
             return HttpResult.success(null, "删除成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
@@ -1048,9 +1048,9 @@ public class StudentImpl implements StudentService {
      */
     @Override
     public HttpResult deleteMessage(Integer messageId) {
-        QueryWrapper<Message> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("message_id", messageId);
-        if (messageDao.delete(queryWrapper) > 0) {
+        UpdateWrapper<Message> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("message_id", messageId).set("student_del",1);
+        if (messageDao.update(null,updateWrapper) > 0) {
             return HttpResult.success(null, "删除成功");
         } else {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
