@@ -71,4 +71,38 @@ public class SchoolApplicationData {
 
         return sortedMap;
     }
+
+    public static LinkedHashMap<String,CollegeApplicationData> sortCollegeMapByValue(Map<String, CollegeApplicationData> unsortedMap) {
+        LinkedHashMap<String, CollegeApplicationData> sortedMap = new LinkedHashMap<>();
+
+        // 将Map中的键值对放入List中
+        List<Map.Entry<String, CollegeApplicationData>> list = new ArrayList<>(unsortedMap.entrySet());
+
+        // 使用Comparator对List中的Entry按值进行排序
+        list.sort(Map.Entry.comparingByValue(Comparator.comparing(CollegeApplicationData::getStudentNum).reversed()));
+
+        // 将排序后的键值对放入新的LinkedHashMap中
+        for (Map.Entry<String, CollegeApplicationData> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
+        return sortedMap;
+    }
+
+    public static LinkedHashMap<String,MajorApplicationData> sortMajorMapByValue(Map<String, MajorApplicationData> unsortedMap) {
+        LinkedHashMap<String, MajorApplicationData> sortedMap = new LinkedHashMap<>();
+
+        // 将Map中的键值对放入List中
+        List<Map.Entry<String, MajorApplicationData>> list = new ArrayList<>(unsortedMap.entrySet());
+
+        // 使用Comparator对List中的Entry按值进行排序
+        list.sort(Map.Entry.comparingByValue(Comparator.comparing(MajorApplicationData::getStudentNum).reversed()));
+
+        // 将排序后的键值对放入新的LinkedHashMap中
+        for (Map.Entry<String, MajorApplicationData> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
+        return sortedMap;
+    }
 }

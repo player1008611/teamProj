@@ -717,6 +717,8 @@ public class SchoolImpl implements SchoolService {
             }
         }
 
+        schoolApplicationData.setCollege(
+                SchoolApplicationData.sortCollegeMapByValue(schoolApplicationData.getCollege()));
         schoolApplicationData.setCity(
                 SchoolApplicationData.sortMapByValue(schoolApplicationData.getCity()));
         schoolApplicationData.setEnterprise(
@@ -725,6 +727,7 @@ public class SchoolImpl implements SchoolService {
                 schoolApplicationData.getCollege();
         for (Map.Entry<String, SchoolApplicationData.CollegeApplicationData> entry :
                 college.entrySet()) {
+            entry.getValue().setMajor(SchoolApplicationData.sortMajorMapByValue(entry.getValue().getMajor()));
             entry.getValue().setCity(SchoolApplicationData.sortMapByValue(entry.getValue().getCity()));
             entry
                     .getValue()
