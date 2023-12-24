@@ -683,12 +683,15 @@ public class AdministratorImpl implements AdministratorService {
             return HttpResult.failure(ResultCodeEnum.NOT_FOUND);
         }
 
+        Date date = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UpdateWrapper<RecruitmentInfo> recruitmentInfoUpdateWrapper = new UpdateWrapper<>();
         recruitmentInfoUpdateWrapper
                 .eq("enterprise_id", enterprise.getEnterpriseId())
                 .eq("department_id", department.getDepartmentId())
                 .eq("job_title", jobTitle)
-                .set("status", status);
+                .set("status", status)
+                .set("approval_time", Timestamp.valueOf(format.format(date)));
         if (status.equals("3")) {
             recruitmentInfoUpdateWrapper.set("rejection_reason", rejectReason);
         }
