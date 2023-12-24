@@ -17,6 +17,7 @@
         FROM recruitment_info AS r
         ,marked_recruitment_info AS m
         WHERE r.recruitment_id = m.recruitment_id AND m.student_id=#{userId}
+        AND recruit_num > recruited_num
         <if test="queryInfo !=null and queryInfo != ''">
             AND (r.job_title LIKE CONCAT('%', #{queryInfo}, '%')
             OR r.company_name LIKE CONCAT('%', #{queryInfo}, '%'))
