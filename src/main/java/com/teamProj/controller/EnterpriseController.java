@@ -318,7 +318,7 @@ public class EnterpriseController {
             @RequestParam(required = false) String graduationSchool,
             @RequestParam(required = false) String tel) {
         return enterpriseService.updateInfo(
-                avatar.isEmpty() ? null : avatar,
+                avatar,
                 name.isEmpty() ? null : name,
                 birthday.isEmpty() ? null : Date.valueOf(birthday),
                 age,
