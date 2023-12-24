@@ -93,7 +93,8 @@ public interface EnterpriseService {
             Date birthday,
             Integer age,
             String gender,
-            String graduationSchool);
+            String graduationSchool,
+            String tel);
 
     HttpResult queryInterview(String date, String school, Integer status, Integer current);
 

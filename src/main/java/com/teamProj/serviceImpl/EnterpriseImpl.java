@@ -1176,7 +1176,8 @@ public class EnterpriseImpl implements EnterpriseService {
             java.sql.Date birthday,
             Integer age,
             String gender,
-            String graduationSchool) {
+            String graduationSchool,
+            String tel) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 (UsernamePasswordAuthenticationToken)
                         SecurityContextHolder.getContext().getAuthentication();
@@ -1197,7 +1198,7 @@ public class EnterpriseImpl implements EnterpriseService {
                             birthday,
                             gender,
                             graduationSchool,
-                            null,
+                            tel,
                             null,
                             avatar.getBytes()),
                     enterpriseUserUpdateWrapper)

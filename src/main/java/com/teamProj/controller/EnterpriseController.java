@@ -315,14 +315,16 @@ public class EnterpriseController {
             @RequestParam(required = false) String birthday,
             @RequestParam(required = false) Integer age,
             @RequestParam(required = false) String gender,
-            @RequestParam(required = false) String graduationSchool) {
+            @RequestParam(required = false) String graduationSchool,
+            @RequestParam(required = false) String tel) {
         return enterpriseService.updateInfo(
                 avatar.isEmpty() ? null : avatar,
                 name.isEmpty() ? null : name,
                 birthday.isEmpty() ? null : Date.valueOf(birthday),
                 age,
                 gender.isEmpty() ? null : gender,
-                graduationSchool.isEmpty() ? null : graduationSchool);
+                graduationSchool.isEmpty() ? null : graduationSchool,
+                tel.isEmpty() ? null : tel);
     }
 
     @GetMapping("/queryInterview")
