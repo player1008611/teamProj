@@ -521,7 +521,7 @@ public class SchoolImpl implements SchoolService {
 
         for(College college : colleges){
             SchoolApplicationData.CollegeApplicationData collegeApplicationData = new SchoolApplicationData.CollegeApplicationData();
-            collegeApplicationData.setTotal(0);
+            collegeApplicationData.setTotal(college.getStudentNum());
             collegeApplicationData.setStudentNum(0);
             collegeApplicationData.setCity(new HashMap<>());
             collegeApplicationData.setEnterprise(new HashMap<>());
