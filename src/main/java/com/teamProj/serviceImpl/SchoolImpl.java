@@ -509,6 +509,37 @@ public class SchoolImpl implements SchoolService {
                 jobApplicationDao.querySchoolApplicationData(schoolId);
         SchoolApplicationData schoolApplicationData = new SchoolApplicationData();
         schoolApplicationData.setTotal(students.size());
+
+
+        QueryWrapper<College> collegeQueryWrapper = new QueryWrapper<>();
+        collegeQueryWrapper.eq("school_id", schoolId);
+        List<College> colleges = collegeDao.selectList(collegeQueryWrapper);
+
+        QueryWrapper<Major> majorQueryWrapper = new QueryWrapper<>();
+        majorQueryWrapper.eq("school_id", schoolId);
+        List<Major> majors = majorDao.selectList(majorQueryWrapper);
+
+        for(College college : colleges){
+            SchoolApplicationData.CollegeApplicationData collegeApplicationData = new SchoolApplicationData.CollegeApplicationData();
+            collegeApplicationData.setTotal(0);
+            collegeApplicationData.setStudentNum(0);
+            collegeApplicationData.setCity(new HashMap<>());
+            collegeApplicationData.setEnterprise(new HashMap<>());
+            Map<String, SchoolApplicationData.MajorApplicationData> major = new HashMap<>();
+            for(Major major1 : majors){
+                if(major1.getCollegeId().equals(college.getCollegeId())){
+                    SchoolApplicationData.MajorApplicationData majorApplicationData = new SchoolApplicationData.MajorApplicationData();
+                    majorApplicationData.setTotal(major1.getStudentNum());
+                    majorApplicationData.setStudentNum(0);
+                    majorApplicationData.setCity(new HashMap<>());
+                    majorApplicationData.setEnterprise(new HashMap<>());
+                    major.put(major1.getMajorName(), majorApplicationData);
+                }
+            }
+            collegeApplicationData.setMajor(major);
+            schoolApplicationData.getCollege().put(college.getCollegeName(), collegeApplicationData);
+        }
+
         for (Student student : students) {
             for (SchoolApplicationDataVo dataVo : schoolApplicationDataVos) {
                 if (student.getStudentId().equals(dataVo.getStudentId())) {
