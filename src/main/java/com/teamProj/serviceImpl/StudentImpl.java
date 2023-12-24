@@ -334,7 +334,7 @@ public class StudentImpl implements StudentService {
      */
     @Override
     public HttpResult createResume(
-            String account, /*MultipartFile imageFile, String selfDescription, String careerObjective,
+            /*MultipartFile imageFile, String selfDescription, String careerObjective,
                                    String educationExperience, String InternshipExperience, String projectExperience,
                                    String certificates, String skills, String resumeName,*/
             Resume resume) {
@@ -859,7 +859,7 @@ public class StudentImpl implements StudentService {
         //            QueryWrapper<RecruitmentInfo> queryWrapper3 = new QueryWrapper<>();
         //            queryWrapper3.eq("recruitment_id", jobApplication.getRecruitmentId());
         //            StudentInterviewVo tempVo = new StudentInterviewVo(tempInfo.getDateTime(),
-        // tempInfo.getPosition(), tempInfo.getMark(), tempInfo.getstatus(),
+        // tempInfo.getPosition(), tempInfo.getMark(), tempInfo.getStatus(),
         // recruitmentInfoDao.selectOne(queryWrapper3).getCompanyName());
         //            studentInterviewVo.add(tempVo);
         //        }
@@ -920,7 +920,7 @@ public class StudentImpl implements StudentService {
         queryWrapper1.eq("student_id", user.getUserId());
         Student student = studentDao.selectOne(queryWrapper1);
         String byword = "";
-        if(student.getByword()!=""&&student.getByword()!=null) {
+        if(student.getByword()!=null&&!student.getByword().isEmpty()) {
             byword = student.getByword();
         }
         List<RecruitmentInfo> list = recruitmentInfoDao.selectList(null);

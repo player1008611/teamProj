@@ -30,7 +30,7 @@ public interface StudentService {
     //                            String educationExperience, String InternshipExperience, String
     // projectExperience,
     //                            String certificates, String skills, String resumeName);
-    HttpResult createResume(String account, Resume resume);
+    HttpResult createResume(Resume resume);
 
     HttpResult editResume(
             String resumeId,

@@ -98,7 +98,8 @@ public class StudentController {
     @PostMapping("/createResume")
     @PreAuthorize("hasAuthority('student')")
     HttpResult createResume(
-            @RequestParam(value = "studentAccount") String account,
+            //                            @RequestParam(value = "studentAccount")
+            // String account,
             //                            @RequestParam(value = "image"/*, required = false*/)
             // MultipartFile imageFile,
             //                            @RequestParam(value = "selfDescription", required = false)
@@ -120,7 +121,7 @@ public class StudentController {
         // return studentService.createResume(account, imageFile, selfDescription, careerObjective,
         // educationExperience, InternshipExperience, projectExperience, certificates, skills,
         // resumeName);
-        return studentService.createResume(account, resume);
+        return studentService.createResume(resume);
     }
 
     @DeleteMapping("/deleteResume")
