@@ -733,7 +733,7 @@ public class StudentImpl implements StudentService {
         QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
         recruitmentInfoQueryWrapper.eq("recruitment_id", recruitmentInfoId);
         RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
-        if(recruitmentInfo.getRecruitedNum().equals(recruitmentInfo.getRecruitNum())){
+        if(recruitmentInfo.getRecruitedNum()>=recruitmentInfo.getRecruitNum()){
             return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "该职位已招满");
         }
         JobApplication jobApplication = new JobApplication();
