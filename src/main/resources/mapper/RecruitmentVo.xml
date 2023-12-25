@@ -22,6 +22,7 @@
         LEFT JOIN
         marked_recruitment_info AS m ON r.recruitment_id = m.recruitment_id
         WHERE recruit_num > recruited_num
+        AND status = 2
         <if test="queryInfo !=null and queryInfo != ''">
             AND (r.job_title LIKE CONCAT('%', #{queryInfo}, '%')
             OR r.company_name LIKE CONCAT('%', #{queryInfo}, '%'))

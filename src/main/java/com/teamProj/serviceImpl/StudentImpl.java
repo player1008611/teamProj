@@ -730,6 +730,12 @@ public class StudentImpl implements StudentService {
     @Override
     public HttpResult createJobApplication(
             String account, Integer recruitmentInfoId, Integer resumeId) {
+        QueryWrapper<RecruitmentInfo> recruitmentInfoQueryWrapper = new QueryWrapper<>();
+        recruitmentInfoQueryWrapper.eq("recruitment_id", recruitmentInfoId);
+        RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(recruitmentInfoQueryWrapper);
+        if(recruitmentInfo.getRecruitedNum().equals(recruitmentInfo.getRecruitNum())){
+            return HttpResult.failure(ResultCodeEnum.SERVER_ERROR, "该职位已招满");
+        }
         JobApplication jobApplication = new JobApplication();
         jobApplication.setRecruitmentId(recruitmentInfoId);
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
@@ -741,9 +747,6 @@ public class StudentImpl implements StudentService {
         jobApplication.setStatus('0');
         jobApplication.setEnterpriseVisible("1");
         if (jobApplicationDao.insert(jobApplication) > 0) {
-            QueryWrapper<RecruitmentInfo> queryWrapper1 = new QueryWrapper<>();
-            queryWrapper1.eq("recruitment_id", recruitmentInfoId);
-            RecruitmentInfo recruitmentInfo = recruitmentInfoDao.selectOne(queryWrapper1);
             QueryWrapper<Student> queryWrapper2 = new QueryWrapper<>();
             queryWrapper2.eq("student_id", jobApplication.getStudentId());
             Student student = studentDao.selectOne(queryWrapper2);
