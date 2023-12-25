@@ -158,7 +158,7 @@ public class AdministratorImpl implements AdministratorService {
         Map<String, Integer> count = new HashMap<>();
         count.put("student", studentDao.selectCount(null));
         count.put("school", schoolDao.selectCount(null));
-        count.put("enterpriseUser", enterpriseUserDao.selectCount(null));
+        count.put("enterprise", enterpriseDao.selectCount(null));
         count.put(
                 "uncheckedRecruitmentInfo", recruitmentInfoDao.selectCount(recruitmentInfoQueryWrapper));
         return HttpResult.success(count, "查询成功");
